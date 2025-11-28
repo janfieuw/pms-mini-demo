@@ -1,0 +1,46 @@
+<header class="bar bar-primary">
+  <!-- Roboto Mono Medium (500) via Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <div class="bar-inner"
+       style="display:flex;align-items:center;width:100%;padding:6px 10px;
+              font-family:'Roboto Mono', monospace;
+              font-weight:500;
+              font-size:10px;">
+    <!-- LEFT: fixed 85px, logo -->
+    <div class="left logo" style="flex:0 0 85px;display:flex;align-items:center;justify-content:flex-start;">
+      <img src="/grafisch/logo-primary.png" alt="RS-PROJECT"
+           style="max-width:100%;height:30px;display:block;object-fit:contain;">
+    </div>
+
+    <!-- CENTER: expands fully -->
+    <div class="center data"
+         style="flex:1 1 auto;text-align:center;letter-spacing:0.2px;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+      <% if (!shiftState) { %>
+        <span style="color:#ff0000;">NO ACTIVE SHIFT.</span>
+      <% } else { %>
+        OPERATOR: <%= shiftState.user %> | 
+        SHIFTSTART: <%= shiftState.startHHMM || '' %> | 
+        DOWNTIME SO FAR: <%= (shiftState.downtime || 0) %>' | 
+        CURRENT STATUS: 
+        <% if (shiftState.status === 'UP') { %>
+          <span style="color:#46A469;">●</span>
+        <% } else { %>
+          <span style="color:#FF0000;">●</span>
+        <% } %>
+      <% } %>
+    </div>
+
+    <!-- RIGHT: fixed 85px, logout -->
+    <div class="right actions" style="flex:0 0 85px;display:flex;align-items:center;justify-content:flex-end;">
+      <form method="POST" action="/logout" style="margin:0;">
+        <button type="submit" class="btn-logout"
+                style="padding:6px 10px;border:0;border-radius:8px;cursor:pointer;">
+          LOG-OUT
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+

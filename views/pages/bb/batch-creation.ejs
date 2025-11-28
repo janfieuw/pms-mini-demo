@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BB WAREHOUSING / BATCH CREATION</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+
+  body{
+      margin:0;
+      background:('/grafisch/background.jpg') no-repeat center/cover fixed;
+      font-family:'Roboto Mono', monospace;
+    }
+
+    .card {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      padding: 22px 24px 80px 24px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin: 0 0 6px 0;
+     
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+
+    .subtitle {
+      margin: 0 0 14px 0;
+      font-size: 11px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+    }
+
+    p {
+      color: #000;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .steps {
+      margin: 8px 0 20px 0;
+      font-size: 11px;
+      color: #555;
+    }
+
+    .steps span {
+      display: inline-block;
+      margin-right: 12px;
+    }
+
+    .steps strong {
+      font-weight: 700;
+    }
+
+    /* Date range (STEP 1 + 2) */
+    .date-range {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      font-size: 11px;
+    }
+
+    .field-group label {
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .field-group input[type="date"] {
+      padding: 6px 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      min-width: 160px;
+    }
+
+    .btn.submit {
+      background: #fdc500;
+      color: #000;
+      border: none;
+      border-radius: 9999px;
+      padding: 8px 18px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+      cursor: pointer;
+      transition: background .12s ease, color .12s ease, opacity .12s ease;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .btn.submit:hover {
+      background: #000;
+      color: #fff;
+      opacity: .98;
+    }
+
+    .error {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #b71c1c;
+    }
+
+    .small-muted {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .section-divider {
+      margin: 18px 0;
+      border: none;
+      border-top: 1px solid #eee;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      margin-bottom: 4px;
+    }
+
+    .section-note {
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    th, td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 10px;
+      color: #555;
+      background: #fafafa;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .empty-row {
+      font-size: 11px;
+      color: #777;
+      font-style: italic;
+    }
+
+    .suggested-row td {
+      background: #fff7d0;
+    }
+
+    .suggested-cell input {
+      border-color: #e0c36c;
+      background: #fff7d0;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-size: 10px;
+      color: #0077cc;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .link-btn:hover {
+      color: #004f88;
+    }
+
+    /* Batch proposal (STEP 6) */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px 16px;
+      margin-top: 8px;
+    }
+
+    .summary-item label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 4px;
+    }
+
+    .summary-item .value-box {
+      display: inline-block;
+      min-width: 120px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #e0c36c;
+      background: #fff7d0;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .summary-item .value-box.code {
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .summary-footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    .save-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .btn.save {
+      background: #000;
+      color: #fff;
+      border-radius: 9999px;
+      padding: 8px 20px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    }
+
+    .btn.save:hover {
+      opacity: .95;
+    }
+
+    .legend {
+      margin-bottom: 6px;
+      font-size: 10px;
+      color: #666;
+    }
+
+    .legend span {
+      margin-right: 12px;
+    }
+
+    .legend-box {
+      display: inline-block;
+      width: 16px;
+      height: 10px;
+      border-radius: 3px;
+      border: 1px solid #e0c36c;
+      background: #fff7d0;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 style="margin-bottom:2px;">BATCH • CREATION</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">The lot number of a production run identifies a clearly defined quantity of finished product and refers to all raw materials, auxiliary materials/chemicals, and packaging materials used during that specific run.</span><br><br>
+
+    <!-- STEP 1 + STEP 2: date range + NEXT -->
+    <form class="date-range" method="post" action="/bb/batch">
+      <div class="field-group">
+        <label for="startDate">Start date</label>
+        <input
+          type="date"
+          id="startDate"
+          name="startDate"
+          value="<%= typeof startDate !== 'undefined' ? startDate : '' %>"
+        />
+      </div>
+
+      <div class="field-group">
+        <label for="endDate">End date</label>
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          value="<%= typeof endDate !== 'undefined' ? endDate : '' %>"
+        />
+      </div>
+
+      <button class="btn submit" type="submit">
+        NEXT
+      </button>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+    </form>
+
+    <% if (startDate && endDate) { %>
+      <p class="small-muted">
+        Gekozen periode: <strong><%= startDate %></strong> t.e.m.
+        <strong><%= endDate %></strong>
+      </p>
+    <% } %>
+
+    <hr class="section-divider" />
+
+    <!-- Vanaf hier: automatische overzichten zodra er data is -->
+    <% const hasChem = chemicals && chemicals.length; %>
+    <% const hasRaw = raws && raws.length; %>
+    <% const hasProd = produced && produced.length; %>
+    <% const hasSummary = summary; %>
+
+    <!-- STEP 3: USED CHEMICAL BATCHES -->
+    <div>
+      <div class="section-title">USED CHEMICAL BATCHES DURING CHOSEN PERIOD</div>
+      <div class="section-note">
+        Yellow boxes are proposed data. You can add lines.
+      </div>
+
+      <form id="batch-save-form" method="post" action="/bb/batch/save">
+        <!-- verstop de periode zodat we die later kunnen bewaren -->
+        <input type="hidden" name="startDate" value="<%= startDate || '' %>"/>
+        <input type="hidden" name="endDate" value="<%= endDate || '' %>"/>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 110px;">Date</th>
+              <th>Product</th>
+              <th style="width: 160px;">Lot</th>
+            </tr>
+          </thead>
+          <tbody id="chem-table-body" data-next-index="<%= hasChem ? chemicals.length : 0 %>">
+            <% if (hasChem) { %>
+              <% chemicals.forEach(function(row, index) { %>
+                <tr class="suggested-row">
+                  <td class="suggested-cell">
+                    <input
+                      type="text"
+                      name="chemicals[<%= index %>][date]"
+                      value="<%= row.date || '' %>"
+                      style="width:100%;border:1px solid #e0c36c;background:#fff7d0;font-size:11px;padding:4px 6px;font-family:'Roboto Mono',monospace;"
+                    />
+                  </td>
+                  <td class="suggested-cell">
+                    <input
+                      type="text"
+                      name="chemicals[<%= index %>][product]"
+                      value="<%= row.product || '' %>"
+                      style="width:100%;border:1px solid #e0c36c;background:#fff7d0;font-size:11px;padding:4px 6px;font-family:'Roboto Mono',monospace;"
+                    />
+                  </td>
+                  <td class="suggested-cell">
+                    <input
+                      type="text"
+                      name="chemicals[<%= index %>][lot]"
+                      value="<%= row.lot || '' %>"
+                      style="width:100%;border:1px solid #e0c36c;background:#fff7d0;font-size:11px;padding:4px 6px;font-family:'Roboto Mono',monospace;"
+                    />
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="3" class="empty-row">
+                  No data yet.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <button type="button" class="btn submit" onclick="addChemRow()">
+          ADD LINE
+        </button>
+
+        <hr class="section-divider" />
+
+        <!-- STEP 4: RECEIVED RAW BATCHES -->
+        <div class="section-title">RECEIVED RAW BATCHES / CMR DURING CHOSEN PERIOD</div>
+       
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 110px;">Date</th>
+              <th style="width: 130px;">CMR / Batch</th>
+              <th>Article</th>
+              <th>Origin</th>
+              <th style="width: 90px;" class="text-right">Qty (kg)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (hasRaw) { %>
+              <% raws.forEach(function(row) { %>
+                <tr>
+                  <td><%= row.date || '' %></td>
+                  <td><%= row.batch || '' %></td>
+                  <td><%= row.article || '' %></td>
+                  <td><%= row.origin || '' %></td>
+                  <td class="text-right"><%= row.qtyKg || '' %></td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="empty-row">
+                  No data yet.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <hr class="section-divider" />
+        <!-- STEP 5: PRODUCED DURING PERIOD -->
+        <div class="section-title">PRODUCED DURING CHOSEN PERIOD</div>
+       
+        <table>
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>End</th>
+              <th style="width: 110px;" class="text-right">Produced (kg)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (produced && produced.length) { %>
+              <% produced.forEach(function(row) { %>
+                <tr>
+                  <td><%= row.start || '' %></td>
+                  <td><%= row.end || '' %></td>
+                  <td class="text-right"><%= row.qtyKg || '' %></td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="3" class="empty-row">
+                  No data yet.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- STEP 6: BATCH PROPOSAL -->
+        <br><div class="section-title">BATCH PROPOSAL</div>
+        <div class="section-note">
+          Based on creation date. Expiry = current year + 1 / week number of creation.
+        </div>
+
+        <% if (hasSummary) { %>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <label>Batch code</label>
+              <input
+                type="text"
+                name="batchCode"
+                class="value-box code"
+                value="<%= summary.batchCode %>"
+              />
+            </div>
+
+            <div class="summary-item">
+              <label>Expiry</label>
+              <input
+                type="text"
+                name="expiryCode"
+                class="value-box"
+                value="<%= summary.expiryCode %>"
+              />
+            </div>
+
+            <div class="summary-item">
+              <label>Total produced (kg)</label>
+              <input
+                type="number"
+                step="1"
+                name="totalProducedKg"
+                class="value-box"
+                value="<%= summary.totalProducedKg %>"
+              />
+            </div>
+
+            <div class="summary-item">
+              <label>Total RAW (kg)</label>
+              <input
+                type="number"
+                step="1"
+                name="totalRawKg"
+                class="value-box"
+                value="<%= summary.totalRawKg %>"
+              />
+            </div>
+          </div>
+
+          <div class="summary-footer">
+           After creation, you can click the batch number in the overview to view the detailed batch record.
+          </div>
+
+          <div class="save-row">
+            <button type="submit" class="btn save">
+              SAVE BATCH
+            </button>
+          </div>
+        <% } else { %>
+          <p class="small-muted">
+            First choose a start and end date, then click NEXT to generate a batch proposal.
+          </p>
+        <% } %>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function addChemRow() {
+      var tbody = document.getElementById('chem-table-body');
+      if (!tbody) return;
+
+      var idx = parseInt(tbody.getAttribute('data-next-index') || '0', 10);
+      var tr = document.createElement('tr');
+
+      var html = ''
+        + '<td>'
+        +   '<input type="text" name="chemicals[' + idx + '][date]" '
+        +   'style="width:100%;border:1px solid #ccc;font-size:11px;padding:4px 6px;font-family:\'Roboto Mono\',monospace;" />'
+        + '</td>'
+        + '<td>'
+        +   '<input type="text" name="chemicals[' + idx + '][product]" '
+        +   'style="width:100%;border:1px solid #ccc;font-size:11px;padding:4px 6px;font-family:\'Roboto Mono\',monospace;" />'
+        + '</td>'
+        + '<td>'
+        +   '<input type="text" name="chemicals[' + idx + '][lot]" '
+        +   'style="width:100%;border:1px solid #ccc;font-size:11px;padding:4px 6px;font-family:\'Roboto Mono\',monospace;" />'
+        + '</td>';
+
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+      tbody.setAttribute('data-next-index', String(idx + 1));
+    }
+  </script>
+</body>
+</html>

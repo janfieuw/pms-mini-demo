@@ -1,0 +1,162 @@
+<!-- views/pages/raw/raw-filter.ejs -->
+
+<style>
+  /* Zelfde tabelstijl als bulk-discharged-overview / raw-overview */
+  .results-table {
+    border-collapse: collapse;
+    width: 1050px;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .results-table th {
+    background: #f5f5f5;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: 11px;
+  }
+
+  .results-table tbody tr:nth-child(even) {
+    background: #fafafa;
+  }
+</style>
+
+<div class="card shadow-sm mb-4">
+  <!-- HEADER: titel + subtitel in wit blok -->
+  <div class="card-header">
+  <h1 style="margin-bottom:2px;">RAW • FILTER</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;"> Select lab field, overview is sorted from old > new.</span><br><br>
+  </div>
+
+  <!-- BODY -->
+  <div class="card-body">
+
+    <!-- FILTER FORM ------------------------------------------------------- -->
+    <form
+      action="/analyses/filter"
+      method="get"
+      class="row g-3 align-items-end mb-3"
+    >
+      <div class="col-md-4">
+        <label for="field" class="form-label fw-semibold">
+         
+        </label>
+        <select
+          name="field"
+          id="field"
+          class="form-select"
+          required
+        >
+          <option value="ph" <%= field === 'ph' ? 'selected' : '' %>>pH</option>
+          <option value="ds" <%= field === 'ds' ? 'selected' : '' %>>DS %</option>
+          <option value="meal_temperature" <%= field === 'meal_temperature' ? 'selected' : '' %>>Meal temperature</option>
+          <option value="duration" <%= field === 'duration' ? 'selected' : '' %>>Duration</option>
+          <option value="pressure_bar" <%= field === 'pressure_bar' ? 'selected' : '' %>>Pressure (bar)</option>
+          <option value="added_sap" <%= field === 'added_sap' ? 'selected' : '' %>>Added SAP</option>
+          <option value="smell" <%= field === 'smell' ? 'selected' : '' %>>Smell</option>
+          <option value="added_af" <%= field === 'added_af' ? 'selected' : '' %>>Added AF</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex gap-2">
+        <br>
+        <button type="submit"
+                style="
+                  background:#fdc500;
+                  color:#000;
+                  border:none;
+                  border-radius:9999px;
+                  padding:8px 18px;
+                  font-weight:500;
+                  text-transform:uppercase;
+                  box-shadow:0 1px 3px rgba(0,0,0,.15);
+                  cursor:pointer;
+                  font-size:11px;
+                  white-space:nowrap;
+                  transition:background .12s ease,color .12s ease,opacity .12s ease;
+                "
+                onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+        >
+          Show list
+        </button>
+
+        <button type="submit"
+                style="
+                  background:#fdc500;
+                  color:#000;
+                  border:none;
+                  border-radius:9999px;
+                  padding:8px 18px;
+                  font-weight:500;
+                  text-transform:uppercase;
+                  box-shadow:0 1px 3px rgba(0,0,0,.15);
+                  cursor:pointer;
+                  font-size:11px;
+                  white-space:nowrap;
+                  transition:background .12s ease,color .12s ease,opacity .12s ease;
+                "
+                onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+        >
+          Export to Excel
+        </button>
+      </div>
+    </form>
+
+    <!-- RESULTS ----------------------------------------------------------- -->
+    <% if (receipts && receipts.length > 0) { %>
+      <h2 class="h6 mb-2">
+        Results (<%= receipts.length %>)
+      </h2>
+
+      <!-- nieuwe tabel in bulk-stijl -->
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th><%= (field || '').toUpperCase() %></th>
+            <th>Batch</th>
+            <th>Article</th>
+            <th>Origin</th>
+            <th>Received date</th>
+            <th>Received time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% receipts.forEach(function(rec) { %>
+            <tr>
+              <td>
+                <% if (rec.labo && rec.labo[field] !== undefined && rec.labo[field] !== null && rec.labo[field] !== '') { %>
+                  <%= rec.labo[field] %>
+                <% } else { %>
+                  -
+                <% } %>
+              </td>
+              <td><%= rec.batch %></td>
+              <td><%= rec.article %></td>
+              <td><%= rec.origin %></td>
+              <td><%= rec.received_date %></td>
+              <td><%= rec.received_time %></td>
+              <td><%= rec.status %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+
+    <% } else if (field) { %>
+      <p class="text-muted mt-2 mb-0">
+        No completed lab analyses found for this field yet.
+      </p>
+    <% } %>
+
+  </div>
+</div>
+

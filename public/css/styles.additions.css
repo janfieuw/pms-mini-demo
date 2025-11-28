@@ -1,0 +1,14 @@
+/* === Additions (2025-10-28b) === */
+/* Make WMS labels reliably blue across markup variations */
+.label-wms,
+.label.label-wms,
+.label[data-label="WMS"],
+.label[data-label="W M S"],
+.label.WMS,
+.label-w-m-s {
+  background-color: #6b828a !important;
+  color: #fff !important;
+}
+
+.read-check{ display:flex; align-items:center; gap:6px; font-size:13px; }
+.read-check input[type="checkbox"]{ width:16px; height:16px; }

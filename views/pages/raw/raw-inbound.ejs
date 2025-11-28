@@ -1,0 +1,211 @@
+<!-- views/pages/raw/raw-inbound.ejs -->
+<div class="card shadow-sm mb-4">
+
+  <!-- HEADER: titel + subtitel in wit blok -->
+  <div class="card-header">
+    <h1 class="h3 mb-1">RAW • INBOUND</h1>
+    <p class="text-muted mb-0">
+   
+    </p>
+  </div>
+
+  <div class="card-body">
+
+    <form action="/raw/inbound-raw" method="POST">
+
+      <div class="row g-3">
+
+        <!-- Artikel -->
+        <div class="col-md-6">
+          <label for="article" class="form-label fw-semibold">Article:</label>
+          <select
+            id="article"
+            name="article"
+            class="form-select"
+            required
+          >
+            <option value="" disabled selected>-- choose --</option>
+            <% (RAW_MATERIALS || []).forEach(function(mat) { %>
+              <option value="<%= mat %>"><%= mat %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <!-- Gewicht -->
+        <div class="col-md-6">
+          <label for="quantity" class="form-label fw-semibold">Weight:</label>
+          <input
+            type="number"
+            step="0.1"
+            id="quantity"
+            name="quantity"
+            class="form-control"
+          >
+        </div>
+<!-- Start level B0210 -->
+<div class="col-md-6">
+  <label for="startlevel" class="form-label fw-semibold">Start level B0210 (m³):</label>
+  <input
+    type="number"
+    step="0.1"
+    id="startlevel"
+    name="startlevel"
+    class="form-control"
+  >
+</div>
+        <!-- Herkomst -->
+        <div class="col-md-6">
+          <label for="origin" class="form-label fw-semibold">Origin:</label>
+          <select
+            id="origin"
+            name="origin"
+            class="form-select"
+            required
+          >
+            <option value="" disabled selected>-- choose --</option>
+            <% (RAW_ORIGINS || []).forEach(function(org) { %>
+              <option value="<%= org %>"><%= org %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <!-- Batchnummer -->
+        <div class="col-md-6">
+          <label for="batch" class="form-label fw-semibold">CMR:</label>
+          <input
+            type="text"
+            id="batch"
+            name="batch"
+            placeholder="bijv. B240315-07"
+            class="form-control"
+            required
+          >
+        </div>
+
+        <!-- Datum ontvangst (zelfde invoer als start.ejs: DD/MM/YYYY) -->
+        <div class="col-md-6">
+          <label for="received_date" class="form-label fw-semibold">Date:</label>
+          <input
+            id="received_date"
+            name="received_date"
+            type="text"
+            inputmode="numeric"
+            maxlength="10"
+            placeholder="DD/MM/YYYY"
+            required
+            pattern="^(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$"
+            title="Gebruik formaat DD/MM/YYYY"
+            class="form-control"
+            style="border-color:#e0c36c;background:#FFF4CD; text-align:center; max-width:160px;"
+          >
+        </div>
+
+        <!-- Tijd ontvangst (zelfde invoer als start.ejs: HH:MM) -->
+        <div class="col-md-6">
+          <label for="received_time" class="form-label fw-semibold">Time:</label>
+          <input
+            id="received_time"
+            name="received_time"
+            type="text"
+            inputmode="numeric"
+            maxlength="5"
+            placeholder="HH:MM"
+            required
+            pattern="^([01]\d|2[0-3]):[0-5]\d$"
+            title="Gebruik formaat HH:MM (00–23:00–59)"
+            class="form-control"
+            style="border-color:#e0c36c ;background:#FFF4CD; text-align:center; max-width:120px;"
+          >
+        </div>
+
+      
+
+      </div>
+<br>
+      <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="submit"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                  
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+                  ADD INBOUND
+                </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // Helper voor tijd: "HHMM" -> "HH:MM"
+    function toHHMM(v) {
+      v = (v || '').replace(/\D/g, '').slice(0, 4);
+      if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+      return v;
+    }
+
+    // Helper voor datum: "DDMMYYYY" -> "DD/MM/YYYY"
+    function toDDMMYYYY(v) {
+      v = (v || '').replace(/\D/g, '').slice(0, 8);
+      if (v.length >= 5) return v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+      if (v.length >= 3) return v.slice(0, 2) + '/' + v.slice(2);
+      return v;
+    }
+
+    var t = document.getElementById('received_time');
+    var dEl = document.getElementById('received_date');
+
+    // Automatisch huidige datum + tijd invullen indien leeg
+    var now = new Date();
+    function pad(n){ return String(n).padStart(2,'0'); }
+
+    if (t && !t.value) {
+      t.value = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    }
+    if (dEl && !dEl.value) {
+      dEl.value = pad(now.getDate()) + '/' + pad(now.getMonth() + 1) + '/' + now.getFullYear();
+    }
+
+    if (t) {
+      t.addEventListener('input', function (e) {
+        e.target.value = toHHMM(e.target.value);
+      });
+      t.addEventListener('blur', function (e) {
+        var m = e.target.value.match(/^(\d{1,2})(?::?(\d{1,2}))?$/);
+        if (!m) { e.target.value = ''; return; }
+        var h = Math.min(parseInt(m[1] || '0', 10), 23);
+        var mn = Math.min(parseInt(m[2] || '0', 10), 59);
+        e.target.value = pad(h) + ':' + pad(mn);
+      });
+    }
+
+    if (dEl) {
+      dEl.addEventListener('input', function (e) {
+        e.target.value = toDDMMYYYY(e.target.value);
+      });
+      dEl.addEventListener('blur', function (e) {
+        var m = e.target.value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (!m) return;
+        var dd = Math.max(1, Math.min(parseInt(m[1], 10), 31));
+        var mm = Math.max(1, Math.min(parseInt(m[2], 10), 12));
+        var yyyy = parseInt(m[3], 10);
+        e.target.value = pad(dd) + '/' + pad(mm) + '/' + yyyy;
+      });
+    }
+  })();
+</script>

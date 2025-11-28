@@ -1,0 +1,173 @@
+<!-- views/pages/chemicals/chemicals-inbound.ejs -->
+
+<div class="card shadow-sm mb-4">
+  <!-- HEADER: titel + ondertitel in het witte blok -->
+  <div class="card-header">
+  <h1 style="margin-bottom:2px;">CHEMICALS • INBOUND</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Add articles to the temporary list. Then add the list to the stock.</span><br><br>
+  </div>
+
+  <!-- BODY: bestaande inhoud -->
+  <div class="card-body">
+
+    <div class="row">
+      <!-- LEFT: FORM VOOR NIEUWE REGEL -->
+      <div class="col-lg-5 mb-4">
+     
+                  <div class="card-body">
+            <form action="/chemicals/inbound/add-line" method="POST">
+              
+              <!-- ARTIKEL -->
+              <div class="mb-3">
+                <label for="articleId" class="form-label">Article:</label>
+                <select
+                  id="articleId"
+                  name="articleId"
+                  class="form-select"
+                  required
+                >
+                  <option value="" disabled selected>-- choose --</option>
+                  <% articles.forEach(function(article) { %>
+                    <option value="<%= article.id %>">
+                      <%= article.id %> – <%= article.name %>
+                    </option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <!-- HOEVEELHEID -->
+              <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  id="quantity"
+                  name="quantity"
+                  class="form-control"
+                  required
+                >
+              </div>
+
+              <!-- LOTNUMMER -->
+              <div class="mb-3">
+                <label for="lotNumber" class="form-label">Batch:</label>
+                <input
+                  type="text"
+                  id="lotNumber"
+                  name="lotNumber"
+                  class="form-control"
+                                  required
+                >
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <!-- INLINE-STYLED ADD ARTICLE BUTTON -->
+               <br> <button type="submit"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                 
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+                  ADD ARTICLE
+                </button>
+
+         
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+<br>
+      <!-- RIGHT: OVERZICHT TIJDELIJKE LIJNEN -->
+      <div class="col-lg-7 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-header">
+            <strong>Temporary List</strong>
+          </div>
+
+          <div class="card-body p-0">
+            <% if (!tempLines || tempLines.length === 0) { %>
+              <div class="p-3 text-muted">
+                Temporary List is empty.
+              </div>
+            <% } else { %>
+              <div class="table-responsive">
+                <table class="table mb-0 align-middle" style="width:800px;">
+                  <thead class="table-light text-start">
+                    <tr><br>
+                      <th style="width:20%; text-align:left;">Code</th>
+    <th style="width:35%; text-align:left;">Article</th>
+    <th style="width:15%; text-align:left;">Quantity</th>
+    <th style="width:20%; text-align:left;">Batch</th>
+    <th style="width:10%; text-align:left;">#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% tempLines.forEach(function(line, index) { 
+                         var article = articles.find(function(a) { return a.id === line.articleId; });
+                      %>
+                      <tr>
+                        <td><span class="fw-semibold"><%= line.articleId %></span></td>
+                        <td><%= article ? article.name : '-' %></td>
+                        <td><%= line.quantity %></td>
+                        <td><code><%= line.lotNumber %></code></td>
+                        <td class="text-muted"><%= index + 1 %></td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                
+                </table>
+              </div>
+            <% } %>
+          </div>
+
+          <% if (tempLines && tempLines.length > 0) { %>
+            <div class="card-footer d-flex justify-content-end">
+              <form action="/chemicals/inbound/commit" method="POST" class="m-0">
+                <!-- INLINE-STYLED ADD TO STOCK BUTTON -->
+               <br> <button
+                  type="submit"
+                  onclick="return confirm('Ben je zeker dat je deze inbound op stock wil boeken?');"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                    letter-spacing:.12em;
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+                  ADD TO STOCK
+                </button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

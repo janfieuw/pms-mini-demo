@@ -1,0 +1,240 @@
+<div class="page-shadow-wrapper">
+  <div class="wms-container no-print">
+
+     <!-- Titel + uitleg -->
+     <h1 style="margin-bottom:2px;">BIG BAGS • LOADING</h1>
+     <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">
+       Select customer and create loading list.
+     </span><br><br>
+  </div>
+
+  <!-- FILTER / CONTEXT -->
+  <div class="wms-card no-print">
+    <form method="GET" action="/bb/loading">
+      <div class="wms-form-grid">
+        <div class="wms-form-group">
+          <select id="customer" name="customer">
+            <option value="">-- all customers --</option>
+            <option value="UNITED PETFOODS (NL-Coevorden)" <%= customer === 'UNITED PETFOODS (NL-Coevorden)' ? 'selected' : '' %>>UNITED PETFOODS (NL-Coevorden)</option>
+            <option value="UNITED PETFOODS (NL-Waalwijk)"  <%= customer === 'UNITED PETFOODS (NL-Waalwijk)'  ? 'selected' : '' %>>UNITED PETFOODS (NL-Waalwijk)</option>
+            <option value="NUTRIFEED"                      <%= customer === 'NUTRIFEED' ? 'selected' : '' %>>NUTRIFEED</option>
+            <option value="PLANTURE LOOP"                 <%= customer === 'PLANTURE LOOP' ? 'selected' : '' %>>PLANTURE LOOP</option>
+            <option value="UNITED PETFOODS (DK)"          <%= customer === 'UNITED PETFOODS (DK)' ? 'selected' : '' %>>UNITED PETFOODS (DK)</option>
+            <option value="UNITED PETFOODS (BE-Wimille)"  <%= customer === 'UNITED PETFOODS (BE-Wimille)' ? 'selected' : '' %>>UNITED PETFOODS (BE-Wimille)</option>
+            <option value="UNITED PETFOODS (BE-Gent)"     <%= customer === 'UNITED PETFOODS (BE-Gent)' ? 'selected' : '' %>>UNITED PETFOODS (BE-Gent)</option>
+            <option value="GA PETFOOD"                    <%= customer === 'GA PETFOOD' ? 'selected' : '' %>>GA PETFOOD</option>
+            <option value="AFFINITY (IT)"                 <%= customer === 'AFFINITY (IT)' ? 'selected' : '' %>>AFFINITY (IT)</option>
+            <option value="AFFINITY (FR)"                 <%= customer === 'AFFINITY (FR)' ? 'selected' : '' %>>AFFINITY (FR)</option>
+            <option value="AFFINITY (SP)"                 <%= customer === 'AFFINITY (SP)' ? 'selected' : '' %>>AFFINITY (SP)</option>
+            <option value="SAUVALE PRODUCTION (FR)"       <%= customer === 'SAUVALE PRODUCTION (FR)' ? 'selected' : '' %>>SAUVALE PRODUCTION (FR)</option>
+            <option value="PARTNER IN PET FOOD (CZ)"      <%= customer === 'PARTNER IN PET FOOD (CZ)' ? 'selected' : '' %>>PARTNER IN PET FOOD (CZ)</option>
+            <option value="PARTNER IN PET FOOD (Nordics AB)" <%= customer === 'PARTNER IN PET FOOD (Nordics AB)' ? 'selected' : '' %>>PARTNER IN PET FOOD (Nordics AB)</option>
+            <option value="FIDES (BE-Oostende)"           <%= customer === 'FIDES (BE-Oostende)' ? 'selected' : '' %>>FIDES (BE-Oostende)</option>
+          </select>
+        </div>
+
+        <br>
+      </div>
+
+      <div class="wms-form-actions">
+        <button type="submit"
+                style="
+                  background:#fdc500;
+                  color:#000;
+                  border:none;
+                  border-radius:9999px;
+                  padding:8px 18px;
+                  font-weight:500;
+                  text-transform:uppercase;
+                  box-shadow:0 1px 3px rgba(0,0,0,.15);
+                  cursor:pointer;
+                  font-size:11px;
+                  white-space:nowrap;
+                  transition:background .12s ease,color .12s ease,opacity .12s ease;
+                "
+                onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+        >Filter</button>
+
+        <% if (loadingList && loadingList.length > 0) { %>
+          <button type="button" style="
+                  background:#fdc500;
+                  color:#000;
+                  border:none;
+                  border-radius:9999px;
+                  padding:8px 18px;
+                  font-weight:500;
+                  text-transform:uppercase;
+                  box-shadow:0 1px 3px rgba(0,0,0,.15);
+                  cursor:pointer;
+                  font-size:11px;
+                  white-space:nowrap;
+                  transition:background .12s ease,color .12s ease,opacity .12s ease;
+                "
+                onclick="window.print()"
+          >Print loading list</button>
+        <% } %>
+      </div>
+    </form>
+  </div>
+
+  <!-- LOADING LIST -->
+  <div class="wms-card">
+    <div class="wms-card-header no-print">
+      <h2>All allocated BB:</h2>
+    </div>
+
+    <!-- PRINT-AREA: alleen dit stuk + signatuurvak wordt geprint -->
+    <div class="print-area">
+      <div style="overflow:auto;">
+        <table class="loading-table-compact">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Location</th>
+              <th>Batch</th>
+              <th>Quantity (kg)</th>
+              <th>Customer</th>
+              <th>Shipping date</th>
+              <th>Purchase Order</th>
+              <th>Bill of Lading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% const hasRows = loadingList && Array.isArray(loadingList) && loadingList.length > 0; %>
+
+            <% if (hasRows) { %>
+              <% loadingList.forEach((row, idx) => { %>
+                <tr>
+                  <td><%= idx + 1 %></td>
+                  <td><%= row.locationCode || row.code %></td>
+                  <td><%= row.lotNumber || row.lot || '' %></td>
+                  <td class="num"><%= row.quantityKg || '' %></td>
+                  <td><%= row.customer || '' %></td>
+                  <td><%= row.shippingDate || '' %></td>
+                  <td><%= row.purchaseOrder || '' %></td>
+                  <td><%= row.billOfLading || '' %></td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="10" class="empty">No allocated big bags found.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if (hasRows) { %>
+        <!-- Signature / approval block ONLY for printing -->
+        <div class="loading-signature-block print-only">
+          <p><strong>Load checked and approved:</strong> ____________________________________________</p>
+          <p><strong>Signature driver:</strong> _________________________________________________</p>
+          <p><strong>Number plate:</strong> _____________________________________________________</p>
+          <p>
+            <strong>Date:</strong> ______________________
+            &nbsp;&nbsp;&nbsp;
+            <strong>Hour:</strong> ______________________
+          </p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<style>
+/* --- IDENTIEKE TABELOPMAAK ALS IN overview.ejs --- */
+
+.loading-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.loading-table-compact thead tr {
+  background: #f7f7f7;
+}
+
+.loading-table-compact th,
+.loading-table-compact td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e6e6e6;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.loading-table-compact td.num {
+  text-align: left;
+}
+
+.loading-table-compact .empty {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #777;
+}
+
+/* Kaartrand en layout blijven behouden op scherm */
+.page-shadow-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 25px 40px;
+  background: #fff;
+  box-shadow: 0 0 25px rgba(0,0,0,.08);
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
+  min-height: calc(100vh - 140px);
+}
+
+/* Signature / approval block */
+.loading-signature-block {
+  margin-top: 24px;
+  border: 1px solid #d0d0d0;
+  padding: 12px 14px;
+  font-size: 11px;
+}
+
+.loading-signature-block p {
+  margin: 4px 0;
+}
+
+/* enkel tonen in print */
+.print-only {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  /* Alles verbergen behalve print-area */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: relative;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+
+  .page-shadow-wrapper {
+    max-width: 100%;
+    box-shadow: none;
+    padding: 0;
+    border: none;
+    min-height: auto;
+  }
+
+  .print-only {
+    display: block;
+  }
+}
+</style>

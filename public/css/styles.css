@@ -1,0 +1,187 @@
+body {
+  background: url('/grafisch/background.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 13px;
+  margin: 0;
+  padding: 0;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:Roboto Mono,system-ui,Arial,sans-serif;color:#222;font-size:13px}
+a{color:inherit;text-decoration:none}
+.bar, .bar * { font-family: 'Roboto Mono', monospace !important; }
+.bar{display:flex;align-items:center;gap:12px;padding:0 16px; height:52px; text-transform:uppercase}
+.bar-primary{background:#fff;border-bottom:1px solid #eee}
+.bar-secondary{background:#DBDBDB}
+.bar-tertiary{background:#617850;color:#fff}
+.bar .bar-section{flex:1}
+.bar .logo{font-weight:700}
+.bar .logout{display:flex;justify-content:flex-end}
+
+.nav-list{list-style:none;margin:0;padding:0;display:flex;gap:10px;align-items:center}
+.nav-pill{display:inline-block;padding:10px 16px;border-radius:999px;color:inherit}
+.bar-tertiary .nav-pill{color:#fff}
+.nav-pill:hover{background:#fdc500}
+
+.page{padding:20px}
+.card {
+  background:#fff;
+  border-radius:0 0 16px 16px;  /* bovenkant recht */
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  padding:18px;
+  max-width:1100px;
+  margin:0 auto;
+}
+.card.narrow{max-width:420px}
+
+h1{margin:4px 0 16px 0; font-size:22px;font-family:Roboto Mono,system-ui,Arial,sans-serif;}
+h10{margin:4px 0 16px 0; font-size:13px;font-family:Roboto Mono,system-ui,Arial,sans-serif;}
+label{display:block;margin:10px 0 6px 0}
+input[type=text], input[type=password], textarea, .time{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:10px;outline:none}
+textarea{min-height:120px;resize:vertical}
+
+.btn{padding:10px 16px;border:0;border-radius:12px;cursor:pointer}
+.btn-green{background:#46A469;color:#ffffff}
+.btn-red{background:#ff0000;color:#ffffff}
+.btn-dark{background:#fdc500;color:#000000}
+.btn-dark:hover{background:#000000;color:#ffffff}
+
+.alert.error{background:#ffe5e5;border:1px solid #f99;padding:10px;border-radius:10px;margin-bottom:10px}
+.muted{color:#777}
+
+/* Chips (info labels multi-select) */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid #333;background:#fff;color:#111;border-radius:6px;padding:6px 10px;cursor:pointer}
+.chip.active{background:#fdc500}
+
+/* Choice radios for WMS */
+.choice{display:inline-flex;align-items:center;gap:6px;margin:6px 10px 6px 0;padding:6px 12px;border:1px solid #ddd;border-radius:999px}
+.choice input{margin:0}
+
+/* Pills (colored buttons) */
+.options{display:flex;gap:12px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 14px;border:1px solid #ddd;cursor:pointer;user-select:none}
+.pill input{margin:0}
+.pill-start{background:#46A469;color:#fff;border-color:#46A469}
+.pill-stop{background:#FF0000;color:#fff;border-color:#FF0000}
+.pill-qc{background:#184E77;color:#fff;border-color:#184E77}
+.pill-must{background:#fdc500;color:#000;border-color:#fdc500}
+.pill-safety{background:#FD7800;color:#fff;border-color:#FD7800}
+.pill-info{background:#fff;color:#000;border-color:#000}
+
+/* Time row */
+.time-row{display:flex;align-items:center;gap:10px}
+.time-row label{margin:0}
+.time{max-width:120px}
+
+/* Feed: always vertical */
+.feed{display:flex;flex-direction:column;gap:12px}
+.post{padding:12px;border:1px solid #eee;border-radius:12px;background:#fff}
+.post header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.icon-btn{border:1px solid #ddd;background:#DBDBDB;border-radius:10px;padding:6px 10px;cursor:pointer}
+.icon-btn:hover{background:#fdc500}
+
+.labels{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.tag{display:inline-block;padding:4px 8px;border-radius:6px;border:1px solid #333;background:#fff}
+.tag.start{background:#46A469;color:#fff;border-color:#46A469}
+.tag.stop{background:#FF0000;color:#fff;border-color:#FF0000}
+.tag.qc{background:#184E77;color:#fff;border-color:#184E77}
+.tag.must{background:#fdc500;color:#000;border-color:#fdc500}
+.tag.safety{background:#FD7800;color:#fff;border-color:#FD7800}
+.tag.wms{background:#b3bfc3;color:#fff;border-color:#000000}
+
+/* Footer buttons */
+.submit{float:right;margin-top:12px}
+
+
+/* Spacing between PUSH and TIME */
+.push-group { margin-bottom: 18px; }
+
+/* Light blue border for time input */
+input.time { border:1px solid #B3DAFF; background:#F6FBFF; border-radius:6px; }
+
+/* Arrow button for Open task */
+.arrow-btn {
+  display:inline-block;
+  padding:6px 12px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  position:relative;
+  text-decoration:none;
+}
+.arrow-btn::after {
+  content: '›';
+  position:absolute;
+  right:-14px;
+  top:50%;
+  transform:translateY(-50%);
+  border:1px solid #ccc;
+  border-left:none;
+  width:20px;
+  height:28px;
+  line-height:28px;
+  text-align:center;
+  border-radius:0 6px 6px 0;
+}
+
+/* Active icon button state */
+.icon-btn.active { background:#fdc500; }
+
+/* Software tag */
+.tag.software{background:#E6E6FF;color:#222;border-color:#B0B0FF}
+
+
+/* WMS choices on the form (blue) */
+.choices[data-choice-group="wms"] .choice{
+  background:#6b828a;
+  color:#fff;
+  border-color:#6b828a;
+}
+.choices[data-choice-group="wms"] .choice span{ color:#fff; }
+
+/* === PMS PATCH: bars & nav hover/active & logout === */
+.bar-primary{ height:52px; }
+.bar-secondary{ height:44px; background:#DBDBDB; }
+.bar-tertiary{ height:44px; background:#617850; color:#fff; }
+
+/* Buttons for secondary/tertiary bars */
+.btn-nav, .btn-sub{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  text-decoration:none;
+}
+
+/* Hover always yellow */
+.btn-nav:hover, .btn-sub:hover{ background:#fdc500; }
+
+/* Active stays yellow */
+.btn-nav.is-active, .btn-sub.is-active{ background:#fdc500; }
+
+/* Logout button (primary bar, right) */
+.btn-logout{
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid #ddd;
+  background:#fff;
+  cursor:pointer;
+}
+.btn-logout:hover{ background:#fdc500; }
+/* === END PATCH === */
+
+/* --- NOTEBOOK TOGGLE (top-right) --- */
+.post{ position: relative; }
+.post .note-toggle{ position:absolute; top:12px; right:12px; }
+
+.icon-btn{
+  border:1px solid #ddd;
+  background:#fff;   /* default: WHITE background */
+  color:#000;        /* default: BLACK icon */
+  border-radius:10px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+.icon-btn:hover{ background:#fdc500; color:#fff; }
+.icon-btn.active{ background:#fdc500; color:#fff; }
+/* ----------------------------------- */

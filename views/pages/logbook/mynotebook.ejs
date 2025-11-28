@@ -1,0 +1,151 @@
+<style>
+  .tag {
+    display: inline-block;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    height: 24px;
+    line-height: 22px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 0 6px;
+    margin: 2px 3px;
+    vertical-align: middle;
+  }
+
+  .icon-btn{
+    width:32px;
+    height:32px;
+    border:1px solid #ddd;
+    background:#ffffff;
+    border-radius:10px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .icon-btn:hover{
+    background:#fdc500;
+  }
+
+  .attachments {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .attachments .thumb {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #e6e6ee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .attachments .thumb img {
+    display: block;
+    max-width: 77px;
+    max-height: 56px;
+    object-fit: contain;
+  }
+
+  .attachments .doc {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid #e6e6ee;
+    border-radius: 8px;
+    background: #fff;
+    text-decoration: none;
+  }
+</style>
+
+<section class="card">
+    <h1 style="margin-bottom:2px;">LOGBOOK • MY NOTEBOOK</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Your personal notebook. Add posted messages or add them by selecting NOTEBOOK ONLY in the form. </span><br><br>
+  <div class="feed">
+
+    <% if (!items.length) { %>
+      <p class="muted">No notes yet.</p>
+    <% } %>
+
+    <%
+      function fmtDateTime(n) {
+        const pad = x => x < 10 ? '0' + x : x;
+        const src = n.createdAt || n.savedAt;
+        const d = src ? new Date(src) : null;
+        if (!d || isNaN(d)) {
+          return (n.time || '').trim();
+        }
+        const dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        const timeStr = n.time || `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        return `${dateStr} - ${timeStr}`;
+      }
+    %>
+
+    <% items.forEach(n => { %>
+
+      <article class="post">
+
+        <!-- HEADER: alles op 1 lijn -->
+        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+
+            <!-- User + datum + tijd -->
+            <%= n.user || (currentUser && currentUser.code) || '' %> - 
+            <span><%= fmtDateTime(n) %> : </span>
+
+            <!-- Labels -->
+            <% (n.infoLabels||[]).forEach(l => { %><span class="tag"><%= l %></span><% }) %>
+            <% (n.software||[]).forEach(l => { %><span class="tag software"><%= l %></span><% }) %>
+            <% if (n.calc==='START') { %><span class="tag start">START</span><% } %>
+            <% if (n.calc==='STOP')  { %><span class="tag stop">STOP</span><% } %>
+            <% if (n.calc==='QC')    { %><span class="tag qc">QC</span><% } %>
+            <% if (n.push==='MUST-READ') { %><span class="tag must">MUST-READ</span><% } %>
+            <% if (n.push==='SAFETY')    { %><span class="tag safety">SAFETY</span><% } %>
+            <% if (n.wms) { %><span class="tag wms">WMS:<%= n.wms %></span><% } %>
+
+            <% if (n.qc) { %><span class="tag qc">QUALITY CHECK</span><% } %>
+
+            <!-- Message -->
+            <span><%= n.message || '(no message)' %></span>
+
+          </div>
+
+          <!-- Rechts: remove from notebook -->
+          <form method="post" action="/logbook/remove-notebook">
+            <input type="hidden" name="id" value="<%= n.id %>"/>
+            <button class="icon-btn active" title="Remove from notebook">
+              <i data-lucide="notebook-pen"></i>
+            </button>
+          </form>
+
+        </header>
+
+        <!-- ATTACHMENTS (op nieuwe lijn) -->
+        <% if (n.attachments && n.attachments.length) { %>
+          <div class="attachments">
+            <% n.attachments.forEach(a => { %>
+
+              <% if (a && a.mime && a.mime.startsWith('image/')) { %>
+                <a class="thumb" href="<%= a.href %>" target="_blank" rel="noopener">
+                  <img src="<%= a.href %>" alt="<%= a.name %>">
+                </a>
+              <% } else if (a && a.href) { %>
+                <a class="doc" href="<%= a.href %>" target="_blank" rel="noopener">
+                  📄 <span style="margin-left:6px; word-break:break-all;"><%= a.name || 'Document' %></span>
+                </a>
+              <% } %>
+
+            <% }) %>
+          </div>
+        <% } %>
+
+      </article>
+
+    <% }) %>
+  </div>
+</section>

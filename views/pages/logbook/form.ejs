@@ -1,0 +1,399 @@
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<section class="card">
+  <h1 style="margin-bottom:2px;">LOGBOOK • FORM</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Add messages to log activities. Select one of the white labels to standardize the messages. A START label can only be used after a previous STOP label of when the shift was started with a down status. Adding light-blue labels will redirect you to the corresponding admin page. When a message is marked NOTEBOOK ONLY, it will appear only in your personal notebook. The Quality Check adds to the number of sample rounds. Messages marked with a must-read or safety label will require acknowledgment from each individual user.</span><br><br>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div style="background:#ffefef;color:#a40000;border:1px solid #a40000;padding:10px 12px;border-radius:8px;margin:0 0 12px 0;font-weight:600;">
+      <i data-lucide="alert-triangle" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i>
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form method="post" action="/logbook/form" class="form" enctype="multipart/form-data">
+    <input type="hidden" name="user" value="<%= (typeof currentUser !== 'undefined' && currentUser && currentUser.code) ? currentUser.code : 'DEMO' %>">
+
+    <!-- ================= INFO LABELS ================= -->
+    <div class="group">
+      <div class="labels-raster" data-chip-group="info">
+        <!-- 10 kolommen (vakken) -> render als 5 + 5 onder elkaar -->
+        <div class="label-col">
+          <button class="chip common-label" data-value="B0110" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0110</button>
+          <button class="chip common-label" data-value="R0140" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">R0140</button>
+          <button class="chip common-label" data-value="B0210" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0210</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="D0320" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">D0320</button>
+          <button class="chip common-label" data-value="D0330" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">D0330</button>
+          <button class="chip common-label" data-value="B0340" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0340</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="BP0410" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">BP0410</button>
+          <button class="chip common-label" data-value="B0415" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0415</button>
+          <button class="chip common-label" data-value="C0430" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">C0430</button>
+          <button class="chip common-label" data-value="B0440" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0440</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="M0451" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">M0451</button>
+          <button class="chip common-label" data-value="FB0500" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">FB0500</button>
+          <button class="chip common-label" data-value="VT2003" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">VT2003</button>
+          <button class="chip common-label" data-value="VT2004" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">VT2004</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="S0621" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">S0621</button>
+          <button class="chip common-label" data-value="B0625" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0625</button>
+          <button class="chip common-label" data-value="BR0670" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">BR0670</button>
+          <button class="chip common-label" data-value="B0630" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0630</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="B0710" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0710</button>
+          <button class="chip common-label" data-value="B0720" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0720</button>
+          <button class="chip common-label" data-value="B0680" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B0680</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="GS0910" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">GS0910</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="COAG" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">COAG</button>
+          <button class="chip common-label" data-value="B1070" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B1070</button>
+          <button class="chip common-label" data-value="B1110" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B1110</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="EVAP" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">EVAP</button>
+          <button class="chip common-label" data-value="MVR" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">MVR</button>
+          <button class="chip common-label" data-value="B1320" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">B1320</button>
+          <button class="chip common-label" data-value="P1321" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">P1321</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="CIP" type="button" style="background:#FFFFFF;color:#000;border-color:#ACACAC;">CIP</button>
+        </div>
+      </div>
+      <input type="hidden" name="infoLabels" value="">
+    </div>
+
+    <!-- ================= MESSAGE ================= -->
+    <label><FONT COLOR="#FFFFFF">MESSAGE</FONT></label>
+    <textarea name="message" rows="2" placeholder="Optional text..."
+      style="
+        width:87%;
+        box-sizing:border-box;
+        line-height:1.2;
+        padding:8px;
+        border:1px solid #acacac;
+        border-radius:6px;
+        min-height:0;
+        height:calc(2 * 1.2em + 16px + 2px);
+        resize:vertical;
+        background:#fff;
+        color:#000;
+      "></textarea>
+
+    <!-- ================= ATTACHMENTS ================= -->
+    <label style="display:block;margin-top:8px;">
+      <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">ATTACHMENTS (PNG/JPG/GIF/PDF)</span>
+      <input
+        type="file"
+        name="attachments"
+        multiple
+        accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,image/png,image/jpeg,image/gif,image/webp,application/pdf" />
+    </label>
+    <br><br>
+
+    <!-- ================= WMS + QUALITY CHECK + CHEM-SWITCH op dezelfde rij ================= -->
+    <div class="group">
+      <div class="labels-raster options" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+
+        <!-- WMS: IB-RAW (chip) -->
+        <button class="chip common-label pill-wms" type="button" data-value="IB-RAW"
+                style="background:#b3bfc3; color:#ffffff; border-color:#000000;">
+          WMS : IB-RAW
+        </button>
+        <input type="hidden" name="wms" value="">
+
+        <!-- CHEM-SWITCH (chip) -->
+        <button class="chip common-label pill-chemswitch" type="button" data-value="CHEM-SWITCH"
+                style="background:#b3bfc3; color:#ffffff; border-color:#000000;">
+          CHEM-SWITCH
+        </button>
+        <input type="hidden" name="chemswitch" value="">
+
+        <!-- QUALITY CHECK (chip) -->
+        <button class="chip common-label pill-qc" type="button" data-value="QC"
+                style="background:#346388;color:#ffffff;border-color:#000000;">
+          QUALITY CHECK
+        </button>
+        <input type="hidden" name="qc" value="">
+
+      </div>
+    </div>
+
+    <!-- ================= START / STOP op aparte rij ================= -->
+    <div class="group">
+      <div class="labels-raster options" style="display:flex;gap:12px;align-items:center;">
+
+        <!-- START -->
+        <label class="pill pill-start common-label" style="background:#06ab25; color:#000; border-color:#ACACAC;">
+          <input id="calcStart" type="radio" name="calc" value="START" style="margin-right:6px;" disabled> START
+        </label>
+
+        <!-- STOP -->
+        <label class="pill pill-stop common-label" style="background:#ff0000; color:#000; border-color:#FF0000;">
+          <input type="radio" name="calc" value="STOP" style="margin-right:6px;"> STOP
+        </label>
+
+      </div>
+    </div>
+
+    <!-- ================= PUSH LABELS (chips, met hidden push) ================= -->
+    <div class="group">
+      <div class="labels-raster options" data-push-group="push" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+
+        <button class="chip common-label pill-must" type="button" data-value="MUST-READ"
+                style="background:#ffea00; color:#000; border-color:#000000;">
+          MUST-READ
+        </button>
+
+        <button class="chip common-label pill-safety" type="button" data-value="SAFETY"
+                style="background:#ff9100; color:#000; border-color:#000000;">
+          SAFETY
+        </button>
+
+        <input type="hidden" name="push" value="">
+
+      </div>
+
+      <!-- ================= MY NOTEBOOK ONLY (roze checkbox) ================= -->
+      <div class="labels-raster options" style="margin-top:8px;">
+        <label class="pill common-label" style="background:#ffffff; color:#000000; border:1px solid #000000;">
+          <input type="checkbox" name="notebookOnly" value="1" style="margin-right:6px;">
+          NOTEBOOK ONLY
+        </label>
+      </div>
+    </div>
+
+    <br>
+    <div class="group time-row">
+      <label>Time:</label>
+      <input
+        id="whenInput"
+        class="time"
+        name="when"
+        type="text"
+        inputmode="numeric"
+        maxlength="5"
+        placeholder="HH:MM"
+        pattern="^([01]\d|2[0-3]):([0-5]\d)$"
+        title="Gebruik formaat HH:MM (00–23:00–59)"
+        style="background:#FFF4CD;border:1px solid #e0c36c;border-radius:8px;
+               padding:8px 10px;text-align:center;width:120px;
+               font-size:14px;font-weight:400;color:#000;">
+    </div>
+
+    <button class="btn btn-dark submit" type="submit"
+            style="font-family:'Roboto Mono', monospace;">ADD A MESSAGE</button>
+  </form>
+
+  <style>
+    :root { --label-w: 140px; --label-h: 22px; }
+
+    /* INFO-raster: 5 + 5 vakken met extra ruimte ertussen */
+    .labels-raster[data-chip-group="info"] {
+      display: grid;
+      grid-template-columns: repeat(5, var(--label-w));
+      column-gap: 24px;
+      row-gap: 20px; /* ruimte tussen de bovenste en onderste 5 vakken */
+      align-items: start;
+      justify-content: start;
+      margin-top: 8px;
+    }
+
+    .label-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .common-label {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      height: var(--label-h);
+      min-width: var(--label-w);
+      padding: 0 10px;
+      border: 1px solid #acacac;
+      border-radius: 6px;
+      background:#fff;
+      color:#000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .05s ease, box-shadow .15s ease;
+    }
+
+    .chip:hover,
+    .choices label.choice:hover,
+    .pill:hover { transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(253,197,0,.25); }
+    .chip.active,
+    .choices label.choice:has(input:checked),
+    .pill:has(input:checked) { box-shadow: 0 0 0 2px #fdc500; }
+
+    /* gelijke verticale afstand tussen labelgroepen */
+    .group { margin-top: 0px; }
+    /* verwijder extra marge van het hint-tekstje */
+    #startHint { margin-top: 1px; }
+  </style>
+</section>
+
+<script>
+/* MUST-READ / SAFETY verplicht message + chip-gedrag */
+(function(){
+  const form=document.querySelector('form.form');
+  if(!form)return;
+
+  const pushWrap=form.querySelector('[data-push-group="push"]');
+  const pushHidden=pushWrap ? pushWrap.querySelector('input[name="push"]') : null;
+
+  if(pushWrap && pushHidden){
+    // chip-click gedrag (radio-achtig maar opnieuw klikken deselecteert)
+    pushWrap.addEventListener('click',ev=>{
+      const btn=ev.target.closest('.chip');
+      if(!btn || !pushWrap.contains(btn)) return;
+
+      if(btn.classList.contains('active')){
+        btn.classList.remove('active');
+        pushHidden.value='';
+      } else {
+        pushWrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+        btn.classList.add('active');
+        pushHidden.value = btn.dataset.value || '';
+      }
+    });
+  }
+
+  form.addEventListener('submit',e=>{
+    const pushValue = pushHidden ? (pushHidden.value || '') : '';
+    const msg=form.querySelector('textarea[name="message"]').value||'';
+    if((pushValue==='MUST-READ'||pushValue==='SAFETY') && msg.trim()===''){
+      e.preventDefault();
+      alert('Bij MUST-READ en SAFETY is een bericht verplicht.');
+    }
+  });
+})();
+
+/* INFO chips -> hidden infoLabels */
+(function(){
+  const form=document.querySelector('form.form');
+  if(!form)return;
+  const wrap=form.querySelector('.labels-raster[data-chip-group="info"]');
+  if(!wrap)return;
+  const hidden=form.querySelector('input[name="infoLabels"]');
+  const sync=()=>hidden.value=Array.from(wrap.querySelectorAll('.chip.active')).map(b=>b.dataset.value).join(',');
+  wrap.addEventListener('click',ev=>{
+    const btn=ev.target.closest('.chip'); if(!btn)return;
+    btn.classList.toggle('active'); sync();
+  });
+  form.addEventListener('submit',sync);
+})();
+
+/* WMS IB-RAW chip -> hidden wms */
+(function(){
+  const btn=document.querySelector('.pill-wms[data-value="IB-RAW"]');
+  if(!btn)return;
+  const hidden=document.querySelector('input[name="wms"]');
+  if(!hidden)return;
+
+  btn.addEventListener('click',()=>{
+    btn.classList.toggle('active');
+    hidden.value=btn.classList.contains('active') ? 'IB-RAW' : '';
+  });
+})();
+
+/* CHEM-SWITCH chip -> hidden chemswitch (zelfde gedrag als WMS IB-RAW) */
+(function(){
+  const btn=document.querySelector('.pill-chemswitch[data-value="CHEM-SWITCH"]');
+  if(!btn)return;
+  const hidden=document.querySelector('input[name="chemswitch"]');
+  if(!hidden)return;
+
+  btn.addEventListener('click',()=>{
+    btn.classList.toggle('active');
+    hidden.value=btn.classList.contains('active') ? 'CHEM-SWITCH' : '';
+  });
+})();
+
+/* QC chip -> hidden qc */
+(function(){
+  const btn=document.querySelector('.pill-qc[data-value="QC"]');
+  if(!btn)return;
+  const hidden=document.querySelector('input[name="qc"]');
+  if(!hidden)return;
+
+  btn.addEventListener('click',()=>{
+    btn.classList.toggle('active');
+    hidden.value=btn.classList.contains('active') ? 'QC' : '';
+  });
+})();
+
+/* TIME veld auto HH:MM en normaliseren */
+(function(){
+  const t=document.getElementById('whenInput');
+  if(!t)return;
+  if(!t.value){
+    const now=new Date();
+    t.value=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  }
+  function toHHMM(v){
+    v=(v||'').replace(/\D/g,'').slice(0,4);
+    if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2);
+    return v;
+  }
+  t.addEventListener('input',e=>{e.target.value=toHHMM(e.target.value);});
+  t.addEventListener('blur',e=>{
+    e.target.value=(e.target.value||'').trim();
+    const m=e.target.value.match(/^(\d{1,2})(?::?(\d{1,2}))?$/);
+    if(!m){e.target.value='';return;}
+    let h=Math.min(parseInt(m[1]||'0',10),23);
+    let mn=Math.min(parseInt(m[2]||'0',10),59);
+    e.target.value=String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0');
+  });
+})();
+
+/* START alleen mogelijk na STOP (via messages-check) */
+(function(){
+  const start=document.getElementById('calcStart');
+  const hint=document.getElementById('startHint');
+  if(!start)return;
+  fetch('/logbook/messages',{credentials:'same-origin'})
+  .then(r=>r.text())
+  .then(h=>{
+    const doc=new DOMParser().parseFromString(h,'text/html');
+    const txt=(doc.body.textContent||'').toUpperCase();
+    const allow=/\bSTOP\b/.test(txt)&&!/\bSTART\b/.test(txt.split('STOP')[0]);
+    start.disabled=!allow;
+    if(hint)hint.textContent=allow?'':'START only possible after STOP';
+  })
+  .catch(()=>{start.disabled=true;if(hint)hint.textContent='START tijdelijk geblokkeerd.';});
+})();
+
+/* Auto-refresh tenzij er wordt getypt */
+document.addEventListener("DOMContentLoaded",()=>{
+  let typing=false;
+  document.addEventListener('input',()=>{
+    typing=true;clearTimeout(window._refreshHold);
+    window._refreshHold=setTimeout(()=>typing=false,15000);
+  });
+  function refresh(){if(!typing)location.reload();else window._refreshTimer=setTimeout(refresh,60000);}
+  window._refreshTimer=setTimeout(refresh,60000);
+});
+</script>

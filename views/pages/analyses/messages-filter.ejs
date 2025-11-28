@@ -1,0 +1,244 @@
+<!-- views/pages/analyses/messages-filter.ejs -->
+<style>
+  .page-card{
+    background:transparent!important;
+    box-shadow:none!important;
+    border:none!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  main, body{
+    margin:0!important;
+    padding:0!important;
+  }
+
+  .card h1{
+    margin-top:0;
+  }
+
+  .labels-raster{
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;
+    margin:16px 0 8px 0;
+  }
+  .label-col{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .chip.label-chip{
+    min-width:90px;
+    text-align:center;
+  }
+
+  .chip.label-chip.active{
+    background:#fdc500;
+    border-color:#fdc500;
+  }
+
+  .search-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:12px;
+  }
+
+  .muted{
+    color:#666;
+    font-size:12px;
+  }
+
+  .results-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+  }
+</style>
+
+<%
+  function fmtDateTime(m){
+    const pad = n => n < 10 ? '0'+n : n;
+    const d = m.createdAt ? new Date(m.createdAt) : null;
+    const valid = d && !isNaN(d);
+    const dateStr = valid ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}` : (m.date || '');
+    const t      = (m.time && String(m.time).trim()) ? m.time : (valid ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : '');
+    return [dateStr, t].filter(Boolean).join(' - ');
+  }
+%>
+
+<section class="card">
+  <h1 style="margin-bottom:2px;">LOGBOOK • SEARCH BY LABELS</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Select one info label and then press SEARCH. The result will show all logbook entries that contain that label.</span><br><br>
+
+  <form method="get" action="/analyses/messages-filter" id="label-search-form">
+    <input type="hidden" name="label" id="selectedLabelInput" value="<%= selected || '' %>"/>
+
+   
+    <% if (!infoLabels || !infoLabels.length) { %>
+      <p class="muted">Er zijn nog geen INFO-labels beschikbaar in het systeem.</p>
+    <% } else { 
+         const cols    = 5;
+         const perCol  = Math.ceil(infoLabels.length / cols);
+    %>
+      <div class="labels-raster" data-chip-group="info">
+        <% for (let c = 0; c < cols; c++) { 
+             const start = c * perCol;
+             const colItems = infoLabels.slice(start, start + perCol);
+             if (!colItems.length) continue;
+        %>
+          <div class="label-col">
+            <% colItems.forEach(function(label){ 
+                 const isActive = (selected === label);
+            %>
+              <button
+                type="button"
+                class="chip label-chip <%= isActive ? 'active' : '' %>"
+                data-label="<%= label %>">
+                <%= label %>
+              </button>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div class="search-actions">
+       <button type="submit"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                   
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+                 
+        SEARCH
+      </button>
+    </div>
+  </form>
+</section>
+
+<section class="card" style="margin-top:16px;">
+  <div class="results-header">
+    <h2 style="margin:0;font-size:18px;">RESULTS</h2>
+    <% if (selected) { %>
+      <span class="muted">
+        Label: <strong><%= selected %></strong>
+        <% if (results && results.length) { %>
+          • <%= results.length %> message(s)
+        <% } else { %>
+          • geen resultaten
+        <% } %>
+      </span>
+    <% } %>
+  </div>
+
+  <% if (!selected) { %>
+    <p class="muted">Kies eerst een label en druk op SEARCH.</p>
+  <% } else if (!results || !results.length) { %>
+    <p class="muted">Geen berichten gevonden voor label "<%= selected %>".</p>
+  <% } else { %>
+    <div class="feed">
+      <% results.forEach(function(m){ %>
+        <article class="post">
+          <header>
+            <div>
+              <strong><%= m.user %></strong>
+              • <span><%= fmtDateTime(m) %></span>
+              <% if (typeof m.deltaMin === 'number') { 
+                   const s = m.deltaMin.toFixed(1).replace('.', ',') + "'"; %>
+                • <span title="Diff since previous STOP">Δ <%= s %></span>
+              <% } %>
+            </div>
+          </header>
+
+          <div class="labels">
+            <% (m.infoLabels||[]).forEach(l => { %><span class="tag"><%= l %></span><% }) %>
+            <% (m.software||[]).forEach(l => { %><span class="tag software"><%= l %></span><% }) %>
+            <% if (m.calc==='START') { %><span class="tag start">START</span><% } %>
+            <% if (m.calc==='STOP')  { %><span class="tag stop">STOP</span><% } %>
+            <% if (m.calc==='QC')    { %><span class="tag qc">QC</span><% } %>
+            <% if (m.push==='MUST-READ') { %><span class="tag must">MUST-READ</span><% } %>
+            <% if (m.push==='SAFETY')    { %><span class="tag safety">SAFETY</span><% } %>
+            <% if (m.wms) { %><span class="tag wms">WMS:<%= m.wms %></span><% } %>
+          </div>
+
+          <% if (m.message) { %><p><%= m.message %></p><% } %>
+
+          <% if (m.attachments && m.attachments.length) { %>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;">
+              <% m.attachments.forEach(function(a){ 
+                   const isImg = a && a.mime && /^image\//.test(a.mime);
+              %>
+                <% if (isImg) { %>
+                  <a href="<%= a.href %>" target="_blank" rel="noopener"
+                     style="display:inline-block;">
+                    <img src="<%= a.href %>" alt="<%= a.name %>"
+                         style="max-width:35%;height:auto;border-radius:8px;border:1px solid #eee;">
+                  </a>
+                <% } else { %>
+                  <a href="<%= a.href %>" target="_blank" rel="noopener"
+                     style="display:inline-flex;align-items:center;padding:4px 8px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;">
+                    📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
+                  </a>
+                <% } %>
+              <% }); %>
+            </div>
+          <% } %>
+        </article>
+      <% }); %>
+    </div>
+  <% } %>
+</section>
+
+<script>
+  (function(){
+    var form   = document.getElementById('label-search-form');
+    if (!form) return;
+    var input  = document.getElementById('selectedLabelInput');
+    var chips  = form.querySelectorAll('.label-chip');
+
+    function selectLabel(value){
+      if (!input) return;
+      input.value = value || '';
+      chips.forEach(function(btn){
+        if (!value) {
+          btn.classList.remove('active');
+        } else {
+          if (btn.getAttribute('data-label') === value){
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    chips.forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var val = btn.getAttribute('data-label');
+        if (input.value === val){
+          // zelfde label nog eens aanklikken = deselecteren
+          selectLabel('');
+        } else {
+          selectLabel(val);
+        }
+      });
+    });
+  })();
+</script>

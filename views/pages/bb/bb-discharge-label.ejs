@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BB Discharge Label</title>
+
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .label-wrapper {
+      width: 100%;
+      height: 148mm; /* bovenste helft A4 */
+      padding: 15mm;
+      box-sizing: border-box;
+      border: 1px solid #000;
+      display: flex;
+      justify-content: center;
+    }
+
+    .label-inner {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* LOGO */
+    .logo {
+      margin-bottom: 8mm;
+    }
+
+    .logo-img {
+      max-height: 15mm;
+      width: auto;
+      display: inline-block;
+    }
+
+    .company {
+      font-size: 11px;
+      line-height: 1.4;
+      margin-bottom: 10mm;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12mm;
+    }
+
+    /* TABEL */
+    .info-table {
+      width: auto;               /* nodig voor centreren */
+      font-size: 12px;
+      border-collapse: collapse;
+      margin: 0 auto 12mm;       /* centreren + marge onderaan */
+    }
+
+    .info-table td {
+      padding: 2mm 0;
+    }
+
+    .info-table .label {
+      text-align: right;
+      padding-right: 4mm;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .info-table .value {
+      text-align: left;
+      padding-left: 2mm;
+    }
+
+    .info-table .kg-row {
+      font-size: 14px;
+      font-weight: bold;
+      padding-top: 1mm;
+    }
+
+    /* BESCHRIJVING */
+    .desc {
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 6mm;
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 20mm;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="label-wrapper">
+    <div class="label-inner">
+
+      <!-- Dynamisch logo -->
+      <div class="logo">
+        <img src="/grafisch/<%= logoFile %>" alt="Logo" class="logo-img">
+      </div>
+
+      <div class="company">
+        BREESTRAAT 2 | 8710 WIELSBEKE | info@resourcevn.be | +32 56790780
+      </div>
+
+      <div class="product-title"><%= L.productTitle %></div>
+
+      <!-- TABEL MET BATCH / DATE / KG -->
+      <table class="info-table">
+        <tr>
+          <td class="label"><%= L.batch %></td>
+          <td class="value"><%= lotNumber %></td>
+        </tr>
+        <tr>
+          <td class="label"><%= L.productionDate %></td>
+          <td class="value"><%= productionDate %></td>
+        </tr>
+        <tr>
+          <td class="label"></td>
+          <td class="value kg-row"><strong><%= quantityKg %></strong> kg</td>
+        </tr>
+      </table>
+
+      <div class="desc">
+        <%= L.feed1 %><br>
+        <%= L.feed2 %><br><br>
+        <%= L.moisture %>: 10%<br>
+        <%= L.starch %>: 65%<br>
+        <%= L.fibre %>: 2%
+      </div>
+
+      <div class="footer">
+        <span><%= locationCode %></span>
+        <span><%= operatorCode %></span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // automatisch printen bij openen
+    window.onload = () => window.print();
+  </script>
+
+</body>
+</html>

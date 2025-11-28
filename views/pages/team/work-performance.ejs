@@ -1,0 +1,264 @@
+<!-- views/pages/team/work-performance.ejs -->
+
+<style>
+  .overview-card {
+    max-width: 1100px;
+    margin: 0 auto 24px auto;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.08);
+    position: relative; /* nodig voor action-toolbar */
+  }
+
+  .overview-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  table.work-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .work-table th {
+    background: #f7f7f7;
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+  }
+  .work-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+  }
+  .muted {
+    opacity: .55;
+  }
+
+  /* Filterbalk zoals in /team/schedule */
+  .wp-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+  .wp-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .wp-filter-select {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    min-width: 70px;
+    background: #ffffff;
+  }
+
+  .wp-filter-apply {
+    padding: 6px 18px;
+    border-radius: 999px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fdc500;
+  }
+  .wp-filter-apply:hover {
+    filter: brightness(0.95);
+  }
+
+  .wp-filter-spacer {
+    flex: 1;
+  }
+
+  /* Zelfde button-styling als schedule.ejs */
+  .btn {
+    background:#ff0000;
+    color:#fff;
+    border:none;
+    border-radius:9999px;
+    padding:8px 14px;
+    font-size:12px;
+    letter-spacing:.6px;
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+    transition:opacity .12s ease, background .12s ease;
+  }
+  .btn:hover{
+    opacity:.92;
+    background:#111;
+  }
+  .btn.secondary{
+    background:#fdc500;
+    color:#000;
+  }
+
+  .action-toolbar{
+    position:absolute;
+    top:-18px;
+    right:18px;
+    display:flex;
+    gap:8px;
+  }
+
+  @media print{
+    .action-toolbar{display:none !important;}
+    .overview-card{box-shadow:none !important;border-radius:0 !important;}
+  }
+</style>
+
+
+<div class="overview-card" data-title="TEAM_WORK_PERFORMANCE">
+
+  <!-- PRINT & XLS zoals bij schedule.ejs -->
+  <div class="action-toolbar">
+    <button class="btn secondary" type="button" onclick="window.print()">PRINT</button>
+    <form method="GET" action="/team/export" style="margin:0">
+      <input type="hidden" name="page" value="work-performance"/>
+      <input type="hidden" name="month" value="<%= filter && filter.month ? filter.month : '' %>"/>
+      <input type="hidden" name="year" value="<%= filter && filter.year ? filter.year : '' %>"/>
+      <input type="hidden" name="operator" value="<%= filter && filter.operator ? filter.operator : '-ALL-' %>"/>
+      <button class="btn secondary" type="submit">XLS</button>
+    </form>
+  </div>
+
+  <h1 style="margin-bottom:2px;">TEAM • WORK PERFORMANCE</h1><br>
+
+  <!-- FILTERBALK -->
+  <form method="get" class="wp-filter-bar">
+    <div class="wp-filter-group">
+      <span>Month</span>
+      <select name="month" class="wp-filter-select">
+        <% const months = ['01','02','03','04','05','06','07','08','09','10','11','12']; %>
+        <% months.forEach(function(mm, idx){ %>
+          <option value="<%= mm %>" <%= (filter && filter.month === mm) ? 'selected' : '' %>><%= idx + 1 %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="wp-filter-group">
+      <span>Year</span>
+      <select name="year" class="wp-filter-select">
+        <% const years = [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]; %>
+        <% years.forEach(function(y){ %>
+          <option value="<%= y %>" <%= (filter && String(filter.year) === String(y)) ? 'selected' : '' %>><%= y %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="wp-filter-group">
+      <span>Operator</span>
+      <select name="operator" class="wp-filter-select">
+        <option value="-ALL-" <%= (filter && filter.operator==='-ALL-') ? 'selected' : '' %>>-ALL-</option>
+        <% (operators || []).forEach(op => { %>
+          <option value="<%= op %>" <%= (filter && filter.operator===op) ? 'selected' : '' %>><%= op %></option>
+        <% }) %>
+      </select>
+    </div>
+
+     <button type="submit" class="btn secondary">APPLY</button>
+
+    <div class="wp-filter-spacer"></div>
+    <!-- geen PDF/XLS links meer hier; die zitten nu in de action-toolbar -->
+  </form>
+
+  <% if (!(items && items.length)) { %>
+
+    <p class="muted">No shifts yet.</p>
+
+  <% } else { %>
+
+    <%
+      let sumMinutes = 0;
+      let countedShifts = 0;
+    %>
+
+    <table class="work-table">
+
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Operator</th>
+          <th>Start label</th>
+          <th>End label</th>
+          <th>Logout</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% items.forEach((s, index) => { %>
+
+          <%
+             let total = "-";
+             let rowMinutes = 0;
+
+             if (s.startLabel && s.logoutAt) {
+               function parse(lbl) {
+                 const m = lbl.match(/(\d{2})\/(\d{2})\/(\d{4})\s*-\s*(\d{2}):(\d{2})/);
+                 if (!m) return null;
+                 return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}:00`);
+               }
+
+               const d1 = parse(s.startLabel);
+               const d2 = parse(s.logoutAt);
+
+               if (d1 && d2) {
+                 const diffMin = Math.max(0, Math.round((d2 - d1) / 60000));
+                 rowMinutes = diffMin;
+                 const h = Math.floor(diffMin / 60);
+                 const m = diffMin % 60;
+                 total = `${h}h${String(m).padStart(2,'0')}min`;
+               }
+             }
+
+             sumMinutes += rowMinutes;
+             if (rowMinutes > 0) countedShifts++;
+          %>
+
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= s.operator || '-' %></td>
+            <td><%= s.startLabel || '-' %></td>
+            <td><%= s.endLabel || '-' %></td>
+            <td><%= s.logoutAt || '-' %></td>
+            <td><%= total %></td>
+          </tr>
+
+        <% }) %>
+      </tbody>
+
+    </table>
+
+    <%
+      if (sumMinutes > 0 && filter && filter.operator && filter.operator !== '-ALL-' && countedShifts > 0) {
+        const totalH = Math.floor(sumMinutes / 60);
+        const totalM = sumMinutes % 60;
+
+        const avgMin = Math.round(sumMinutes / countedShifts);
+        const avgH = Math.floor(avgMin / 60);
+        const avgM = avgMin % 60;
+
+        const avgHStr = String(avgH).padStart(2,'0');
+        const avgMStr = String(avgM).padStart(2,'0');
+    %>
+      <p class="muted" style="margin-top:8px;">
+        Total working time for
+        <strong><%= filter.operator %></strong>
+        in this period:
+        <strong><%= totalH %>h<%= String(totalM).padStart(2,'0') %>min</strong>
+        (<%= avgHStr %>h<%= avgMStr %>min/day)
+      </p>
+    <% } %>
+
+  <% } %>
+
+</div>

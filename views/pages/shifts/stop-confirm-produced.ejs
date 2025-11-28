@@ -1,0 +1,113 @@
+<div style="width:100%; display:flex; justify-content:center; padding:0 12px;">
+
+  <section style="
+    max-width:1100px;
+    width:100%;
+    background:#ffffff;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
+    padding:24px 24px 64px;
+    border:1px solid rgba(0,0,0,0.08);
+    margin:0 0 24px 0;
+    text-align:left;
+    font-family:'Roboto Mono', monospace;
+  ">
+
+    <style>
+      .res-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      .res-sub {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 24px;
+      }
+      .res-label {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .res-box {
+        display:inline-block;
+        min-width: 220px;
+        padding: 10px 16px;
+        border: 2px solid #000;
+        border-radius: 4px;
+        font-size: 24px;
+        font-weight: 700;
+        text-align:center;
+        background:#ffffff;
+      }
+      .res-box span.unit {
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 4px;
+      }
+      .res-note {
+        margin-top: 18px;
+        font-size: 12px;
+        color: #6b7280;
+        line-height: 1.4;
+      }
+    </style>
+
+    <h2 class="res-title">PRODUCTION RESULT</h2>
+
+    <p class="res-sub">
+      Dit is de <strong>ACTUAL PRODUCED</strong> voor deze shift, berekend op basis van:
+      <br>
+      <span style="font-size:12px;">
+        (STOP LEVEL 710 − START LEVEL 710) + (STOP LEVEL 720 − START LEVEL 720)<br>
+        + OUTBOUND BULK 710 + OUTBOUND BULK 720<br>
+        + DISCHARGED BB 710 + DISCHARGED BB 720
+      </span>
+    </p>
+
+    <div style="margin-top:8px;">
+      <div class="res-label">RESULT:</div>
+      <div class="res-box">
+        <%= (typeof producedTotal !== 'undefined' ? producedTotal : 0) %>
+        <span class="unit">kg</span>
+      </div>
+    </div>
+
+    <p class="res-note">
+      Controleer of deze waarde logisch is ten opzichte van de uitgevoerde productie en registraties
+      in <strong>BULK</strong> en <strong>BB WAREHOUSING</strong>.
+      <br>
+      Klik op <strong>NEXT</strong> om de <strong>DOWNTIME</strong> en <strong>OEE</strong> te berekenen in de volgende stap.
+    </p>
+
+    <!-- FOOTER KNOP -->
+    <div style="position:relative; height:60px; margin-top:8px;">
+      <a
+        href="/shifts/stop/step3"
+        style="
+          position:absolute;
+          right:25px;
+          bottom:-36px;
+          display:inline-block;
+          background:#fdc500;
+          color:#000;
+          border:none;
+          border-radius:9999px;
+          padding:8px 22px;
+          font-weight:600;
+          font-size:13px;
+          letter-spacing:0.08em;
+          text-transform:uppercase;
+          text-decoration:none;
+          box-shadow:0 2px 6px rgba(0,0,0,0.25);
+        "
+      >
+        NEXT
+      </a>
+    </div>
+
+  </section>
+</div>

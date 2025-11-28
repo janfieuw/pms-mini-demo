@@ -1,0 +1,148 @@
+{
+  "bulkDischarges": [
+    {
+      "id": "1763822659138",
+      "createdAt": "2025-11-22T14:44:19.138Z",
+      "silo": "710",
+      "weight": "27000",
+      "customer": "Aviko",
+      "cmr": "222",
+      "purchaseOrder": "222",
+      "billOfLading": "222",
+      "date": "22/11/2025",
+      "time": "15:44"
+    },
+    {
+      "id": "1763823325425",
+      "createdAt": "2025-11-22T14:55:25.425Z",
+      "silo": "710",
+      "weight": "27000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "12345",
+      "purchaseOrder": "23456",
+      "billOfLading": "34567",
+      "date": "22/11/2025",
+      "time": "15:55"
+    },
+    {
+      "id": "1763823546351",
+      "createdAt": "2025-11-22T14:59:06.351Z",
+      "silo": "710",
+      "weight": "27000",
+      "customer": "PARTNER IN PET FOOD (Nordics AB)",
+      "cmr": "12345789",
+      "purchaseOrder": "12345789",
+      "billOfLading": "12345789",
+      "date": "22/11/2025",
+      "time": "15:58"
+    },
+    {
+      "id": "1763914182962",
+      "createdAt": "2025-11-23T16:09:42.962Z",
+      "silo": "710",
+      "weight": "20000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "23/11/2025",
+      "time": "17:09"
+    },
+    {
+      "id": "1764123169929",
+      "createdAt": "2025-11-26T02:12:49.929Z",
+      "silo": "710",
+      "weight": "25000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "1",
+      "purchaseOrder": "1",
+      "billOfLading": "1",
+      "date": "26/11/2025",
+      "time": "03:12"
+    },
+    {
+      "id": "1764123205210",
+      "createdAt": "2025-11-26T02:13:25.210Z",
+      "silo": "710",
+      "weight": "10000",
+      "customer": "UNITED PETFOODS (NL-Waalwijk)",
+      "cmr": "1",
+      "purchaseOrder": "1",
+      "billOfLading": "1",
+      "date": "26/11/2025",
+      "time": "03:13"
+    },
+    {
+      "id": "1764123621881",
+      "createdAt": "2025-11-26T02:20:21.881Z",
+      "silo": "710",
+      "weight": "25000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "26/11/2025",
+      "time": "03:20"
+    },
+    {
+      "id": "1764124663677",
+      "createdAt": "2025-11-26T02:37:43.677Z",
+      "silo": "710",
+      "weight": "25000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "26/11/2025",
+      "time": "03:37"
+    },
+    {
+      "id": "1764125791365",
+      "createdAt": "2025-11-26T02:56:31.365Z",
+      "silo": "720",
+      "weight": "100",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "26/11/2025",
+      "time": "03:56"
+    },
+    {
+      "id": "1764125831034",
+      "createdAt": "2025-11-26T02:57:11.034Z",
+      "silo": "710",
+      "weight": "10000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "26/11/2025",
+      "time": "03:56"
+    },
+    {
+      "id": "1764126439777",
+      "createdAt": "2025-11-26T03:07:19.777Z",
+      "silo": "710",
+      "weight": "12345",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "-",
+      "purchaseOrder": "-",
+      "billOfLading": "-",
+      "date": "26/11/2025",
+      "time": "04:07"
+    },
+    {
+      "id": "1764161994544",
+      "createdAt": "2025-11-26T12:59:54.544Z",
+      "silo": "710",
+      "weight": "25000",
+      "customer": "UNITED PETFOODS (NL-Coeverden)",
+      "cmr": "123",
+      "purchaseOrder": "123",
+      "billOfLading": "123",
+      "date": "26/11/2025",
+      "time": "13:59"
+    }
+  ]
+}

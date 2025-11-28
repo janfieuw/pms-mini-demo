@@ -1,0 +1,74 @@
+<!-- LOGIN full-screen background, inline CSS only -->
+<!-- Background layer that always covers the full viewport -->
+<div style="
+  position:fixed; inset:0;
+  background-image:url('/grafisch/background.png');
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  z-index:-1;
+"></div>
+
+<!-- Foreground: centers the card -->
+<div style="
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  box-sizing:border-box;
+  /* kill default body margins even when this is inside body */
+  margin:0;
+">
+
+  <section class="card narrow"
+    style="
+      width:100%;
+      max-width:460px;
+      padding:36px 32px;
+      border-radius:20px;
+      background:#ffffff;       /* <- niet transparant */
+      box-shadow:0 8px 30px rgba(0,0,0,0.18);
+      font-family:'Roboto', Arial, sans-serif;
+      text-align:left;
+    "
+  >
+    <!-- Logo -->
+    <div style="text-align:center; margin-bottom:22px;">
+      <img src="/grafisch/logo-loginpage.PNG" alt="FEWR PMS" style="width:180px;">
+    </div>
+
+    <% if (error) { %>
+      <div style="color:#b00020; margin-bottom:14px; font-weight:600;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form method="post" action="/login">
+      <label style="display:block; margin-bottom:6px; font-size:12px; color:#555;">USER CODE</label>
+      <input type="text" name="code" placeholder="bv. JFI" required
+             style="width:100%; height:36px; padding:6px 10px; margin-bottom:14px;
+                    border:1px solid #cfd3d8; border-radius:8px; box-sizing:border-box;">
+
+      <label style="display:block; margin-bottom:6px; font-size:12px; color:#555;">PASSWORD</label>
+      <input type="password" name="password" placeholder="bv. 3009" required
+             style="width:100%; height:36px; padding:6px 10px; margin-bottom:18px;
+                    border:1px solid #cfd3d8; border-radius:8px; box-sizing:border-box;">
+
+      <button type="submit"
+              style="width:100%; height:40px; background-color:#fdc500; color:#000;
+                     font-weight:700; border:none; border-radius:10px; cursor:pointer;">
+        SIGN IN
+      </button>
+    </form>
+  </section>
+</div>
+
+
+
+
+
+
+
+

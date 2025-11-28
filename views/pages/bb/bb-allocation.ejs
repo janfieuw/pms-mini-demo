@@ -1,0 +1,245 @@
+<div class="page-shadow-wrapper">
+  <div class="wms-container">
+
+    <!-- Titel + uitleg -->
+         <h1 style="margin-bottom:2px;">BIG BAGS • ALLOCATION</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Allocate Big Bags to a customer. Select and confirm.</span><br><br>
+    </div>
+
+    <!-- STAP 1: keuze klant + shipping info -->
+    <div class="wms-card">
+      <form method="GET" action="/bb/allocation">
+        <div class="wms-form-grid">
+
+          <!-- Customer -->
+          <div class="wms-form-group">
+            <label for="customer">Customer</label>
+            <select id="customer" name="customer" required>
+              <option value="">-- choose customer --</option>
+              <option value="UNITED PETFOODS (NL-Coevorden)">UNITED PETFOODS (NL-Coevorden)</option>
+              <option value="UNITED PETFOODS (NL-Waalwijk)">UNITED PETFOODS (NL-Waalwijk)</option>
+              <option value="NUTRIFEED">NUTRIFEED</option>
+              <option value="PLANTURE LOOP">PLANTURE LOOP</option>
+              <option value="UNITED PETFOODS (DK)">UNITED PETFOODS (DK)</option>
+              <option value="UNITED PETFOODS (BE-Wimille)">UNITED PETFOODS (BE-Wimille)</option>
+              <option value="UNITED PETFOODS (BE-Gent)">UNITED PETFOODS (BE-Gent)</option>
+              <option value="GA PETFOOD">GA PETFOOD</option>
+              <option value="AFFINITY (IT)">AFFINITY (IT)</option>
+              <option value="AFFINITY (FR)">AFFINITY (FR)</option>
+              <option value="AFFINITY (SP)">AFFINITY (SP)</option>
+              <option value="SAUVALE PRODUCTION (FR)">SAUVALE PRODUCTION (FR)</option>
+              <option value="PARTNER IN PET FOOD (CZ)">PARTNER IN PET FOOD (CZ)</option>
+              <option value="PARTNER IN PET FOOD (Nordics AB)">PARTNER IN PET FOOD (Nordics AB)</option>
+              <option value="FIDES (BE-Oostende)">FIDES (BE-Oostende)</option>
+            </select>
+          </div>
+
+          <!-- Shipping date -->
+          <div class="wms-form-group">
+            <label for="shippingDate">Shipping date</label>
+            <input type="date" id="shippingDate" name="shippingDate">
+          </div>
+
+       
+
+          <!-- Purchase Order -->
+          <div class="wms-form-group">
+            <label for="purchaseOrder">Purchase Order:</label>
+            <input type="text" id="purchaseOrder" name="purchaseOrder">
+          </div>
+
+          <!-- Bill of Lading -->
+          <div class="wms-form-group">
+            <label for="billOfLading">Bill of Lading:</label>
+            <input type="text" id="billOfLading" name="billOfLading">
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- STAP 2: beschikbaar voor allocatie -->
+    <div class="wms-card wms-card-margin-top">
+      <div class="wms-card-header">
+        <h2>Available BB for allocation</h2>
+       
+      </div>
+
+      <form method="POST" action="/bb/allocation/allocate">
+        <div style="overflow:auto;">
+          <table class="allocation-table-compact">
+            <thead>
+              <tr>
+                <th>Sel.</th>
+                <th>Location</th>
+                <th>Batch</th>
+                <th>Quantity (kg)</th>
+                <th>Production date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%
+                const hasAllocData =
+                  (typeof availableSlots !== 'undefined') &&
+                  Array.isArray(availableSlots) &&
+                  availableSlots.length > 0;
+
+                // bb.js sorteert al op createdAtMs (oud -> nieuw)
+                const sortedSlots = hasAllocData ? availableSlots : [];
+              %>
+
+              <% if (hasAllocData) { %>
+                <% sortedSlots.forEach(function(slot) { %>
+                  <tr>
+                    <td>
+                      <input 
+                        type="checkbox" 
+                        name="locations[]" 
+                        value="<%= slot.code %>">
+                    </td>
+                    <td><%= slot.code %></td>
+                    <td><%= slot.lot || '' %></td>
+                    <td class="num"><%= slot.quantityKg || '' %></td>
+                    <!-- zelfde label als in batch-overview -->
+                    <td><%= slot.createdLabel || '' %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="5" class="empty">No occupied BB locations available for allocation.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- verborgen velden om de gekozen context mee te posten -->
+        <input type="hidden" name="customer" id="hiddenCustomer">
+        <input type="hidden" name="shippingDate" id="hiddenShippingDate">
+        <input type="hidden" name="reference" id="hiddenReference">
+        <input type="hidden" name="remarks" id="hiddenRemarks">
+
+        <div class="wms-form-actions">
+        <button type="submit"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                  
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+            Allocate selected to customer
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .page-shadow-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 25px 40px;
+    background: #ffffff;
+    box-shadow: 0 0 25px rgba(0,0,0,0.08);
+    border-left: 1px solid #e6e6e6;
+    border-right: 1px solid #e6e6e6;
+    min-height: calc(100vh - 140px);
+  }
+
+  .wms-container {
+    width: 100%;
+    margin: 0;
+  }
+    h1 {
+      margin: 0 0 12px 0;
+    
+      font-weight: 700;
+    }
+  .wms-card {
+    width: 100%;
+  }
+
+  .wms-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .wms-form-actions {
+    margin-top: 1rem;
+    text-align: right;
+  }
+
+  /* --------- Tabel in zelfde stijl als overview / loading --------- */
+
+  .allocation-table-compact {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+  }
+
+  .allocation-table-compact thead tr {
+    background: #f7f7f7;
+  }
+
+  .allocation-table-compact th,
+  .allocation-table-compact td {
+    padding: 7px 8px;
+    border-bottom: 1px solid #e6e6e6;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .allocation-table-compact td.num {
+    text-align: right;
+  }
+
+  .allocation-table-compact .empty {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #777;
+  }
+</style>
+
+<script>
+  // Zorg dat de hidden velden dezelfde waarden meekrijgen als de bovenste form
+  (function () {
+    const formTop   = document.querySelector('.wms-card form[method="GET"]');
+    const formAlloc = document.querySelector('.wms-card.wms-card-margin-top form[method="POST"]');
+    if (!formTop || !formAlloc) return;
+
+    const customer     = document.getElementById('customer');
+    const shippingDate = document.getElementById('shippingDate');
+    const reference    = document.getElementById('reference');
+    const remarks      = document.getElementById('remarks');
+
+    const hCust = document.getElementById('hiddenCustomer');
+    const hShip = document.getElementById('hiddenShippingDate');
+    const hRef  = document.getElementById('hiddenReference');
+    const hRem  = document.getElementById('hiddenRemarks');
+
+    function syncHidden() {
+      if (hCust && customer)     hCust.value = customer.value;
+      if (hShip && shippingDate) hShip.value = shippingDate.value;
+      if (hRef  && reference)    hRef.value  = reference.value;
+      if (hRem  && remarks)      hRem.value  = remarks.value;
+    }
+
+    // sync direct bij load en voor submit van allocation-form
+    syncHidden();
+    formAlloc.addEventListener('submit', syncHidden);
+  })();
+</script>

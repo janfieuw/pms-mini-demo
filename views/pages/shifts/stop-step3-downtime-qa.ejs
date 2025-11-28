@@ -1,0 +1,75 @@
+<div style="max-width:1100px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,0.12);padding:24px;">
+  <h2>CALCULATE OEE &amp; QC</h2>
+
+  <%
+    const _oee = (typeof oee === 'object' && oee) ? oee : {};
+    const _downtime    = (typeof _oee.downtime === 'number') ? _oee.downtime : Number(_oee.downtime||0);
+    const _qc          = (typeof _oee.qc === 'number') ? _oee.qc : Number(_oee.qc||100);
+    const _shiftTimeMin= (typeof shiftTimeMin === 'number' && !Number.isNaN(shiftTimeMin)) ? shiftTimeMin : Number(shiftTimeMin||0);
+  %>
+
+  <!-- SHIFT TIME (planned time) -->
+  <div style="font-family:Roboto Mono, monospace;margin-bottom:16px;">
+    <label for="shiftTimeMin" style="display:block;font-weight:200;margin-bottom:6px;">Shift Time (min)</label>
+    <input id="shiftTimeMin" type="number" value="<%= _shiftTimeMin %>" readonly
+           style="width:260px;padding:8px 10px;border:2px solid #99B8FB;background:#FFF4CD;border-radius:8px;" />
+  </div>
+
+  <!-- FORM -->
+  <form method="post" action="/shifts/stop/step3" style="font-family:Roboto Mono, monospace;">
+    <!-- DOWNTIME -->
+    <div style="margin-bottom:12px;">
+      <label for="downtime" style="display:block;font-weight:200;margin-bottom:6px;">Downtime (min)</label>
+      <input id="downtime" name="downtime" type="number" step="1" min="0" value="<%= _downtime %>"
+             style="width:260px;padding:8px 10px;border:2px solid #99B8FB;background:#FFF4CD;border-radius:8px;" />
+    </div>
+
+    <!-- RASTER: From / To / Minutes  (nu ONDER Downtime) -->
+    <div style="font-size:10px;margin:10px 0 18px 0;">
+      
+      <table style="width:60%;border-collapse:collapse;font-size:10px;table-layout:auto;">
+        <thead>
+          <tr>
+            <th style="width:45%;text-align:left;border-bottom:1px solid #ddd;padding:6px 4px;">From</th>
+            <th style="width:45%;text-align:left;border-bottom:1px solid #ddd;padding:6px 4px;">To</th>
+            <th style="width:10%;text-align:right;border-bottom:1px solid #ddd;padding:6px 4px;">Minutes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (intervals||[]).forEach(it => { %>
+            <tr>
+              <td style="padding:6px 4px;"><%= it.from %></td>
+              <td style="padding:6px 4px;"><%= it.to %></td>
+              <td style="padding:6px 4px;text-align:right;"><%= it.minutes %></td>
+            </tr>
+          <% }) %>
+          <% if (!(intervals||[]).length) { %>
+            <tr>
+              <td colspan="3" style="padding:6px 4px;color:#666;">
+                (geen downtime events gevonden in deze shift)
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QC -->
+    <div style="margin-bottom:18px;">
+      <label for="qc" style="display:block;font-weight:200;margin-bottom:6px;">Quality Checks (%)</label>
+      <input id="qc" name="qc" type="number" step="1" min="0" max="100" value="<%= _qc %>"
+             style="width:260px;padding:8px 10px;border:2px solid #99B8FB;background:#FFF4CD;border-radius:8px;" />
+    </div>
+
+    <!-- Submit button half buiten kaart -->
+    <div class="ack-footer" style="position:relative;height:60px;">
+      <button class="btn btn-dark submit" type="submit"
+              style="position:absolute;right:25px;bottom:-50px;
+                     font-family:'Roboto Mono', monospace;font-weight:500;font-size:13px;
+                     box-shadow:0 2px 6px rgba(0,0,0,0.25);">
+        CONFIRM / CALCULATE OEE
+      </button>
+    </div>
+  </form>
+</div>
+

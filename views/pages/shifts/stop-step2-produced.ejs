@@ -1,0 +1,474 @@
+<%
+  // veiligheid: defaults
+  const p = produced || {};
+  const m = metrics || {};
+  const hasResult = !!m.hasResult;
+
+  // OEE op de pagina berekenen op basis van uptime, performance
+  const uptimePercent      = m.uptimePercent      ?? 0;
+  const performancePercent = m.performancePercent ?? 0;
+
+  // QUALITY: standaard 100%, aantal checks wordt enkel getoond
+  const qualityPercent     = 100;
+
+  let oeePagePercent = 0;
+  if (hasResult) {
+    oeePagePercent =
+      (uptimePercent / 100) *
+      (performancePercent / 100) *
+      (qualityPercent / 100) *
+      100;
+  }
+%>
+
+<div style="width:100%; display:flex; justify-content:center; padding:0 12px;">
+
+  <section style="
+    max-width:1100px;
+    width:100%;
+    background:#ffffff;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
+    padding:24px 24px 64px;
+    border:1px solid rgba(0,0,0,0.08);
+    margin:0 0 24px 0;
+    text-align:left;
+    font-family:'Roboto Mono', monospace;
+  ">
+
+    <style>
+      .prod-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      .prod-sub {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 20px;
+      }
+
+      /* GRID MET 4 BLOKKEN */
+      .prod-grid {
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap:40px;
+        row-gap:24px;
+        margin-bottom:16px;
+      }
+      .prod-block {
+        min-width:220px;
+      }
+      .block-title {
+        font-size:11px;
+        letter-spacing:0.18em;
+        font-weight:700;
+        text-transform:uppercase;
+        margin-bottom:6px;
+      }
+
+      .prod-small-table {
+        width:100%;
+        border-collapse:collapse;
+        font-size:13px;
+      }
+      .prod-small-table td {
+        border:0;
+        padding:2px 6px;
+      }
+      .row-label-num {
+        text-align:left;
+        width:30px;
+      }
+
+      .cell-stop  { background:#ffffff; }
+      .cell-start { background:#FFF4CD; }
+      .cell-bb    { background:#D1FAE5; }
+      .cell-bulk  { background:#D1FAE5; }
+
+      .prod-input {
+        width:90px;
+        border:1px solid #000;
+        border-radius:2px;
+        padding:2px 4px;
+        text-align:right;
+        background:#ffffff;
+        font-size:12px;
+      }
+      .prod-input.start {
+        background:#FFF4CD;
+      }
+      .prod-input.bb,
+      .prod-input.bulk {
+        background:#D1FAE5;
+      }
+      .prod-input[readonly] {
+        border-color:#000;
+        color:#111827;
+      }
+
+      .res-label {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .res-box-green {
+        display:inline-block;
+        min-width: 180px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 18px;
+        font-weight: 700;
+        text-align:center;
+        background:#f2f2f2;
+      }
+      .res-box-purple {
+        display:inline-block;
+        min-width: 180px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 18px;
+        font-weight: 700;
+        text-align:center;
+        background:#f2f2f2;
+      }
+      .res-unit {
+        font-size: 13px;
+        font-weight: 500;
+        margin-left: 4px;
+      }
+      .hr {
+        border-top:1px solid #d4d4d4;
+        margin:16px 0;
+      }
+      .muted-small {
+        font-size:12px;
+        color:#6b7280;
+      }
+      textarea.downtime-box {
+        width:100%;
+        min-height:70px;
+        border:1px solid:#d4d4d4;
+        border-radius:4px;
+        font-size:12px;
+        padding:6px 8px;
+        resize:vertical;
+      }
+    </style>
+
+    <h2 class="prod-title">PRODUCTION CALCULATION</h2>
+
+    <p class="prod-sub">
+      Bovenaan vier blokken:
+      <strong>STOP LEVELS</strong>, <strong>START LEVELS</strong>, <strong>DISCHARGED BB</strong> en <strong>OUTBOUND BULK</strong>.
+      De gele velden zijn de <strong>START LEVELS</strong> (aanpasbaar).<br>
+      De groene velden komen automatisch uit domein <strong>BB</strong> en <strong>BULK</strong>.
+    </p>
+
+    <!-- FORM: CONFIRM PRODUCTION -->
+    <form method="POST" action="/shifts/stop/step2-produced">
+
+      <!-- 4 BLOKKEN -->
+      <div class="prod-grid">
+
+        <!-- STOP LEVELS -->
+        <div class="prod-block">
+          <div class="block-title">STOP LEVELS</div>
+          <table class="prod-small-table">
+            <tbody>
+              <tr>
+                <td class="row-label-num">710</td>
+                <td class="cell-stop">
+                  <input
+                    type="number"
+                    step="1"
+                    name="stop710"
+                    class="prod-input"
+                    value="<%= p.stop710 ?? 0 %>"
+                    required
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td class="row-label-num">720</td>
+                <td class="cell-stop">
+                  <input
+                    type="number"
+                    step="1"
+                    name="stop720"
+                    class="prod-input"
+                    value="<%= p.stop720 ?? 0 %>"
+                    required
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- START LEVELS -->
+        <div class="prod-block">
+          <div class="block-title">START LEVELS</div>
+          <table class="prod-small-table">
+            <tbody>
+              <tr>
+                <td class="row-label-num">710</td>
+                <td class="cell-start">
+                  <input
+                    type="number"
+                    step="1"
+                    name="start710"
+                    class="prod-input start"
+                    value="<%= p.start710 ?? 0 %>"
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td class="row-label-num">720</td>
+                <td class="cell-start">
+                  <input
+                    type="number"
+                    step="1"
+                    name="start720"
+                    class="prod-input start"
+                    value="<%= p.start720 ?? 0 %>"
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DISCHARGED BB -->
+        <div class="prod-block">
+          <div class="block-title">DISCHARGED BB</div>
+          <table class="prod-small-table">
+            <tbody>
+              <tr>
+                <td class="row-label-num">710</td>
+                <td class="cell-bb">
+                  <input
+                    type="number"
+                    step="1"
+                    class="prod-input bb"
+                    value="<%= p.d_710_bb ?? 0 %>"
+                    readonly
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td class="row-label-num">720</td>
+                <td class="cell-bb">
+                  <input
+                    type="number"
+                    step="1"
+                    class="prod-input bb"
+                    value="<%= p.d_720_bb ?? 0 %>"
+                    readonly
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:#6b7280; margin-top:2px;">(uit BB)</div>
+        </div>
+
+        <!-- OUTBOUND BULK -->
+        <div class="prod-block">
+          <div class="block-title">OUTBOUND BULK</div>
+          <table class="prod-small-table">
+            <tbody>
+              <tr>
+                <td class="row-label-num">710</td>
+                <td class="cell-bulk">
+                  <input
+                    type="number"
+                    step="1"
+                    class="prod-input bulk"
+                    value="<%= p.d_710_bulk ?? 0 %>"
+                    readonly
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td class="row-label-num">720</td>
+                <td class="cell-bulk">
+                  <input
+                    type="number"
+                    step="1"
+                    class="prod-input bulk"
+                    value="<%= p.d_720_bulk ?? 0 %>"
+                    readonly
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:#6b7280; margin-top:2px;">(uit BULK)</div>
+        </div>
+
+      </div> <!-- einde prod-grid -->
+
+      <p class="muted-small" style="margin-top:2px;">
+        Bij <strong>CONFIRM</strong> wordt de totale productie (kg) berekend als:
+        (STOP 710 − START 710) + (STOP 720 − START 720)
+        + OUTBOUND BULK 710 + OUTBOUND BULK 720
+        + DISCHARGED BB 710 + DISCHARGED BB 720.
+      </p>
+
+      <div style="position:relative; height:60px; margin-top:8px;">
+        <button
+          type="submit"
+          name="mode"
+          value="confirm"
+          style="
+            position:absolute;
+            right:25px;
+            bottom:-30px;
+            background:#fdc500;
+            color:#000;
+            border:none;
+            border-radius:9999px;
+            padding:8px 22px;
+            font-weight:200;
+            font-size:11px;
+            letter-spacing:0.08em;
+            text-transform:uppercase;
+            box-shadow:0 2px 6px rgba(0,0,0,0.25);
+          "
+        >CONFIRM</button>
+      </div>
+
+      <!-- RESULT + OEE-BLOK -->
+
+      <div class="hr"></div>
+
+      <!-- RESULT KG -->
+      <div style="margin-top:12px;">
+        <div class="res-label">RESULT:</div>
+        <div class="res-box-green">
+          <% if (hasResult) { %>
+            <%= m.producedTotal.toFixed(0) %><span class="res-unit">kg</span>
+          <% } else { %>
+            ----
+          <% } %>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- DOWNTIME OVERVIEW -->
+      <div style="margin-top:8px;">
+        <div class="res-label">OVERVIEW DOWNTIME:</div>
+        <textarea class="downtime-box" readonly>
+<% if (m.intervals && m.intervals.length) { %>
+<% m.intervals.forEach(function(iv){ %>
+- <%= iv.from %> → <%= iv.to %>  (<%= iv.minutes %> min)
+<% }); %>
+<% } else { %>
+(no registered downtime in this shift window)
+<% } %>
+        </textarea>
+      </div>
+
+      <div style="margin-top:12px; font-size:13px;">
+        TOTAL SHIFT TIME: <strong><%= m.shiftTimeMin || 0 %></strong> min.<br>
+        TOTAL DOWNTIME: &nbsp;<strong><%= m.downtimeMin || 0 %></strong> min.
+      </div>
+
+      <!-- UPTIME -->
+      <div style="margin-top:8px;">
+        <div class="res-label">RESULT UPTIME:</div>
+        <div class="res-box-purple">
+          <%= (m.uptimePercent ?? 0).toFixed(2) %><span class="res-unit">%</span>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- PERFORMANCE -->
+      <div style="margin-top:8px; font-size:13px;">
+        PRODUCED / H: <strong><%= hasResult ? m.producedPerHour.toFixed(0) : 0 %></strong> kg<br>
+        <div style="color:#d1d1d1;">
+          TARGET / H: <%= m.targetPerHour || 0 %> kg
+        </div>
+      </div>
+
+      <div style="margin-top:4px;">
+        <div class="res-label">RESULT PERFORMANCE:</div>
+        <div class="res-box-green">
+          <% if (hasResult) { %>
+            <%= m.performancePercent.toFixed(2) %><span class="res-unit">%</span>
+          <% } else { %>
+            ----
+          <% } %>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- QUALITY -->
+      <div style="margin-top:8px; font-size:13px;">
+        QUALITY CHECKS: <strong><%= m.qcChecks || 0 %></strong><br>
+        <div style="color:#d1d1d1;">
+          TARGET: <%= m.qcTarget || 0 %>
+        </div>
+      </div>
+
+      <div style="margin-top:4px;">
+        <div class="res-label">RESULT QUALITY:</div>
+        <div class="res-box-purple">
+          <% if (hasResult) { %>
+            100.00<span class="res-unit">%</span>
+          <% } else { %>
+            ----
+          <% } %>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- OEE -->
+      <div style="margin-top:4px;">
+        <div class="res-label">RESULT OEE:</div>
+        <div class="res-box-green">
+          <% if (hasResult) { %>
+            <%= oeePagePercent.toFixed(2) %><span class="res-unit">%</span>
+          <% } else { %>
+            ----
+          <% } %>
+        </div>
+      </div>
+
+      <!-- ADD TO OVERVIEW -->
+      <div style="position:relative; height:60px; margin-top:12px;">
+        <button
+          type="submit"
+          name="mode"
+          value="finish"
+          style="
+            position:absolute;
+            right:25px;
+            bottom:-30px;
+            background:#fdc500;
+            color:#000;
+            border:none;
+            border-radius:9999px;
+            padding:8px 22px;
+            font-weight:200;
+            font-size:11px;
+            letter-spacing:0.08em;
+            text-transform:uppercase;
+            box-shadow:0 2px 6px rgba(0,0,0,0.25);
+          "
+        >
+          ADD TO OVERVIEW
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+</div>

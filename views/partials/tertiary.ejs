@@ -1,0 +1,101 @@
+<div class="bar bar-tertiary">
+  <div class="bar-inner" style="display:flex;align-items:center;width:100%;">
+
+    <!-- LEFT spacer: takes 50% of remaining space -->
+    <div style="flex:1 1 0;"></div>
+
+    <!-- CENTER container: fixed width 1100px, buttons left-aligned -->
+    <nav style="flex:0 0 1100px;max-width:1100px;display:flex;gap:8px;justify-content:flex-start;align-items:center;margin:0 auto;">
+
+      <% if (activeDomain === 'RAW MATERIALS') { %>
+        <!-- RAW MATERIALS -->
+        <a href="/raw/inbound-raw"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/raw/inbound-raw')) ? 'is-active' : '' %>">
+          RAW - INBOUND
+        </a>
+       
+        <a href="/raw/overview"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/raw/overview')) ? 'is-active' : '' %>">
+          RAW - OVERVIEW
+        </a>
+      
+
+      <% } else if (activeDomain === 'CHEMICALS') { %>
+        <!-- CHEMICALS -->
+        <a href="/chemicals/inbound"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/inbound')) ? 'is-active' : '' %>">
+          CHEMICALS - INBOUND
+        </a>
+        <a href="/chemicals/switch"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/switch')) ? 'is-active' : '' %>">
+          CHEMICALS - SWITCH
+        </a>
+        <a href="/chemicals/stock"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/stock')) ? 'is-active' : '' %>">
+          CHEMICALS - STOCK
+        </a>
+        <a href="/chemicals/used"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/used')) ? 'is-active' : '' %>">
+          CHEMICALS - USED
+        </a>
+
+      <% } else if (activeDomain === 'BB WAREHOUSING') { %>
+        <!-- BB WAREHOUSING -->
+        <a href="/bb/batch"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/batch')) ? 'is-active' : '' %>">
+          BATCH - CREATION
+        </a>
+        <a href="/bb/batch-overview"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/batch-overview')) ? 'is-active' : '' %>">
+          BATCH - OVERVIEW
+        </a>
+        <a href="/bb/discharge"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/discharge')) ? 'is-active' : '' %>">
+          BB - DISCHARGE
+        </a>
+        <a href="/bb/movements"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/movements')) ? 'is-active' : '' %>">
+          BB - MOVEMENTS
+        </a>
+        <a href="/bb/allocation"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/allocation')) ? 'is-active' : '' %>">
+          BB - ALLOCATION
+        </a>
+        <a href="/bb/loading"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/loading')) ? 'is-active' : '' %>">
+          BB - LOADING
+        </a>
+        <a href="/bb/stock"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/stock')) ? 'is-active' : '' %>">
+          BB - STOCK
+        </a>
+
+      <% } else if (activeDomain === 'OUTBOUND BULK') { %>
+        <!-- OUTBOUND BULK -->
+        <a href="/outbound-bulk/discharge"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/outbound-bulk/discharge')) ? 'is-active' : '' %>">
+          BULK - DISCHARGE
+        </a>
+        <a href="/outbound-bulk/overview"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/outbound-bulk/overview')) ? 'is-active' : '' %>">
+          BULK - DISCHARGED OVERVIEW
+        </a>
+
+      <% } else { %>
+        <!-- DEFAULT: legacy dynamic tertiarySubs for andere domeinen -->
+        <% (tertiarySubs || []).forEach(function(s){ %>
+          <a href="<%= s.path %>"
+             class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith(s.path)) ? 'is-active' : '' %>">
+            <%= s.key %>
+          </a>
+        <% }); %>
+      <% } %>
+
+    </nav>
+
+    <!-- RIGHT spacer: takes 50% of remaining space -->
+    <div style="flex:1 1 0;"></div>
+
+  </div>
+</div>
+

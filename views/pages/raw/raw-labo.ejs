@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>RAW • LAB ANALYSIS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+    body{
+      margin:0;
+      padding:0;
+      font-family:'Roboto Mono', monospace;
+      font-size:13px;
+      background-color:#f3f3f3;
+    }
+
+    /* Witte kaart die nu direct onder de groene nav strook start */
+    .page-wrapper{
+      max-width:1100px;
+      margin:0 auto 40px auto;       /* top=0 zodat kaart aansluit op groene balk */
+      background:#ffffff;
+      border-radius:14px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.15);
+      padding:24px 28px 28px 28px;
+      box-sizing:border-box;
+    }
+
+    h1{
+      margin:0 0 6px 0;
+      font-size:20px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .subtitle{
+      font-size:11px;
+      color:#444;
+      margin-bottom:6px;
+    }
+
+    .meta{
+      font-size:11px;
+      margin-bottom:18px;
+    }
+
+    .meta div{
+      margin-bottom:2px;
+    }
+
+    form{
+      margin-top:10px;
+    }
+
+    /* ====== ADDED / SMELL BLOK ====== */
+
+    .lab-seg-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-bottom:16px;
+    }
+
+    .lab-seg-table td{
+      padding:2px 0;
+      vertical-align:middle;
+    }
+
+    .lab-seg-table .label-cell{
+      width:120px;
+      font-size:12px;
+      text-transform:uppercase;
+      padding-right:10px;
+    }
+
+    .seg-row{
+      display:flex;
+      gap:6px;
+    }
+
+    .seg-btn{
+      flex:1;
+      height:26px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      border:1px solid #b0b0b0;
+      box-sizing:border-box;
+      background:#ffffff;
+    }
+
+    .seg-btn input{ display:none; }
+
+    /* Added-juices neutraal */
+    .sap-none  { background:#eeeeee; }
+    .sap-fresh { background:#eeeeee; }
+    .sap-b1070 { background:#eeeeee; }
+    .sap-mix   { background:#eeeeee; }
+
+    /* Smell kleuren */
+    .smell-a { background:#005726;color:#fff; }
+    .smell-b { background:#71d16a;color:#000; }
+    .smell-c { background:#ffc61e;color:#000; }
+    .smell-d { background:#d10000;color:#fff; }
+
+    .seg-btn.selected{
+      outline:2px solid #000;
+    }
+
+    /* ====== OVERIGE LAB VELDEN ====== */
+
+    .lab-field{
+      max-width:420px;
+      margin-bottom:10px;
+    }
+
+    .lab-field label{
+      display:block;
+      font-size:12px;
+      text-transform:uppercase;
+      margin-bottom:2px;
+    }
+
+    .lab-field input{
+      width:100%;
+      height:26px;
+      padding:2px 6px;
+      border:1px solid #d0d0d0;
+      border-radius:3px;
+      font-family:'Roboto Mono', monospace;
+      font-size:12px;
+      box-sizing:border-box;
+    }
+
+    .warning{
+      color:#c62828;
+      font-size:10px;
+      min-height:11px;
+      margin-top:1px;
+    }
+
+    .footer-buttons{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:18px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+  <h1>RAW • LAB ANALYSIS</h1>
+  <div class="subtitle">Laboratory data for this inbound:</div>
+
+  <div class="meta">
+    <div>
+      <strong>Article</strong>: <%= receipt.article %>
+      | <strong>Origin</strong>: <%= receipt.origin %>
+      | <strong>Batch</strong>: <%= receipt.batch %>
+      | <strong>Date</strong>: <%= receipt.received_date %>
+      | <strong>Time</strong>: <%= receipt.received_time %>
+      | <strong>Weight</strong>: <%= receipt.quantity %>
+    </div>
+  </div>
+
+  <form id="laboForm" action="/raw/labo/<%= receipt.id %>" method="post">
+    <% const labo = receipt.labo || {}; %>
+
+    <!-- ADDED + SMELL -->
+    <table class="lab-seg-table">
+      <tr>
+        <td class="label-cell">ADDED JUICE</td>
+        <td>
+          <div class="seg-row" data-seg-name="added_sap">
+            <label class="seg-btn sap-none <%= labo.added_sap==='NONE'?'selected':'' %>">
+              <input type="radio" name="added_sap" value="NONE" <%= labo.added_sap==='NONE'?'checked':'' %> >
+              NONE
+            </label>
+            <label class="seg-btn sap-fresh <%= labo.added_sap==='FRESH'?'selected':'' %>">
+              <input type="radio" name="added_sap" value="FRESH" <%= labo.added_sap==='FRESH'?'checked':'' %> >
+              FRESH
+            </label>
+            <label class="seg-btn sap-b1070 <%= labo.added_sap==='B1070'?'selected':'' %>">
+              <input type="radio" name="added_sap" value="B1070" <%= labo.added_sap==='B1070'?'checked':'' %> >
+              B1070
+            </label>
+            <label class="seg-btn sap-mix <%= labo.added_sap==='B1070+FRESH'?'selected':'' %>">
+              <input type="radio" name="added_sap" value="B1070+FRESH" <%= labo.added_sap==='B1070+FRESH'?'checked':'' %> >
+              B1070+FRESH
+            </label>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="label-cell">SMELL</td>
+        <td>
+          <div class="seg-row" data-seg-name="smell">
+            <label class="seg-btn smell-a <%= labo.smell==='A'?'selected':'' %>">
+              <input type="radio" name="smell" value="A" <%= labo.smell==='A'?'checked':'' %> >
+              A
+            </label>
+            <label class="seg-btn smell-b <%= labo.smell==='B'?'selected':'' %>">
+              <input type="radio" name="smell" value="B" <%= labo.smell==='B'?'checked':'' %> >
+              B
+            </label>
+            <label class="seg-btn smell-c <%= labo.smell==='C'?'selected':'' %>">
+              <input type="radio" name="smell" value="C" <%= labo.smell==='C'?'checked':'' %> >
+              C
+            </label>
+            <label class="seg-btn smell-d <%= labo.smell==='D'?'selected':'' %>">
+              <input type="radio" name="smell" value="D" <%= labo.smell==='D'?'checked':'' %> >
+              D
+            </label>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Overige labo velden -->
+    <div class="lab-field">
+      <label>MILLING T</label>
+      <input class="comma-decimal" type="text" name="meal_temperature" value="<%= labo.meal_temperature || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="lab-field">
+      <label>MILLING PERIOD (min.)</label>
+      <input class="comma-decimal" type="text" name="duration" value="<%= labo.duration || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="lab-field">
+      <label>MILLING PRESSURE (bar)</label>
+      <input class="comma-decimal" type="text" name="pressure_bar" value="<%= labo.pressure_bar || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="lab-field">
+      <label>ADDED AF (L)</label>
+      <input class="comma-decimal" type="text" name="added_af" value="<%= labo.added_af || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="lab-field">
+      <label>pH</label>
+      <input class="comma-decimal" type="text" name="ph" value="<%= labo.ph || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="lab-field">
+      <label>DS%</label>
+      <input class="comma-decimal" type="text" name="ds" value="<%= labo.ds || '' %>">
+      <div class="warning"></div>
+    </div>
+
+    <div class="footer-buttons">
+      <button type="submit"
+              style="
+                background:#fdc500;
+                color:#000;
+                border:none;
+                border-radius:9999px;
+                padding:8px 18px;
+                font-weight:500;
+                text-transform:uppercase;
+                box-shadow:0 1px 3px rgba(0,0,0,.15);
+                cursor:pointer;
+                font-size:11px;
+                white-space:nowrap;
+                transition:background .12s ease,color .12s ease,opacity .12s ease;
+              "
+              onmouseover="this.style.background='#000'; this.style.color='#fff';"
+              onmouseout="this.style.background='#fdc500'; this.style.color='#000';">
+        SAVE AS COMPLETED
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Toggle voor segment-knoppen
+  document.querySelectorAll('.seg-row').forEach(row => {
+    row.addEventListener('click', e => {
+      const label = e.target.closest('.seg-btn');
+      if (!label) return;
+      row.querySelectorAll('.seg-btn').forEach(x => x.classList.remove('selected'));
+      label.classList.add('selected');
+      const radio = label.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+
+  // Validatie: enkel decimalen met komma
+  const regex = /^[0-9]+(,[0-9]+)?$/;
+  const form = document.getElementById('laboForm');
+  const inputs = document.querySelectorAll('.comma-decimal');
+
+  inputs.forEach(input => {
+    input.addEventListener('input', function () {
+      const warn = this.closest('.lab-field').querySelector('.warning');
+      warn.textContent = '';
+      if (!this.value.trim()) return;
+      if (!regex.test(this.value.trim())) {
+        warn.textContent = 'Enkel decimale waarden met komma toegestaan (bijv. 12,5)';
+      }
+    });
+  });
+
+  form.addEventListener('submit', e => {
+    let ok = true;
+    inputs.forEach(input => {
+      const warn = input.closest('.lab-field').querySelector('.warning');
+      warn.textContent = '';
+      if (input.value.trim() && !regex.test(input.value.trim())) {
+        warn.textContent = 'Enkel decimale waarden met komma toegestaan (bijv. 12,5)';
+        ok = false;
+      }
+    });
+    if (!ok) {
+      e.preventDefault();
+      alert('Corrigeer de foutieve labo-velden (enkel decimalen met komma).');
+    }
+  });
+</script>
+
+</body>
+</html>
+

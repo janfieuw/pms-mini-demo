@@ -1,0 +1,201 @@
+<div class="page-shadow-wrapper">
+  <div class="wms-container">
+
+    <!-- Titel -->
+    <div class="wms-page-header">
+      <h1 style="margin-bottom:2px;">BIG BAGS • FREE & ALLOCATED STOCK</h1>
+    </div>
+
+    <%
+      const hasSummary = Array.isArray(stockSummary) && stockSummary.length > 0;
+
+      let totalFreeCount  = 0;
+      let totalAllocCount = 0;
+      let totalFreeKg     = 0;
+      let totalAllocKg    = 0;
+
+      if (hasSummary) {
+        stockSummary.forEach(row => {
+          const f1000 = Number(row.free1000  ?? 0);
+          const f1100 = Number(row.free1100  ?? 0);
+          const f1200 = Number(row.free1200  ?? 0);
+
+          const a1000 = Number(row.alloc1000 ?? 0);
+          const a1100 = Number(row.alloc1100 ?? 0);
+          const a1200 = Number(row.alloc1200 ?? 0);
+
+          totalFreeCount  += f1000 + f1100 + f1200;
+          totalAllocCount += a1000 + a1100 + a1200;
+
+          totalFreeKg  += f1000 * 1000 + f1100 * 1100 + f1200 * 1200;
+          totalAllocKg += a1000 * 1000 + a1100 * 1100 + a1200 * 1200;
+        });
+      }
+
+      const totalCount = totalFreeCount + totalAllocCount;
+      const totalKg    = totalFreeKg + totalAllocKg;
+    %>
+
+    <div class="wms-card">
+
+      <!-- ✔ DRIE kaders van 200px breed -->
+      <% if (hasSummary) { %>
+      <div class="bb-summary-wrap">
+
+        <!-- FREE -->
+        <div class="bb-summary-box">
+          <div class="bb-label"><b>Free</b></div>
+          <div class="bb-value"><%= totalFreeCount %> BB</div>
+          <div class="bb-kg"><%= totalFreeKg.toFixed(0) %> kg</div>
+        </div>
+
+        <!-- ALLOCATED -->
+        <div class="bb-summary-box">
+          <div class="bb-label"><b>Allocated</b></div>
+          <div class="bb-value"><%= totalAllocCount %> BB</div>
+          <div class="bb-kg"><%= totalAllocKg.toFixed(0) %> kg</div>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="bb-summary-box">
+          <div class="bb-label"><b>Total</b></div>
+          <div class="bb-value"><%= totalCount %> BB</div>
+          <div class="bb-kg"><%= totalKg.toFixed(0) %> kg</div>
+        </div>
+
+      </div>
+      <% } %>
+
+      <!-- ✔ Tabel -->
+      <div style="overflow:auto;">
+        <table class="stock-table-compact">
+          <thead>
+            <tr>
+              <th rowspan="2">Batch</th>
+              <th rowspan="2">Start date</th>
+              <th colspan="3">Free stock (BB count)</th>
+              <th colspan="3">Allocated stock (BB count)</th>
+            </tr>
+            <tr>
+              <th>1000 kg</th>
+              <th>1100 kg</th>
+              <th>1200 kg</th>
+              <th>1000 kg</th>
+              <th>1100 kg</th>
+              <th>1200 kg</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% if (hasSummary) { %>
+              <% stockSummary.forEach(row => { %>
+                <tr>
+                  <td><%= row.batchCode || '' %></td>
+                  <td><%= row.startDate || '' %></td>
+
+                  <!-- FREE stock -->
+                  <td class="num"><%= row.free1000  ?? 0 %></td>
+                  <td class="num"><%= row.free1100  ?? 0 %></td>
+                  <td class="num"><%= row.free1200  ?? 0 %></td>
+
+                  <!-- ALLOCATED stock -->
+                  <td class="num"><%= row.alloc1000 ?? 0 %></td>
+                  <td class="num"><%= row.alloc1100 ?? 0 %></td>
+                  <td class="num"><%= row.alloc1200 ?? 0 %></td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="8" class="empty">No batch stock data available yet.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* --- Pagina omkadering --- */
+.page-shadow-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 25px 40px;
+  background: #ffffff;
+  box-shadow: 0 0 25px rgba(0,0,0,0.08);
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
+  min-height: calc(100vh - 140px);
+}
+
+.wms-card { width: 100%; }
+
+/* --- ✔ Samenvattende kaders naast elkaar --- */
+.bb-summary-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 22px 0 30px 0;
+}
+
+.bb-summary-box {
+  width: 200px;  /* ✔ UPDATE: 200px breed */
+  background: #ededed;
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+
+.bb-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #777;
+  margin-bottom: 1px;
+}
+
+.bb-value {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.bb-kg {
+  font-size: 12px;
+  color: #777;
+}
+
+/* --- ✔ Compacte tabel (zoals loading/overview) --- */
+.stock-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.stock-table-compact thead tr {
+  background: #f7f7f7;
+}
+
+.stock-table-compact th,
+.stock-table-compact td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e6e6e6;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.stock-table-compact th[colspan] {
+  text-align: center;
+}
+
+.stock-table-compact td.num {
+  text-align: left;
+}
+
+.stock-table-compact .empty {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #777;
+}
+</style>

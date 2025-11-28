@@ -1,0 +1,23 @@
+<style>
+  .tag {
+    display: inline-block;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    height: 24px;
+    line-height: 22px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 0 6px;
+    margin: 2px 3px;
+    vertical-align: middle;
+  }
+</style>
+<section class="card">
+  <h1>LOGBOOK • TO-DO</h1>
+  <ul class="todo">
+    <% if (!items.length) { %><p class="muted">No tasks.</p><% } %>
+    <% items.forEach(t => { %>
+      <li><span class="tag wms">WMS:<%= t.label %></span> <a class="arrow-btn" href="<%= t.link %>" target="_blank" rel="noopener" data-id="<%= t.id %>" data-delete="/logbook/todo/<%= t.id %>/delete">Open task</a></li>
+    <% }) %>
+  </ul>
+</section>

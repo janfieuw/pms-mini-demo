@@ -1,0 +1,21 @@
+<div class="bar bar-secondary">
+  <div class="bar-inner" style="display:flex;align-items:center;width:100%;">
+
+    <!-- LEFT spacer: takes 50% of remaining space -->
+    <div style="flex:1 1 0;"></div>
+
+    <!-- CENTER container: fixed width 1100px, buttons left-aligned -->
+    <nav style="flex:0 0 1100px;max-width:1100px;display:flex;gap:8px;justify-content:flex-start;align-items:center;margin:0 auto;">
+      <% (domains || []).forEach(function(d){ %>
+        <a href="<%= (d.subs && d.subs[0] && d.subs[0].path) ? d.subs[0].path : '#' %>"
+           class="btn-nav <%= activeDomain === d.key ? 'is-active' : '' %>">
+          <%= d.key %>
+        </a>
+      <% }); %>
+    </nav>
+
+    <!-- RIGHT spacer: takes 50% of remaining space -->
+    <div style="flex:1 1 0;"></div>
+
+  </div>
+</div>

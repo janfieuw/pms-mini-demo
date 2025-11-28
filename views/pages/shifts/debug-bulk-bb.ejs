@@ -1,0 +1,134 @@
+<div style="width:100%; display:flex; justify-content:center; padding:0 12px;">
+
+  <section style="
+    max-width:1200px;
+    width:100%;
+    background:#ffffff;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
+    padding:24px 24px 48px;
+    border:1px solid rgba(0,0,0,0.08);
+    margin:0 0 24px 0;
+    font-family:'Roboto Mono', monospace;
+    font-size:12px;
+  ">
+
+    <h2 style="font-size:18px; font-weight:700; margin-bottom:4px;">
+      DEBUG • BULK &amp; BB PER SHIFT
+    </h2>
+
+    <% if (!shift) { %>
+      <p style="color:#b91c1c; margin-top:16px;">
+        Geen shift gevonden (er is geen open shift en er zijn nog geen afgesloten shifts).
+      </p>
+    <% } else { %>
+
+      <p style="margin:8px 0 16px 0; color:#4b5563;">
+        Huidige / laatste shift van operator <strong><%= shift.operator %></strong><br>
+        <strong>Start:</strong> <%= startLabel || '–' %><br>
+        <strong>End:</strong> &nbsp;<%= endLabel   || '–' %><br>
+        <strong>Start ISO:</strong> <%= startStr || '–' %><br>
+        <strong>End ISO:</strong> &nbsp;&nbsp;<%= endStr   || '–' %>
+      </p>
+
+      <hr style="margin:12px 0;">
+
+      <h3 style="font-size:14px; font-weight:700; margin-bottom:4px;">SOMMEN (helpers)</h3>
+      <table style="border-collapse:collapse; margin-bottom:16px;">
+        <tr>
+          <th style="border:1px solid #d4d4d4; padding:4px 8px; background:#f9fafb;">Type</th>
+          <th style="border:1px solid #d4d4d4; padding:4px 8px; background:#f9fafb;">710 (kg)</th>
+          <th style="border:1px solid #d4d4d4; padding:4px 8px; background:#f9fafb;">720 (kg)</th>
+        </tr>
+        <tr>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;">OUTBOUND BULK</td>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;"><%= sums.bulk710 %></td>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;"><%= sums.bulk720 %></td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;">DISCHARGED BB</td>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;"><%= sums.bb710 %></td>
+          <td style="border:1px solid #d4d4d4; padding:4px 8px;"><%= sums.bb720 %></td>
+        </tr>
+      </table>
+
+      <p style="font-size:11px; color:#6b7280; margin-bottom:18px;">
+        De waarden hierboven zijn exact dezelfde sommen die gebruikt worden in
+        <strong>STOP STEP 2</strong> om de groene vakken te vullen.
+      </p>
+
+      <hr style="margin:12px 0;">
+
+      <!-- BULK IN SHIFT -->
+      <h3 style="font-size:14px; font-weight:700; margin-bottom:4px;">
+        BULK binnen shift (filter op created_at)
+      </h3>
+
+      <% if (!bulkInShift || !bulkInShift.length) { %>
+        <p style="color:#6b7280;">Geen BULK-leveringen gevonden binnen deze shift.</p>
+      <% } else { %>
+        <table style="border-collapse:collapse; width:100%; margin-bottom:20px;">
+          <thead>
+            <tr>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">created_at</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">date_label</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">time_label</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">silo</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">kg</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">customer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bulkInShift.forEach(function(r){ %>
+              <tr>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= r.created_at %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= r.date_label %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= r.time_label %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= r.silo %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px; text-align:right;"><%= r.kg %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px; text-align:left;"><%= r.customer %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+
+      <!-- BB IN SHIFT -->
+      <h3 style="font-size:14px; font-weight:700; margin-bottom:4px;">
+        BB discharges binnen shift
+      </h3>
+
+      <% if (!bbInShift || !bbInShift.length) { %>
+        <p style="color:#6b7280;">Geen BB-discharges gevonden binnen deze shift.</p>
+      <% } else { %>
+        <table style="border-collapse:collapse; width:100%; margin-bottom:8px;">
+          <thead>
+            <tr>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">createdAt</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">originSilo</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">quantityKg</th>
+              <th style="border:1px solid #d4d4d4; padding:4px 4px; background:#f9fafb;">batch</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bbInShift.forEach(function(d){ %>
+              <tr>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= d.createdAt %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= d.originSilo %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px; text-align:right;"><%= d.quantityKg %></td>
+                <td style="border:1px solid #e5e7eb; padding:3px 4px;"><%= d.batch || '' %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+
+      <p style="margin-top:10px; font-size:11px; color:#6b7280;">
+        Extra: alle ruwe arrays zijn beschikbaar in <code>bulkAll</code> en <code>bbAll</code> als je hier
+        nog meer debug-info wil tonen.
+      </p>
+
+    <% } %>
+
+  </section>
+</div>

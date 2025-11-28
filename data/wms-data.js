@@ -1,0 +1,57 @@
+// data/wms-data.js
+// Centrale vaste waarden voor het WMS-luik (RAW, CHEMICALS, CUSTOMERS, SALES)
+
+module.exports = {
+  RAW_MATERIALS: [
+    "POTATOES",
+    "SWEET POTATOES",
+    "SHREDS",
+    "SWEET SHREDS",
+    "MIXED SHREDS",
+    "STEAM-PEELED SKINS"
+  ],
+
+  RAW_ORIGINS: [
+    "AGRISTO WB (DUYNIE)",
+    "AGRISTO HB (SDV)",
+    "AGRISTO NZ (WESTFEED)",
+    "AVIKO (DUYNIE)",
+    "LUTOSA LEUZE (DUYNIE)",
+    "LUTOSA WAREGEM (DUYNIE)"
+  ],
+
+  CHEMICALS: [
+    "STRUKTOL - SB 2052",
+    "STRUKTOL - SB 413",
+    "NAOH - 50%",
+    "NAOH - 32%",
+    "TENSACID - SFZ",
+    "TENSALC - PRO",
+    "BIG BAG PACKAGING RE:SOURCE",
+    "BIG BAG PACKAGING BLANK"
+  ],
+
+  CUSTOMERS: [
+    "UNITED PETFOOD (COEVORDEN)",
+    "UNITED PETFOOD (WAALWIJK)",
+    "NUTRIFEED",
+    "PLANTURE LOOP",
+    "UNITED PETFOOD (DENEMARKEN)",
+    "PARTNER IN PET FOOD NORDICS AB",
+    "UNITED PETFOOD (WIMILLE)",
+    "UNITED PETFOOD (GENT)",
+    "GA PETFOOD",
+    "AFFINITY (IT)",
+    "AFFINITY (FR)",
+    "AFFINITY (SP)",
+    "SAUVALE PRODUCTION (FR)",
+    "PPF CZ",
+    "FIDES (OOSTENDE)"
+  ],
+
+  SALES_ITEMS_BULK: [
+    "BB – 1000KG",
+    "BB – 1100KG",
+    "BB – 1200KG"
+  ]
+};

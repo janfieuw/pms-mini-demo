@@ -1,0 +1,151 @@
+<style>
+  .tag {
+    display: inline-block;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    height: 24px;
+    line-height: 22px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 0 6px;
+    margin: 2px 3px;
+    vertical-align: middle;
+  }
+
+  .icon-btn{
+    width:32px;
+    height:32px;
+    border:1px solid #ddd;
+    background:#ffffff;
+    border-radius:6px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .icon-btn:hover{
+    background:#fdc500;
+  }
+</style>
+
+<section class="card">
+
+<%
+function fmtDateTime(m){
+  const pad=n=>n<10?'0'+n:n;
+  const d = m.createdAt ? new Date(m.createdAt) : null;
+  const valid = d && !isNaN(d);
+  const dateStr = valid ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}` : (m.date || '');
+  const timeStr = (m.time && String(m.time).trim()) ? m.time : (valid ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : '');
+  return [dateStr, timeStr].filter(Boolean).join(' - ');
+}
+%>
+
+     <h1 style="margin-bottom:2px;">LOGBOOK • MESSAGES</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">All posted messages. Select the notebook icon to add the message to your notebook, or deselect it to remove it.</span><br><br>
+
+  <div class="feed">
+    <% if (!items.length) { %>
+      <p class="muted">No messages yet.</p>
+    <% } %>
+
+    <% items.forEach(m => { 
+         const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
+    %>
+
+      <article class="post">
+
+        <!-- HEADER: alles op één lijn -->
+        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+
+          <!-- LINKS: user / datum / labels / message -->
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <%= m.user %> - 
+            <span><%= fmtDateTime(m) %> : </span>
+
+            <% if (typeof m.deltaMin === 'number') { 
+                 const s = m.deltaMin.toFixed(1).replace('.', ',') + "'"; %> 
+              <span title="Diff since previous STOP"><font color="FF0000">Δ <%= s %></font>-</span>
+            <% } %>
+
+            <% (m.infoLabels||[]).forEach(l => { %><span class="tag"><%= l %></span><% }) %>
+            <% (m.software||[]).forEach(l => { %><span class="tag software"><%= l %></span><% }) %>
+
+            <% if (m.calc==='START') { %><span class="tag start">START</span><% } %>
+            <% if (m.calc==='STOP')  { %><span class="tag stop">STOP</span><% } %>
+            <% if (m.calc==='QC')    { %><span class="tag qc">QC</span><% } %>
+
+            <% if (m.push==='MUST-READ') { %><span class="tag must">MUST-READ</span><% } %>
+            <% if (m.push==='SAFETY')    { %><span class="tag safety">SAFETY</span><% } %>
+
+            <% if (m.wms) { %>
+              <span class="tag wms">WMS:<%= m.wms %></span>
+            <% } %>
+
+            <% if (m.chemswitch) { %>
+              <span class="tag wms">CHEM-SWITCH</span>
+            <% } %>
+
+            <% if (m.qc) { %>
+              <span class="tag qc">QUALITY CHECK</span>
+            <% } %>
+
+            <% if (m.message) { %>
+              <span><%= m.message %></span>
+            <% } %>
+          </div>
+
+          <!-- RECHTS: delete + notebook -->
+          <div style="display:flex;gap:8px;">
+
+            <!-- DELETE van deze ene message -->
+            <form method="post" action="/logbook/message/<%= m.id %>/delete"
+                  onsubmit="return confirm('Message wissen?');">
+              <button class="icon-btn" title="Delete message">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </form>
+
+            <!-- Notebook toggle -->
+            <form method="post" action="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
+              <input type="hidden" name="id" value="<%= m.id %>"/>
+              <button class="icon-btn <%= inNB ? 'active' : '' %>"
+                      title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>">
+                <i data-lucide="notebook-pen"></i>
+              </button>
+            </form>
+
+          </div>
+
+        </header>
+
+        <!-- ATTACHMENTS (altijd op nieuwe lijn) -->
+        <% if (m.attachments && m.attachments.length) { %>
+          <div class="attachments" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
+            <% m.attachments.forEach(a => { %>
+
+              <% if (a.mime && a.mime.startsWith('image/')) { %>
+                <a href="<%= a.href %>" target="_blank" rel="noopener"
+                   style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                  <img src="<%= a.href %>" alt="<%= a.name %>"
+                       style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
+                </a>
+              <% } else { %>
+                <a href="<%= a.href %>" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;">
+                  📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
+                </a>
+              <% } %>
+
+            <% }) %>
+          </div>
+        <% } %>
+
+      </article>
+
+    <% }) %>
+
+  </div>
+</section>

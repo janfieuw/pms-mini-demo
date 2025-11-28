@@ -1,0 +1,4 @@
+.oee-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.oee-row label{width:130px;font-weight:500}
+.oee-row input[type="number"], .oee-row input[type="text"]{padding:6px 8px;border-radius:4px;border:1px solid #ccc;width:160px}
+.oee-start{border:2px solid #003366;background:#fff9cc;font-weight:700}

@@ -1,0 +1,182 @@
+<style>
+  .tag {
+    display: inline-block;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    height: 24px;
+    line-height: 22px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 0 6px;
+    margin: 2px 3px;
+    vertical-align: middle;
+  }
+
+  .icon-btn{
+    width:32px;
+    height:32px;
+    border:1px solid #ddd;
+    background:#ffffff;
+    border-radius:10px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .icon-btn:hover{
+    background:#fdc500;
+  }
+</style>
+
+<section class="card">
+
+    <h1 style="margin-bottom:2px;">LOGBOOK • MUST READ</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Mark message when read. Select the notebook icon to add the message to your notebook, or deselect it to remove it.
+</span><br><br>
+  
+  </span>
+  <form method="post" action="/logbook/acknowledge">
+
+    <% if (!items.length) { %>
+      <p class="muted">Nothing to read.</p>
+    <% } %>
+
+    <% items.forEach(m => { 
+         const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
+    %>
+
+      <article class="post">
+
+        <!-- HEADER: alles op één lijn -->
+        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+
+          <!-- Links -->
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <input type="checkbox"
+                   name="ids"
+                   value="<%= m.id %>"
+                   style="transform:scale(1.3); margin-right:6px;">
+
+            <%= m.user %> - 
+
+            <%
+              const d = m.createdAt ? new Date(m.createdAt) : null;
+              function pad(n){ return n < 10 ? '0' + n : n; }
+              const valid   = d && !isNaN(d);
+              const dateStr = valid ? (d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())) : '';
+              const timeStr = m.time || (valid ? (pad(d.getHours()) + ':' + pad(d.getMinutes())) : '');
+            %>
+
+            <span><%= dateStr %> - <%= timeStr %> - </span>
+
+            <!-- INFO LABELS -->
+            <% (m.infoLabels || []).forEach(function(l){ %>
+              <span class="tag"><%= l %></span>
+            <% }); %>
+
+            <!-- SOFTWARE LABELS -->
+            <% (m.software || []).forEach(function(l){ %>
+              <span class="tag software"><%= l %></span>
+            <% }); %>
+
+            <!-- CALC LABELS -->
+            <% if (m.calc === 'START') { %>
+              <span class="tag start">START</span>
+            <% } %>
+
+            <% if (m.calc === 'STOP') { %>
+              <span class="tag stop">STOP</span>
+            <% } %>
+
+            <% if (m.calc === 'QC') { %>
+              <span class="tag qc">QC</span>
+            <% } %>
+
+            <!-- MUST-READ / SAFETY -->
+            <% if (m.push === 'MUST-READ') { %>
+              <span class="tag must">MUST-READ</span>
+            <% } %>
+
+            <% if (m.push === 'SAFETY') { %>
+              <span class="tag safety">SAFETY</span>
+            <% } %>
+
+            <!-- WMS LABEL -->
+            <% if (m.wms) { %>
+              <span class="tag wms">WMS:<%= m.wms %></span>
+            <% } %>
+
+            <!-- QUALITY CHECK LABEL (via m.qc) -->
+            <% if (m.qc) { %>
+              <span class="tag qc">QUALITY CHECK</span>
+            <% } %>
+
+            <!-- MESSAGE TEKST -->
+            <% if (m.message) { %>
+              <span><%= m.message %></span>
+            <% } %>
+          </div>
+
+          <!-- Rechts: Notebook only -->
+          <div style="display:flex;gap:10px;">
+            <button
+              class="icon-btn <%= inNB ? 'active' : '' %>"
+              title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>"
+              type="submit"
+              name="id"
+              value="<%= m.id %>"
+              formmethod="post"
+              formaction="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
+              <i data-lucide="notebook-pen"></i>
+            </button>
+          </div>
+
+        </header>
+
+        <!-- ATTACHMENTS (op nieuwe lijn) -->
+        <% if (m.attachments && m.attachments.length) { %>
+          <div class="attachments"
+               style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
+            <% m.attachments.forEach(function(a){ %>
+
+              <% if (a.mime && a.mime.startsWith('image/')) { %>
+                <a href="<%= a.href %>"
+                   target="_blank"
+                   rel="noopener"
+                   style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                  <img src="<%= a.href %>"
+                       alt="<%= a.name %>"
+                       style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
+                </a>
+              <% } else { %>
+                <a href="<%= a.href %>"
+                   target="_blank"
+                   rel="noopener"
+                   style="display:inline-flex;align-items:center;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;padding:4px 6px;">
+                  📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
+                </a>
+              <% } %>
+
+            <% }); %>
+          </div>
+        <% } %>
+
+      </article>
+
+    <% }); %>
+
+    <% if (items.length) { %>
+      <div style="text-align:right;margin-top:15px;">
+        <button type="submit"
+                class="btn btn-dark submit"
+                style="font-family:'Roboto Mono', monospace;">
+          ACKNOWLEDGE
+        </button>
+      </div>
+    <% } %>
+
+  </form>
+
+</section>

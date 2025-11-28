@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TEAM • REPLACEMENTS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+    :root{ --card-max:1100px; --shadow:0 2px 8px rgba(0,0,0,.08); --yellow:#fdc500; }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:'Roboto Mono', monospace;  }
+    .card{ position:relative; max-width:var(--card-max); margin:0 auto; background:#fff; border-radius:0 0 12px 12px; box-shadow:var(--shadow); padding:22px 24px 80px 24px; }
+   
+    .action-toolbar{position:absolute;top:-18px;right:18px;display:flex;gap:8px}
+    .action-toolbar .btn{background:#000;color:#fff;border:none;border-radius:9999px;padding:6px 12px;font-size:12px;letter-spacing:.6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .action-toolbar .btn.secondary{background:var(--yellow);color:#000}
+    .table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+    .table th,.table td{border:1px solid #e6e6e6;padding:8px;text-align:left}
+    .table th{background:#fafafa}
+    .btn{background:#000;color:#fff;border:none;border-radius:9999px;padding:6px 12px;font-size:12px;letter-spacing:.6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    @media print{ .action-toolbar{display:none !important} body{background:#fff !important} .card{box-shadow:none !important;border-radius:0 !important} }
+  </style>
+</head>
+<body>
+  <div class="card" data-title="TEAM_REPLACEMENTS">
+    <div class="action-toolbar">
+     
+      </form>
+    </div>
+
+    <h1 style="margin-bottom:2px;">TEAM • REPLACEMENTS</h1>
+    <table class="table exportable">
+      <thead><tr><th>Date</th><th>Shift</th><th>Original Operator</th><th>Replaced by</th><th>Action</th></tr></thead>
+      <tbody>
+        <% (rows||[]).forEach(r => { %>
+          <tr>
+       <td>
+  <% 
+    const d = new Date(r.date);
+    const dayName = d.toLocaleDateString('en-GB', { weekday: 'short' }); // bv. Wed
+    const datePart = d.toLocaleDateString('nl-BE'); // bv. 12/11/2025
+  %>
+  <%= `${dayName}. ${datePart}` %>
+</td>
+
+            <td><%= r.shift %></td>
+            <td><%= r.originalUser || '-' %></td>
+            <td><%= r.coverUser || '-' %></td>
+            <td>
+              <form method="POST" action="/team/replacements/undo" style="display:inline">
+                <input type="hidden" name="date" value="<%= r.date %>"/>
+                <input type="hidden" name="shift" value="<%= r.shift %>"/>
+                <button type="submit" class="btn">– undo</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <script id="rawData" type="application/json"><%- JSON.stringify(raw || {}, null, 2) %></script>
+  </div>
+</body>
+</html>

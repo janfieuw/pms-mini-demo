@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATCH DETAIL – <%= batch.batchCode %></title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+
+    body {
+      margin: 0;
+      background:('/grafisch/background.jpg') no-repeat center/cover fixed;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .card {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      padding: 22px 24px 32px 24px;
+    }
+
+    h1 {
+      margin: 0 0 6px 0;
+      
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin-top: 22px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    table {
+      width: 70%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 14px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 6px 8px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tbody td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #eee;
+      white-space: nowrap;
+    }
+
+    .badge-batch{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      background-color:#e8f5e9;
+      border:1px solid #43a047;
+      color:#1b5e20;
+      font-weight:700;
+      font-size:10px;
+    }
+
+    .back-link{
+      font-size: 11px;
+      margin-bottom: 10px;
+      display: inline-block;
+      text-decoration: none;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+
+    <a href="/bb/batch-overview" class="back-link">← Back to overview</a>
+
+     <h1 style="margin-bottom:2px;">BATCH DETAIL</h1>
+    <span class="badge-batch"><%= batch.batchCode %></span><br><br>
+
+    <div style="font-size:12px; margin-bottom:14px; color:#444;">
+      Created: <%= new Date(batch.createdAt).toLocaleString() %>
+      <br>
+      Period: <%= batch.periodLabel %>
+      <br>
+      Expiry: <%= batch.expiryCode %>
+    </div>
+
+    <!-- PRODUCED -->
+    <h2>Production data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Shifts</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if(batch.producedLots.length > 0){ %>
+          <% batch.producedLots.forEach(function(p){ %>
+            <tr>
+              <td><%= p.lot %></td>
+              <td style="text-align:right;"><%= p.kg %>kg</td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="2">No data.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- RAW -->
+    <h2>Received raw materials</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>CMR</th>
+          <th>Origin</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if(batch.rawLots.length > 0){ %>
+          <% batch.rawLots.forEach(function(r){ %>
+            <tr>
+            <td style="width:100px;"><%= r.lot %></td>
+              <td><%= r.origin || '' %></td>
+              <td style="width:120px;text-align:right;"><%= r.kg %>kg</td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="3">No data.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- CHEMICALS -->
+    <h2>Used chemicals</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Batch</th>
+          <th>Article</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if(batch.chemicalLots.length > 0){ %>
+          <% batch.chemicalLots.forEach(function(c){ %>
+            <tr>
+              <td style="width:100px;"><%= c.lot %></td>
+              <td><%= c.article || '' %></td>
+              <td style="width:120px;text-align:right; color:#fff;"><%= c.kg %></td>
+
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="3">No data.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>
+</body>
+</html>

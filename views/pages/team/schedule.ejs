@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TEAM • SCHEDULE</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+    :root{ --card-max:1100px; --shadow:0 2px 8px rgba(0,0,0,.08); --yellow:#fdc500; }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:'Roboto Mono', monospace; }
+    .card{ position:relative; max-width:var(--card-max); margin:0 auto; background:#fff; border-radius:0 0 12px 12px; box-shadow:var(--shadow); padding:22px 24px 80px 24px; }
+      .row{display:flex;gap:8px;align-items:center;margin:6px 0 12px}
+    select{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid #dcdcdc;background:#fff}
+    .btn{background:#ff0000;color:#fff;border:none;border-radius:9999px;padding:8px 14px;font-size:12px;letter-spacing:.6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:opacity .12s ease, background .12s ease}
+    .btn:hover{opacity:.92;background:#111}
+    .btn.secondary{background:var(--yellow);color:#000}
+    .action-toolbar{position:absolute;top:-18px;right:18px;display:flex;gap:8px}
+    .table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+    .table th,.table td{border:1px solid #e6e6e6;padding:8px;text-align:left}
+    .table th{background:#fafafa}
+    @media print{ .action-toolbar{display:none !important} body{background:#fff !important} .card{box-shadow:none !important;border-radius:0 !important} }
+  </style>
+</head>
+<body>
+  <div class="card" data-title="TEAM_SCHEDULE">
+    <div class="action-toolbar">
+      <button class="btn secondary" type="button" onclick="window.print()">PRINT</button>
+      <form method="GET" action="/team/export" style="margin:0">
+        <input type="hidden" name="page" value="schedule"/>
+        <input type="hidden" name="month" value="<%= month %>"/>
+        <input type="hidden" name="year" value="<%= year %>"/>
+        <button class="btn secondary" type="submit">XLS</button>
+      </form>
+    </div>
+
+   <h1 style="margin-bottom:2px;">TEAMS • SCHEDULE</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Select X to set the operator to ‘absent'.</span><br><br>
+
+    <!-- Filter met dropdowns -->
+    <form class="row" method="GET">
+      <label>Month
+        <select name="month" id="month">
+          <% for (let m=1; m<=12; m++){ 
+               const mm = String(m).padStart(2,'0'); %>
+            <option value="<%= mm %>" <%= (mm===month ? 'selected' : '') %>><%= mm %></option>
+          <% } %>
+        </select>
+      </label>
+
+      <label>Year
+        <select name="year" id="year">
+          <% 
+            const yNow = Number(year||new Date().getFullYear());
+            // toon een ruime range 2020..2045 (pas gerust aan in router indien gewenst)
+            for (let y=2020; y<=2045; y++){ %>
+            <option value="<%= y %>" <%= (String(y)===String(year) ? 'selected' : '') %>><%= y %></option>
+          <% } %>
+        </select>
+      </label>
+
+      <button type="submit" class="btn secondary">APPLY</button>
+    </form>
+
+   <table class="table exportable">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Shift</th>
+      <th>Operator</th>
+      <th class="hidden-column">State</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% (rows || []).forEach(r => { %>
+      <tr>
+    <td>
+  <% 
+    const d = new Date(r.date);
+    const dayName = d.toLocaleDateString('en-GB', { weekday: 'short' }); // bv. Wed
+    const datePart = d.toLocaleDateString('nl-BE'); // bv. 12/11/2025
+  %>
+  <%= `${dayName}. ${datePart}` %>
+</td>
+
+        <td><%= r.shift %></td>
+        <td><%= r.user || '-' %></td>
+        <td class="hidden-column"><%= r.state %></td>
+        <td>
+          <% if (r.state !== 'white-empty') { %>
+            <form method="POST" action="/team/schedule/mark-absent" style="display:inline">
+              <input type="hidden" name="date" value="<%= r.date %>">
+              <input type="hidden" name="shift" value="<%= r.shift %>">
+              <button type="submit" class="btn" style="padding:4px 10px;">x</button>
+            </form>
+          <% } else { %>
+            <span style="opacity:.6;">waiting replacement</span>
+          <% } %>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+<style>
+  /* Verbergt de kolom visueel, maar houdt de data aanwezig in de DOM */
+  .hidden-column {
+    color: white;
+    background-color: white;
+    border: none;
+    width: 0;
+    max-width: 0;
+    font-size: 0;
+    visibility: hidden;
+  }
+</style>
+
+
+    <!-- ruwe dataset (voor XLS export fallback) -->
+    <script id="rawData" type="application/json"><%- JSON.stringify(raw || {}, null, 2) %></script>
+  </div>
+</body>
+</html>
+

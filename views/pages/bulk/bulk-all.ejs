@@ -1,0 +1,53 @@
+<!-- views/pages/bulk/bulk-all.ejs -->
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header">
+    <h1 class="h3 mb-1">BULK • ALL</h1>
+    <p class="text-muted mb-0"></p>
+  </div>
+
+  <div class="card-body">
+
+    <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <% if (!deliveries || !deliveries.length) { %>
+      <p class="text-muted mb-0">Nog geen bulk-registraties.</p>
+    <% } else { %>
+      <div class="table-responsive mt-2">
+        <table class="table table-sm table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Silo</th>
+              <th class="text-end">kg</th>
+              <th>Customer</th>
+              <th>CMR</th>
+              <th>AO</th>
+              <th>LB</th>
+              <th>Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% deliveries.forEach(function(d) { %>
+              <tr>
+                <td><%= d.date_label %></td>
+                <td><%= d.time_label %></td>
+                <td><%= d.silo %></td>
+                <td class="text-end"><%= d.kg %></td>
+                <td><%= d.customer %></td>
+                <td><%= d.cmr || '' %></td>
+                <td><%= d.purchase_order || '' %></td>
+                <td><%= d.delivery_note || '' %></td>
+                <td><%= d.remark || '' %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+  </div>
+</div>

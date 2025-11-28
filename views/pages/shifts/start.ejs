@@ -1,0 +1,172 @@
+<!-- views/pages/shifts/overview.ejs -->
+
+<style>
+
+/* Pills */
+    .options{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border-radius:16px;
+      padding:10px 18px;
+      font-weight:400;
+      color:#fff;
+      cursor:pointer;
+      user-select:none;
+      transition:opacity .15s ease;
+    }
+    .pill:hover{opacity:.9;}
+    .pill input{
+      margin:0 2px 0 0;
+      transform:scale(1.1);
+    }
+    .pill-up{background:#46A469;}
+    .pill-down{background:#FF0000;}
+
+.card {
+  background:#fff;
+  border-radius:0 0 16px 16px;  /* bovenkant recht */
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  padding:18px;
+  max-width:1100px;
+  margin:0 auto;
+}
+  main, body{
+    margin:0!important;
+    padding:0!important;
+  }
+</style>
+
+<div style="max-width:1100px;margin:0 auto 24px auto;
+            background:#ffffff;border-radius:0 0 16px 16px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.12);
+            padding:24px;border:1px solid rgba(0,0,0,0.08);">
+
+  <h1>START NEW SHIFT</h1>
+
+    <form action="/shifts/start" method="post" autocomplete="off">
+      <!-- TIME -->
+      <label for="shiftTime" class="form-label fw-semibold">Time:</label>
+      <input
+        id="shiftTime" name="time" type="text" inputmode="numeric" maxlength="5"
+        placeholder="HH:MM" required
+        pattern="^([01]\d|2[0-3]):[0-5]\d$"
+        title="Gebruik formaat HH:MM (00–23:00–59)"
+        style="padding:6px; border:1px solid #e0c36c; background:#FFF4CD;
+               border-radius:6px; width:100%; max-width:120px;
+               text-align:center; font-weight:400; letter-spacing:.5px;"
+      >
+
+      <!-- DATE -->
+      <label for="shiftDate" class="form-label fw-semibold">Date:</label>
+      <input
+        id="shiftDate" name="day" type="text" inputmode="numeric" maxlength="10"
+        placeholder="DD/MM/YYYY" required
+        pattern="^(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2])\/\d{4}$"
+        title="Gebruik formaat DD/MM/YYYY"
+        style="padding:6px; border:1px solid #e0c36c; background:#FFF4CD;
+               border-radius:6px; width:100%; max-width:140px;
+               text-align:center; font-weight:400; letter-spacing:.5px;"
+      >
+
+      <!-- STATUS -->
+     <br><br> <div class="form-label fw-semibold">State:</div>
+      <div class="options">
+        <label class="pill pill-up">
+          <input type="radio" name="status" value="UP" checked>
+          <span>UP</span>
+        </label>
+        <label class="pill pill-down">
+          <input type="radio" name="status" value="DOWN">
+          <span>DOWN</span>
+        </label>
+      </div>
+<span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">When the shift is started with the status DOWN, downtime begins to be counted immediately until the first message with the START label is received.</span>
+      <!-- START LEVEL / SITUATION -->
+      <label for="startLevel" class="form-label fw-semibold">Start Level B0210 (m³):</label>
+      <input
+        id="startLevel" name="startLevel" type="number" step="0.01"
+        placeholder=""
+        required
+        style="padding:6px; border:1px solid #c2c2c2; background:#ffffff;
+               border-radius:6px; width:100%; max-width:200px;"
+      >
+
+      <label for="startDescription" class="form-label fw-semibold">
+        Comment:
+      </label>
+      <textarea
+        id="startDescription" name="startDescription"
+        placeholder="Describe start shift situation for better analysis..."
+        style="padding:6px; border:1px solid #c2c2c2; background:#ffffff;
+               border-radius:6px; width:100%; height:80px; resize:vertical;"
+      ></textarea>
+
+      <div style="margin-top:18px;">
+        <button class="btn btn-green submit" type="submit"
+          style="font-family: 'Roboto Mono', sans-serif;">
+          START NEW SHIFT
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // TIME & DATE helpers
+    (function () {
+      const t = document.getElementById('shiftTime');
+      if (t && !t.value) {
+        const d = new Date();
+        t.value = String(d.getHours()).padStart(2,'0') + ':' +
+                  String(d.getMinutes()).padStart(2,'0');
+      }
+      function toHHMM(v){
+        v = (v || '').replace(/\D/g,'').slice(0,4);
+        if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2);
+        return v;
+      }
+      t.addEventListener('input', e => { e.target.value = toHHMM(e.target.value); });
+      t.addEventListener('blur', e => {
+        let m = e.target.value.match(/^(\d{1,2})(?::?(\d{1,2}))?$/);
+        if (!m){ e.target.value=''; return; }
+        let h  = Math.min(parseInt(m[1]||'0',10),23);
+        let mn = Math.min(parseInt(m[2]||'0',10),59);
+        e.target.value = String(h).padStart(2,'0') + ':' +
+                         String(mn).padStart(2,'0');
+      });
+
+      const dEl = document.getElementById('shiftDate');
+      if (dEl && !dEl.value) {
+        const d = new Date();
+        dEl.value =
+          String(d.getDate()).padStart(2,'0') + '/' +
+          String(d.getMonth()+1).padStart(2,'0') + '/' +
+          d.getFullYear();
+      }
+      function toDDMMYYYY(v){
+        v = (v || '').replace(/\D/g,'').slice(0,8);
+        if (v.length >= 5) return v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+        if (v.length >= 3) return v.slice(0,2)+'/'+v.slice(2);
+        return v;
+      }
+      dEl.addEventListener('input', e => { e.target.value = toDDMMYYYY(e.target.value); });
+      dEl.addEventListener('blur', e => {
+        const m = e.target.value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (!m) return;
+        let dd = Math.max(1,Math.min(parseInt(m[1],10),31));
+        let mm = Math.max(1,Math.min(parseInt(m[2],10),12));
+        let yyyy = parseInt(m[3],10);
+        e.target.value =
+          String(dd).padStart(2,'0') + '/' +
+          String(mm).padStart(2,'0') + '/' +
+          String(yyyy);
+      });
+    })();
+  </script>
+</body>
+</html>

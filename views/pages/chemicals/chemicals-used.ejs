@@ -1,0 +1,108 @@
+<!-- views/pages/chemicals/chemicals-used.ejs -->
+
+<div class="card shadow-sm mb-4" style="font-size:13px;">
+  <!-- HEADER -->
+  <div class="card-header">
+  <h1 style="margin-bottom:2px;">CHEMICALS • USED</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">History of used batches per item.</span><br><br>
+  </div>
+
+  <div class="card-body" style="font-size:13px;">
+
+    <!-- TOTAAL AANTAL RECORDS -->
+    <p style="font-size:13px; margin-bottom:15px;">
+      <i>Total records: <%= used ? used.length : 0 %></i>
+    </p>
+
+    <!-- TABEL CONTAINER -->
+    <div style="width:950px; font-size:13px;">
+
+      <% if (!used || used.length === 0) { %>
+
+        <p style="color:#777; font-size:13px;">Nog geen gebruik geregistreerd.</p>
+
+      <% } else { %>
+
+        <table style="
+            width:950px;
+            border-collapse:collapse;
+            text-align:left;
+            font-size:13px;
+          ">
+
+          <thead>
+            <tr>
+              <th style="padding:6px; font-size:13px; text-align:left;">Code</th>
+              <th style="padding:6px; font-size:13px; text-align:left;">Article</th>
+              <th style="padding:6px; font-size:13px; text-align:left;">Batch</th>
+              <th style="padding:6px; font-size:13px; text-align:left;">Start</th>
+              <th style="padding:6px; font-size:13px; text-align:left;">End</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <% used.forEach(function(row) { %>
+
+              <tr
+                <% if (!row.endDate) { %>
+                  style="background:#fff4c2;"
+                <% } else { %>
+                  style=""
+                <% } %>
+              >
+
+                <!-- CODE -->
+                <td style="padding:6px; font-size:13px;">
+                  <%= row.articleId %>
+                </td>
+
+                <!-- ARTICLE -->
+                <td style="padding:6px; font-size:13px;">
+                  <%= row.articleName || '-' %>
+                </td>
+
+                <!-- BATCH -->
+                <td style="padding:6px; font-size:13px;">
+                  <code><%= row.lotNumber %></code>
+                </td>
+
+                <!-- STARTDATUM -->
+                <td style="padding:6px; font-size:13px;">
+                  <% if (row.startDate) { %>
+                    <%= new Date(row.startDate).toLocaleString('nl-BE', {
+                      day:'2-digit', month:'2-digit', year:'numeric',
+                      hour:'2-digit', minute:'2-digit', hour12:false
+                    }) %>
+                  <% } else { %>
+                    -
+                  <% } %>
+                </td>
+
+                <!-- ENDDATUM -->
+                <td style="padding:6px; font-size:13px;">
+                  <% if (row.endDate) { %>
+                    <%= new Date(row.endDate).toLocaleString('nl-BE', {
+                      day:'2-digit', month:'2-digit', year:'numeric',
+                      hour:'2-digit', minute:'2-digit', hour12:false
+                    }) %>
+                  <% } else { %>
+                    <span style="color:#008000; font-weight:bold;">ACTIVE</span>
+                  <% } %>
+                </td>
+
+              </tr>
+
+            <% }); %>
+
+          </tbody>
+        </table>
+
+      <% } %>
+
+     
+
+    </div> <!-- einde 950px div -->
+
+  </div>
+</div>

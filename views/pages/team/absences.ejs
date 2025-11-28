@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TEAM • ABSENCES</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+    :root{ --card-max:1100px; --shadow:0 2px 8px rgba(0,0,0,.08); --yellow:#fdc500; --green:#2e7d32; }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:'Roboto Mono', monospace;  }
+    .card{ position:relative; max-width:var(--card-max); margin:0 auto; background:#fff; border-radius:0 0 12px 12px; box-shadow:var(--shadow); padding:22px 24px 80px 24px; }
+   
+    .action-toolbar{position:absolute;top:-18px;right:18px;display:flex;gap:8px}
+    .action-toolbar .btn{background:#000;color:#fff;border:none;border-radius:9999px;padding:8px 14px;font-size:12px;letter-spacing:.6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .action-toolbar .btn.secondary{background:var(--yellow);color:#000}
+    .table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+    .table th,.table td{border:1px solid #e6e6e6;padding:8px;text-align:left;vertical-align:middle}
+    .table th{background:#fafafa}
+    .approved{font-family:'Roboto Mono', monospace; font-weight:300}
+    .muted{opacity:.65}
+    input[type='text']{font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid #dadada;border-radius:8px}
+    .btn{background:#23a925;color:#fff;border:none;border-radius:9999px;padding:6px 12px;font-size:12px;letter-spacing:.6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    @media print{ .action-toolbar{display:none !important} body{background:#fff !important} .card{box-shadow:none !important;border-radius:0 !important} }
+  </style>
+</head>
+<body>
+  <div class="card" data-title="TEAM_ABSENCES">
+    
+
+    <h1 style="margin-bottom:2px;">TEAMS • ABSENCES</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Fill in name code and save the confirm the replacement.</span><br><br>
+    <table class="table exportable">
+      <thead><tr><th>Date</th><th>Shift</th><th>Original Operator</th><th>Replace by</th></tr></thead>
+      <tbody>
+        <% (rows||[]).forEach(r => { %>
+          <tr>
+            <td>
+  <% 
+    const d = new Date(r.date);
+    const dayName = d.toLocaleDateString('en-GB', { weekday: 'short' }); // bv. Wed
+    const datePart = d.toLocaleDateString('nl-BE'); // bv. 12/11/2025
+  %>
+  <%= `${dayName}. ${datePart}` %>
+</td>
+
+            <td><%= r.shift %></td>
+            <td>
+              <% if (r.approved) { %>
+                <span class="approved"><%= r.originalUser || '-' %> <span class="muted">(approved)</span></span>
+              <% } else { %>
+                <%= r.originalUser || '-' %>
+              <% } %>
+            </td>
+            <td>
+              <form method="POST" action="/team/absences/fill" style="display:flex;gap:6px;align-items:center">
+                <input type="hidden" name="date" value="<%= r.date %>"/>
+                <input type="hidden" name="shift" value="<%= r.shift %>"/>
+                <input type="text" name="coverUser" placeholder="User code" style="width:100px" />
+            <button type="submit"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                  
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >Save</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <script id="rawData" type="application/json"><%- JSON.stringify(raw || {}, null, 2) %></script>
+  </div>
+</body>
+</html>

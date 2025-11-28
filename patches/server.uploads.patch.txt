@@ -1,0 +1,63 @@
+# PATCH: server.js — ADD-ONLY BLOKKEN (NIET AUTOMATISCH)
+# Doel: technische voorbereiding voor uploads (afbeeldingen + PDF), zonder gedrag te wijzigen.
+# Actie: voeg onderstaande blokken toe op de aangegeven plekken.
+# Opmerking: Zolang je je form-route niet aanpast met upload.array(...) en je form niet op enctype="multipart/form-data" zet,
+#            blijft het gedrag IDENTIEK aan nu.
+
+---------------------------------------------------------------------------
+[1] BOVENAAN (bij je andere requires/imports) — ADD-ONLY
+---------------------------------------------------------------------------
+const multer = require('multer');
+const crypto = require('crypto');
+const UP_PATH = path.join(__dirname, 'uploads');
+
+---------------------------------------------------------------------------
+[2] STATISCHE MAP (bij je andere app.use('/public', ...)) — ADD-ONLY
+---------------------------------------------------------------------------
+if (!fs.existsSync(UP_PATH)) fs.mkdirSync(UP_PATH, { recursive: true });
+app.use('/uploads', express.static(UP_PATH));
+
+---------------------------------------------------------------------------
+[3] MULTER CONFIGURATIE (ergens centraal bij je configuratieblokken) — ADD-ONLY
+---------------------------------------------------------------------------
+// ===== Uploads configuratie (images + pdf) =====
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UP_PATH),
+  filename: (req, file, cb) => {
+    const time = Date.now();
+    const rand = crypto.randomBytes(3).toString('hex');
+    const parsed = path.parse(file.originalname);
+    const safeBase = (parsed.name || 'file')
+      .toLowerCase()
+      .replace(/[^a-z0-9_\-]+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 60);
+    const ext = (parsed.ext || '').toLowerCase();
+    cb(null, `${time}-${rand}-${safeBase}${ext}`);
+  }
+});
+
+const ALLOWED = new Set([
+  'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp',
+  'application/pdf'
+]);
+
+function fileFilter(req, file, cb) {
+  if (ALLOWED.has(file.mimetype)) return cb(null, true);
+  cb(new Error('Alleen afbeeldingen of PDF zijn toegestaan.'));
+}
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024, files: 10 } // 10 MB / 10 files
+});
+
+---------------------------------------------------------------------------
+[4] (NIET ACTIVEREN IN STAP 1) — GEEN ROUTE-WIJZIGING NU
+---------------------------------------------------------------------------
+# Pas in stap 2:
+# - Voeg bij je LOGBOOK POST-route (bv. '/logbook/form') de middleware toe:
+#   upload.array('attachments', 10)
+# - En vul in je entry-object een attachments-array met req.files
+# Zolang je dit nog NIET doet, blijft de app volledig identiek qua gedrag.

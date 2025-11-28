@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>RAW • OVERVIEW</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: url('/grafisch/background.jpg') no-repeat center/cover fixed;
+      font-family: "Roboto Mono", monospace;
+      font-size: 13px;
+    }
+
+    .card {
+      background: #fff;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 1050px;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #f5f5f5;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-size: 11px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    /* badges */
+    .badge-labo-missing {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background-color: #ffebee;
+      border: 1px solid #c62828;
+      color: #b71c1c;
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    .badge-labo-ok {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background-color: #e8f5e9;
+      border: 1px solid #43a047;
+      color: #1b5e20;
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    .btn-labo {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #617850;
+      background-color: #ffffff;
+      color: #617850;
+      font-size: 10px;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .btn-labo:hover {
+      background-color: #617850;
+      color: #ffffff;
+    }
+
+    .empty-row {
+      text-align: center;
+      font-size: 11px;
+      padding: 18px 8px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>RAW  •  OVERVIEW</h1>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Article</th>
+        <th>Origin</th>
+        <th>Batch</th>
+        <th>Weight</th>
+        <th>SL B0210</th>
+        <th>Lab data</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% if (receipts && receipts.length > 0) { %>
+        <% receipts.forEach(function(row) { %>
+          <tr>
+            <td><%= row.received_date %></td>
+            <td><%= row.received_time %></td>
+            <td><%= row.article %></td>
+            <td><%= row.origin %></td>
+            <td><%= row.batch %></td>
+            <td><%= (row.quantity !== null && row.quantity !== undefined) ? row.quantity : '' %></td>
+            <td><%= (row.startlevel !== null && row.startlevel !== undefined) ? row.startlevel : '' %></td>
+
+            <td>
+              <% if (row.status === 'COMPLETED') { %>
+                <span class="badge-labo-ok">OK</span>
+              <% } else { %>
+                <span class="badge-labo-missing">MISSING</span>
+              <% } %>
+            </td>
+
+            <td>
+              <% if (row.status === 'COMPLETED') { %>
+                <a href="/raw/labo/<%= row.id %>" class="btn-labo">LAB SHEET</a>
+              <% } else { %>
+                <a href="/raw/labo/<%= row.id %>" class="btn-labo">FILL LAB</a>
+              <% } %>
+            </td>
+
+          </tr>
+        <% }); %>
+
+      <% } else { %>
+        <tr>
+          <td colspan="9" class="empty-row">No receipts found.</td>
+        </tr>
+      <% } %>
+
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

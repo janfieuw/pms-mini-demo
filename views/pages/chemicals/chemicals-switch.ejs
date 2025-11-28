@@ -1,0 +1,190 @@
+<!-- views/pages/chemicals/chemicals-switch.ejs -->
+
+<div class="card shadow-sm mb-4">
+  <!-- HEADER: titel + ondertitel in het witte blok -->
+  <div class="card-header">
+   <h1 style="margin-bottom:2px;">CHEMICALS • SWITCH</h1>
+ <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Select the article you want to switch. Select then the new batch.</span><br><br>
+  
+  </div>
+
+  <!-- BODY -->
+  <div class="card-body">
+
+    <!-- ARTIKEL DROPDOWN -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="articleSelect" class="form-label mb-1 small fw-semibold">
+          Select Article:
+        </label>
+        <select id="articleSelect" class="form-select form-select-sm">
+          <option value="">-- choose --</option>
+          <% (articles || []).forEach(function(article) { %>
+            <option value="<%= article.articleId %>">
+              <%= article.articleName %> (<%= article.articleId %>)
+            </option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <% (articles || []).forEach(function(article) { %>
+
+        <!-- BELANGRIJK: data-article-id -->
+        <div class="col-md-6 mb-4 article-card" data-article-id="<%= article.articleId %>">
+          <div class="card shadow-sm h-100">
+
+            <!-- HEADER -->
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <div>
+                <strong><%= article.articleName %></strong><br>
+                <span class="text-muted small"><%= article.articleId %></span>
+              </div>
+
+              <!-- STOCK INDICATOR -->
+              <span class="badge
+                <% if(article.isBelowAlert) { %> bg-danger <% } else { %> bg-success <% } %>">
+                <%= article.totalAvailable %> in stock
+              </span>
+            </div>
+
+            <!-- BODY -->
+            <div class="card-body">
+              <div class="row">
+
+                <!-- HUIDIGE BATCH -->
+                <div class="col-12 mb-3">
+                  <br>
+                  <h10 class=>Batch in use:</h10>
+
+                  <% if (article.activeUsage) { %>
+                    <p class="mb-1">
+                      <span class="fw-semibold">
+                        <code><%= article.activeUsage.lotNumber %></code>
+                      
+                      - (Active since:
+                     <%= article.activeUsage.startDate
+      ? new Date(article.activeUsage.startDate).toLocaleString('nl-BE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        })
+      : '-' %>)</span>
+                    </p>
+                  <% } else { %>
+                    <p class="text-muted mb-0">
+                      <i>No active batch.</i>
+                    </p>
+                  <% } %>
+                </div>
+
+                <!-- SWITCH FORM -->
+                <div class="col-12">
+                  <h10 class="mb-2">Select new batch:</h10>
+
+                  <% if (!article.availableBatches || article.availableBatches.length === 0) { %>
+                    <p class="text-muted mb-0">
+                      <i>No stock.</i>
+                    </p>
+                  <% } else { %>
+                    <form action="/chemicals/switch" method="POST" class="row g-2 align-items-center">
+                      <input type="hidden" name="articleId" value="<%= article.articleId %>">
+
+                      <div class="col-8">
+                        <select
+                          name="newLotNumber"
+                          class="form-select form-select-sm"
+                          required
+                        >
+                          <option value="" disabled selected>-- choose batch --</option>
+                          <% article.availableBatches.forEach(function(batch) { %>
+                            <option value="<%= batch.lotNumber %>">
+                              <%= batch.lotNumber %> ( <%= batch.availableQuantity %> )
+                            </option>
+                          <% }); %>
+                        </select>
+                      </div>
+
+                      <div class="col-4 text-end">
+                       <br> <button
+                  type="submit"
+                  onclick="return confirm('Ben je zeker dat je deze inbound op stock wil boeken?');"
+                  style="
+                    background:#fdc500;
+                    color:#000;
+                    border:none;
+                    border-radius:9999px;
+                    padding:8px 18px;
+                    font-weight:500;
+                 
+                    text-transform:uppercase;
+                    box-shadow:0 1px 3px rgba(0,0,0,.15);
+                    cursor:pointer;
+                    font-size:11px;
+                    white-space:nowrap;
+                    transition:background .12s ease,color .12s ease,opacity .12s ease;
+                  "
+                  onmouseover="this.style.background='#000'; this.style.color='#fff';"
+                  onmouseout="this.style.background='#fdc500'; this.style.color='#000';"
+                >
+                  SWITCH
+                        </button>
+                      </div>
+                    </form>
+                  <% } %>
+                </div>
+
+              </div>
+            </div>
+
+           
+
+          </div>
+        </div>
+
+      <% }); %>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- SCRIPT: enkel geselecteerd artikel tonen (zonder Bootstrap .d-none) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var select = document.getElementById('articleSelect');
+    if (!select) return;
+
+    var articleCards = document.querySelectorAll('.article-card');
+
+    function updateVisibleCards() {
+      var selectedId = select.value;
+
+      articleCards.forEach(function(card) {
+        var cardId = card.getAttribute('data-article-id');
+
+        if (!selectedId) {
+          // Geen selectie => alles verbergen
+          card.style.display = 'none';
+        } else if (cardId === selectedId) {
+          // Geselecteerde artikel tonen
+          card.style.display = '';
+        } else {
+          // Andere artikels verbergen
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Init: alles verbergen
+    updateVisibleCards();
+
+    // Bij wijziging in dropdown
+    select.addEventListener('change', updateVisibleCards);
+  });
+</script>
