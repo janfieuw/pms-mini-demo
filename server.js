@@ -23,7 +23,7 @@ const teamRouter       = require('./routes/team');        // TEAM
 const rawRouter        = require('./routes/raw');         // RAW MATERIALS
 const chemicalsRouter  = require('./routes/chemicals');   // CHEMICALS
 const bbRouter         = require('./routes/bb');          // BB WAREHOUSING
-const bulkRouter       = require('./routes/bulk');        // BULK
+const bulkRouter       = require('./routes/bulk');        // OUTBOUND BULK
 
 // ---- App setup
 app.set('view engine', 'ejs');
@@ -43,7 +43,7 @@ app.use(session({
 const USERS = [
   { code: 'JFI', name: 'Jan Fieuw',               password: '3009' },
   { code: 'DTH', name: 'Davinia Thoelen',         password: '3009' },
-  { code: 'DDS', name: 'Dimitri Devos',           password: '3009' },
+  { code: 'DDE', name: 'Dimitri Devos',           password: '3009' },
   { code: 'TDA', name: 'Tajib Diwan Ali',         password: '3009' },
   { code: 'CVD', name: 'Cliff Verdonck',          password: '3009' },
   { code: 'FCO', name: 'Florian Collier',         password: '3009' },
@@ -52,6 +52,7 @@ const USERS = [
   { code: 'PBR', name: 'Pieter Brodeoux',         password: '3009' },
   { code: 'JBR', name: 'Jelle Bryon',             password: '3009' },
   { code: 'TSW', name: 'Thomas Sweertvaegher',    password: '3009' },
+  { code: 'JPE', name: 'Jana Petricevic',         password: '3009' },
 ];
 
 // ---- In-memory store
@@ -101,44 +102,44 @@ const DOMAINS = [
     { key:'ARCHIVE',      path:'/logbook/archive' },
   ]},
   { key:'SHIFTS', subs:[
-    { key:'NEW SHIFT',       path:'/shifts/start' },
-    { key:'STOP SHIFT',      path:'/shifts/stop' },
-    { key:'OVERVIEW',        path:'/shifts/overview' },
+    { key:'NEW SHIFT',        path:'/shifts/start' },
+    { key:'STOP SHIFT',       path:'/shifts/stop' },
+    { key:'SHIFTS OVERVIEW',  path:'/shifts/overview' },
   ]},
-  { key:'RAW', subs:[
-    { key:'INBOUND RAW', path:'/raw/inbound' },
-    { key:'OVERVIEW',    path:'/raw/overview' },
+  // RAW MATERIALS – sleutel gelijk aan tertiary / activeDomain, inbound-raw pad
+  { key:'RAW MATERIALS', subs:[
+    { key:'RAW INBOUND',   path:'/raw/inbound-raw' },
+    { key:'RAW OVERVIEW',  path:'/raw/overview' },
   ]},
   { key:'CHEMICALS', subs:[
     { key:'INBOUND CHEMICALS', path:'/chemicals/inbound' },
     { key:'CHEMICALS STOCK',   path:'/chemicals/stock' },
     { key:'CHEMICALS SWITCH',  path:'/chemicals/switch' },
-    { key:'USED - OVERVIEW',   path:'/chemicals/used-overview' },
+    { key:'USED OVERVIEW',     path:'/chemicals/used-overview' },
   ]},
   { key:'BB WAREHOUSING', subs:[
     { key:'BATCH',            path:'/bb/batch' },
-    { key:'BATCH - OVERVIEW', path:'/bb/batch-overview' },
+    { key:'BATCH OVERVIEW',   path:'/bb/batch-overview' },
     { key:'DISCHARGE',        path:'/bb/discharge' },
     { key:'CHANGES',          path:'/bb/changes' },
     { key:'ALLOCATION',       path:'/bb/allocation' },
     { key:'LOADING',          path:'/bb/loading' },
     { key:'STOCK',            path:'/bb/stock' },
   ]},
-  { key:'BULK', subs:[
-    { key:'bulk-registratie', path:'/bulk/registratie' },
-    { key:'bulk-all',         path:'/bulk/all' },
+  // OUTBOUND BULK – sleutel gelijk aan tertiary / activeDomain
+  { key:'OUTBOUND BULK', subs:[
+    { key:'BULK INBOUND',   path:'/bulk/registratie' },
+    { key:'BULK OVERVIEW',  path:'/bulk/all' },
   ]},
   { key:'ANALYSES', subs:[
-    { key:'MESSAGES-FILTER',  path:'/analyses/messages-filter' },
-    { key:'RAW-FILTER',       path:'/analyses/filter' },
-    { key:'OVERVIEW-OEE',     path:'/analyses/overview-oee' },
+    { key:'MESSAGES FILTER',  path:'/analyses/messages-filter' },
+    { key:'RAW FILTER',       path:'/analyses/filter' },
+    { key:'OEE OVERVIEW',     path:'/analyses/overview-oee' },
     { key:'PRODUCTION',       path:'/analyses/production' },
   ]},
+  // TEAM – hier alleen de default pagina voor de grijze TEAM-knop
   { key:'TEAM', subs:[
-    { key:'SCHEDULE',          path:'/team/schedule' },
-    { key:'ABSENCES',          path:'/team/absences' },
-    { key:'REPLACEMENTS',      path:'/team/replacements' },
-    { key:'WORK-PERFORMANCE',  path:'/team/work-performance' },
+    { key:'TOPICS', path:'/team/topics' },
   ]},
 ];
 
@@ -149,13 +150,14 @@ app.use((req, res, next) => {
 
   res.locals.activeDomain =
     req.path.startsWith('/logbook')   ? 'LOGBOOK' :
+    req.path.startsWith('/topics')    ? 'TOPICS'  :
     req.path.startsWith('/shifts')    ? 'SHIFTS' :
     req.path.startsWith('/analyses')  ? 'ANALYSES' :
     req.path.startsWith('/team')      ? 'TEAM' :
     req.path.startsWith('/raw')       ? 'RAW MATERIALS' :
     req.path.startsWith('/chemicals') ? 'CHEMICALS' :
     req.path.startsWith('/bb')        ? 'BB WAREHOUSING' :
-    req.path.startsWith('/bulk')      ? 'BULK' :
+    req.path.startsWith('/bulk')      ? 'OUTBOUND BULK' :
     null;
 
   res.locals.tertiarySubs =
@@ -278,33 +280,48 @@ logbookRouter.get('/form', requireAuth, (req,res)=>{
 // --- POST FORM
 logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,res)=>{
   const user = req.session.user;
-  const message   = (req.body.message || '').trim();
+
+  // originele tekst + genormaliseerde tekst
+  const rawMessage = (req.body.message || '').trim();
+  let message      = rawMessage;
+
   const labelCalc = (req.body.labelCalc || req.body.calc || '').trim();
   const timeHHMM  = (req.body.timeHHMM  || req.body.when || nowHHmm()).trim();
 
   const push         = (req.body.push || '').trim();
   const wms          = (req.body.wms || '').trim();
-  const chemswitch   = (req.body.chemswitch || '').trim();  // NIEUW: CHEM-SWITCH
-  const qc           = (req.body.qc || '').trim();          // NIEUW: QUALITY CHECK
+  const chemswitch   = (req.body.chemswitch || '').trim();  // CHEM-SWITCH
+  const qc           = (req.body.qc || '').trim();          // QUALITY CHECK
+  const chemib       = (req.body.chemib || '').trim();      // CHEM-IB
+  const bulkob       = (req.body.bulkob || '').trim();      // BULK-OB
   const infoLabels   = (req.body.infoLabels || '').split(',').filter(Boolean);
   const software     = (req.body.softwareLabels || '').split(',').filter(Boolean);
   const notebookOnly = (req.body.notebookOnly === '1' || req.body.notebookOnly === 'on');
 
+  // START-regel: nooit START zonder voorgaande STOP
   if (labelCalc === 'START') {
     const hasAnyStop = store.messages.some(m => m.calc === 'STOP');
     if (!hasAnyStop) {
       return res.status(400).render('pages/logbook/form',{
         error:"You can't add a START message without a previous STOP message",
-        old:{ labelCalc, timeHHMM, message }
+        old:{ labelCalc, timeHHMM, message: rawMessage }
       });
+    }
+  }
+
+  // BERICHT NORMALISEREN: hoofdletter + eindigt met .?! (indien tekst bestaat)
+  if (message) {
+    message = message.charAt(0).toUpperCase() + message.slice(1);
+    if (!/[.!?]$/.test(message)) {
+      message += '.';
     }
   }
 
   let deltaMin = null;
   if (labelCalc === 'START') {
+    const startM = hhmmToMinutes(timeHHMM);
     const lastStop = store.messages.find(m => m.calc === 'STOP');
     if (lastStop) {
-      const startM = hhmmToMinutes(timeHHMM);
       const stopM  = hhmmToMinutes(lastStop.time);
       const adjStart = (startM >= stopM) ? startM : startM+1440;
       deltaMin = Math.round((adjStart-stopM)*10)/10;
@@ -330,6 +347,8 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
     wms,
     chemswitch,        // CHEM-SWITCH opslaan
     qc,                // QUALITY CHECK opslaan
+    chemib,            // CHEM-IB opslaan
+    bulkob,            // BULK-OB opslaan
     deltaMin,
     attachments,
     createdAt:new Date()
@@ -349,6 +368,8 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
       wms:entry.wms || '',
       chemswitch:entry.chemswitch || '',
       qc:entry.qc || '',
+      chemib:entry.chemib || '',
+      bulkob:entry.bulkob || '',
       attachments:entry.attachments || [],
       savedAt:new Date()
     });
@@ -379,7 +400,7 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
     store.archive.unshift({ ...entry });
   }
 
-  // TODO's voor WMS en CHEM-SWITCH
+  // TODO's voor WMS, CHEM-SWITCH, CHEM-IB, BULK-OB
   if (wms) {
     const todoLink = (wms === 'IB-RAW') ? '/raw/inbound-raw' : '#';
     store.todos.unshift({
@@ -393,7 +414,7 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
 
   if (chemswitch) {
     store.todos.unshift({
-      id:`todo-${entry.id}-chem`,
+      id:`todo-${entry.id}-chem-switch`,
       user:user.code,
       label:chemswitch,
       link:'/chemicals/switch',
@@ -401,11 +422,35 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
     });
   }
 
-  // Redirect logica:
-  // 1) WMS: IB-RAW → /raw/inbound-raw
-  // 2) CHEM-SWITCH → /chemicals/switch
+  if (chemib) {
+    store.todos.unshift({
+      id:`todo-${entry.id}-chem-ib`,
+      user:user.code,
+      label:chemib,
+      link:'/chemicals/inbound',
+      createdAt:new Date()
+    });
+  }
+
+  if (bulkob) {
+    store.todos.unshift({
+      id:`todo-${entry.id}-bulk-ob`,
+      user:user.code,
+      label:bulkob,
+      link:'/bulk/registratie',
+      createdAt:new Date()
+    });
+  }
+
+  // Redirect logica
   if (wms === 'IB-RAW') {
     return res.redirect('/raw/inbound-raw');
+  }
+  if (chemib === 'CHEM-IB') {
+    return res.redirect('/chemicals/inbound');
+  }
+  if (bulkob === 'BULK-OB') {
+    return res.redirect('/bulk/registratie');
   }
   if (chemswitch === 'CHEM-SWITCH') {
     return res.redirect('/chemicals/switch');
@@ -450,14 +495,10 @@ logbookRouter.get('/mynotebook', requireAuth, (req,res)=>{
 logbookRouter.post('/message/:id/delete', requireAuth, (req,res)=>{
   const { id } = req.params;
 
-  // hoofd-lijst
   store.messages = store.messages.filter(m => m.id !== id);
-
-  // must-read en archief
   store.mustRead = store.mustRead.filter(m => m.id !== id);
   store.archive  = store.archive.filter(m => m.id !== id);
 
-  // alle notebooks van alle users opschonen
   Object.keys(store.notebooks).forEach(code => {
     store.notebooks[code] = (store.notebooks[code] || []).filter(
       n => n.id !== id && n.fromId !== id
@@ -518,7 +559,11 @@ logbookRouter.post('/add-notebook', requireAuth, (req,res)=>{
       wms:msg.wms||'',
       chemswitch:msg.chemswitch||'',
       qc:msg.qc||'',
+      chemib:msg.chemib||'',
+      bulkob:msg.bulkob||'',
+      topicType: msg.topicType || '',
       attachments:norm,
+      createdAt: msg.createdAt || null,
       savedAt:new Date()
     });
   }
@@ -531,7 +576,7 @@ logbookRouter.post('/remove-notebook', requireAuth, (req,res)=>{
   const code = req.session.user.code;
   if (store.notebooks[code]) {
     store.notebooks[code] = store.notebooks[code].filter(
-      n=>n.id!==id && n.fromId!==id
+      n => n.id!==id && n.fromId!==id
     );
   }
   res.redirect('back');
@@ -549,6 +594,18 @@ logbookRouter.post('/acknowledge', requireAuth, (req,res)=>{
 app.use('/logbook', logbookRouter);
 
 // =============================
+// TOPICS STATS  (redirect naar TEAM)
+// =============================
+const topicsRouter = express.Router();
+
+topicsRouter.get('/stats', requireAuth, (req, res) => {
+  // één centraal endpoint voor de logica in team.js
+  return res.redirect('/team/topics/stats');
+});
+
+app.use('/topics', topicsRouter);
+
+// =============================
 // 404
 // =============================
 app.use((req,res)=>{
@@ -559,7 +616,7 @@ app.use((req,res)=>{
 // =============================
 // START SERVER
 // =============================
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8888;
 const server = app.listen(PORT, () =>
   console.log(`FEWR PMS running at http://localhost:${PORT}`)
 );

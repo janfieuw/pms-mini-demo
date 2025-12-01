@@ -15,13 +15,17 @@ const CHEMICAL_ARTICLES = [
   { id: "PA02", name: "BB Blank", stockAlertValue: 0 }
 ];
 
-
 // STOCK per artikel
-// articleId -> { stockAlertValue, batches: [{ lotNumber, availableQuantity }] }
+// articleId -> {
+//   articleId,
+//   stockAlertValue,
+//   batches: [{ lotNumber, availableQuantity }],
+//   lastInboundQuantity,        // LAATSTE ontvangst (# stuks)
+//   lastInboundDate             // LAATSTE ontvangst (Date)
+// }
 const chemicalStock = new Map();
 
 // USED OVERVIEW (historiek)
-// { id, articleId, lotNumber, startDate, endDate|null }
 let chemicalUsage = [];
 let nextUsageId = 1;
 
@@ -39,7 +43,9 @@ function ensureArticleStock(articleId) {
     chemicalStock.set(articleId, {
       articleId,
       stockAlertValue: article?.stockAlertValue ?? 0,
-      batches: []
+      batches: [],
+      lastInboundQuantity: null,
+      lastInboundDate: null
     });
   }
   return chemicalStock.get(articleId);
@@ -53,6 +59,8 @@ function addInboundLines(lines) {
     if (!line.articleId || !line.lotNumber || !qty || qty <= 0) return;
 
     const stock = ensureArticleStock(line.articleId);
+
+    // stock/batches aanpassen
     let batch = stock.batches.find(b => b.lotNumber === line.lotNumber);
     if (batch) {
       batch.availableQuantity += qty;
@@ -62,6 +70,10 @@ function addInboundLines(lines) {
         availableQuantity: qty
       });
     }
+
+    // >>> last inbound op artikel-niveau bijwerken
+    stock.lastInboundQuantity = qty;
+    stock.lastInboundDate = new Date();
   });
 }
 
@@ -74,14 +86,12 @@ function setStockAlert(articleId, value) {
 function getStockOverview() {
   return getArticles().map(article => {
     const stock = ensureArticleStock(article.id);
+
     const totalAvailable = stock.batches.reduce(
       (sum, b) => sum + b.availableQuantity,
       0
     );
 
-    // Jouw logica:
-    // - groen als stock >= alert
-    // - rood als stock < alert
     const isBelowAlert = totalAvailable < stock.stockAlertValue;
 
     return {
@@ -92,7 +102,10 @@ function getStockOverview() {
       isBelowAlert,
       batches: stock.batches
         .slice()
-        .sort((a, b) => a.lotNumber.localeCompare(b.lotNumber))
+        .sort((a, b) => a.lotNumber.localeCompare(b.lotNumber)),
+      // nieuwe velden rechtstreeks uit stock
+      lastInboundQuantity: stock.lastInboundQuantity,
+      lastInboundDate: stock.lastInboundDate
     };
   });
 }
@@ -127,7 +140,7 @@ function switchBatch({ articleId, newLotNumber, timestamp }) {
 
   // nieuw blok openen
   chemicalUsage.push({
-    id: nextUsageId++,
+    id: nextUsageId++, 
     articleId,
     lotNumber: newLotNumber,
     startDate: now,
@@ -140,7 +153,6 @@ function switchBatch({ articleId, newLotNumber, timestamp }) {
 
 // ---------- USED OVERVIEW ----------
 function getUsageOverview() {
-  // sorteer op startdatum desc
   return chemicalUsage
     .slice()
     .sort((a, b) => b.startDate - a.startDate)

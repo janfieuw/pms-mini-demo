@@ -13,12 +13,10 @@
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/raw/inbound-raw')) ? 'is-active' : '' %>">
           RAW - INBOUND
         </a>
-       
         <a href="/raw/overview"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/raw/overview')) ? 'is-active' : '' %>">
           RAW - OVERVIEW
         </a>
-      
 
       <% } else if (activeDomain === 'CHEMICALS') { %>
         <!-- CHEMICALS -->
@@ -82,10 +80,10 @@
         </a>
 
       <% } else { %>
-        <!-- DEFAULT: legacy dynamic tertiarySubs for andere domeinen -->
+        <!-- DEFAULT: dynamische tertiarySubs (o.a. TEAM) -->
         <% (tertiarySubs || []).forEach(function(s){ %>
           <a href="<%= s.path %>"
-             class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith(s.path)) ? 'is-active' : '' %>">
+             class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath === s.path) ? 'is-active' : '' %>">
             <%= s.key %>
           </a>
         <% }); %>

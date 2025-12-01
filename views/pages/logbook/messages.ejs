@@ -1,151 +1,300 @@
 <style>
-  .tag {
-    display: inline-block;
+  /* Tabelstructuur voor messages */
+  .messages-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .messages-table td {
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+
+  .msg-main-cell {
+    width: 100%;
+  }
+
+  .msg-icons-cell {
+    width: 65px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .message-block {
+    border: 1px solid #e5e7eb;   /* lichtgrijs */
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  .msg-header-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .msg-meta {
     font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 400;   /* <-- HIER AANGEPAST: NIET MEER VET */
+  }
+
+  .msg-label-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+    padding-bottom: 0;
+  }
+
+  .msg-body {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 11px;
+    white-space: pre-wrap;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
     height: 24px;
-    line-height: 22px;
-    border: 1px solid rgba(0,0,0,0.3);
     border-radius: 4px;
-    padding: 0 6px;
+    background-color: #346388;
+    color: #ffffff;
+    border: none;
     margin: 2px 3px;
-    vertical-align: middle;
+    white-space: nowrap;
   }
 
-  .icon-btn{
-    width:32px;
-    height:32px;
-    border:1px solid #ddd;
-    background:#ffffff;
-    border-radius:6px;
-    padding:0;
+  .start {
+    display:flex;align-items:center;justify-content:center;
+    width:145px!important;height:24px;border-radius:4px;
+    background:#34885e;color:#fff;font-family:'Roboto Mono';font-size:11px;
+    margin:2px 3px;white-space:nowrap;
+  }
+
+  .stop {
+    display:flex;align-items:center;justify-content:center;
+    width:145px!important;height:24px;border-radius:4px;
+    background:#ee3107;color:#fff;font-family:'Roboto Mono';font-size:11px;
+    margin:2px 3px;white-space:nowrap;
+  }
+
+  .safety {
+    display:flex;align-items:center;justify-content:center;
+    width:145px!important;height:24px;border-radius:4px;
+    background:#ff9100;color:#fff;font-family:'Roboto Mono';font-size:11px;
+    margin:2px 3px;white-space:nowrap;
+  }
+
+  .must {
+    display:flex;align-items:center;justify-content:center;
+    width:145px!important;height:24px;border-radius:4px;
+    background:#ffea00;color:#6f6f6f;font-family:'Roboto Mono';font-size:11px;
+    margin:2px 3px;white-space:nowrap;
+  }
+
+  .info {
+    display:flex;align-items:center;justify-content:center;
+    width:145px!important;height:24px;border-radius:4px;
+    background:#ebebeb;color:#2c2c2c;font-family:'Roboto Mono';font-size:11px;
+    border:0;margin:2px 3px;white-space:nowrap;
+  }
+
+  .tag.wms { display:inline-flex; }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .icon-btn:hover { background:#fdc500; }
+  .icon-btn i { font-size:11px; }
+
+  .messages-help-text {
+    font-family:'Roboto Mono',monospace;
+    font-size:11px;
+    color:#646464;
+  }
+
+  .attachments-row {
+    margin-top:6px;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-  }
-
-  .icon-btn:hover{
-    background:#fdc500;
+    flex-wrap:wrap;
+    gap:8px;
   }
 </style>
 
 <section class="card">
 
 <%
-function fmtDateTime(m){
+/* Datum formatter */
+function fmtDate(m){
   const pad=n=>n<10?'0'+n:n;
   const d = m.createdAt ? new Date(m.createdAt) : null;
-  const valid = d && !isNaN(d);
-  const dateStr = valid ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}` : (m.date || '');
-  const timeStr = (m.time && String(m.time).trim()) ? m.time : (valid ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : '');
-  return [dateStr, timeStr].filter(Boolean).join(' - ');
+  if(!d || isNaN(d)) return m.date || '';
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+/* Tijd formatter (wordt vet via <strong>) */
+function fmtTime(m){
+  const pad=n=>n<10?'0'+n:n;
+
+  if(m.time && String(m.time).trim()) return m.time;
+
+  const d = new Date(m.createdAt);
+  if(!d || isNaN(d)) return '';
+
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 %>
 
-     <h1 style="margin-bottom:2px;">LOGBOOK • MESSAGES</h1>
- <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">All posted messages. Select the notebook icon to add the message to your notebook, or deselect it to remove it.</span><br><br>
+<h1 style="margin-bottom:2px;">LOGBOOK • MESSAGES</h1>
+<span class="messages-help-text">
+  All posted messages. Select the notebook icon to add the message to your notebook,
+  or deselect it to remove it.
+</span>
+<br><br>
 
-  <div class="feed">
-    <% if (!items.length) { %>
-      <p class="muted">No messages yet.</p>
-    <% } %>
+<div class="feed">
 
-    <% items.forEach(m => { 
-         const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
+  <% if (!items.length) { %>
+    <p class="muted" style="font-size:11px;">No messages yet.</p>
+  <% } %>
+
+  <table class="messages-table">
+    <tbody>
+
+    <% items.forEach(m => {
+       const inNB = Array.isArray(notebooks) && notebooks.includes(m.id);
     %>
 
-      <article class="post">
+      <tr>
 
-        <!-- HEADER: alles op één lijn -->
-        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <!-- LINKERKOLOM -->
+        <td class="msg-main-cell">
+          <div class="message-block">
 
-          <!-- LINKS: user / datum / labels / message -->
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <%= m.user %> - 
-            <span><%= fmtDateTime(m) %> : </span>
+            <div class="msg-header-row">
 
-            <% if (typeof m.deltaMin === 'number') { 
-                 const s = m.deltaMin.toFixed(1).replace('.', ',') + "'"; %> 
-              <span title="Diff since previous STOP"><font color="FF0000">Δ <%= s %></font>-</span>
-            <% } %>
+              <!-- ENKEL TIJD VET -->
+              <span class="msg-meta">
+                <%= m.user %> – <%= fmtDate(m) %> – <strong><%= fmtTime(m) %></strong> :
+              </span>
 
-            <% (m.infoLabels||[]).forEach(l => { %><span class="tag"><%= l %></span><% }) %>
-            <% (m.software||[]).forEach(l => { %><span class="tag software"><%= l %></span><% }) %>
-
-            <% if (m.calc==='START') { %><span class="tag start">START</span><% } %>
-            <% if (m.calc==='STOP')  { %><span class="tag stop">STOP</span><% } %>
-            <% if (m.calc==='QC')    { %><span class="tag qc">QC</span><% } %>
-
-            <% if (m.push==='MUST-READ') { %><span class="tag must">MUST-READ</span><% } %>
-            <% if (m.push==='SAFETY')    { %><span class="tag safety">SAFETY</span><% } %>
-
-            <% if (m.wms) { %>
-              <span class="tag wms">WMS:<%= m.wms %></span>
-            <% } %>
-
-            <% if (m.chemswitch) { %>
-              <span class="tag wms">CHEM-SWITCH</span>
-            <% } %>
-
-            <% if (m.qc) { %>
-              <span class="tag qc">QUALITY CHECK</span>
-            <% } %>
-
-            <% if (m.message) { %>
-              <span><%= m.message %></span>
-            <% } %>
-          </div>
-
-          <!-- RECHTS: delete + notebook -->
-          <div style="display:flex;gap:8px;">
-
-            <!-- DELETE van deze ene message -->
-            <form method="post" action="/logbook/message/<%= m.id %>/delete"
-                  onsubmit="return confirm('Message wissen?');">
-              <button class="icon-btn" title="Delete message">
-                <i data-lucide="trash-2"></i>
-              </button>
-            </form>
-
-            <!-- Notebook toggle -->
-            <form method="post" action="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
-              <input type="hidden" name="id" value="<%= m.id %>"/>
-              <button class="icon-btn <%= inNB ? 'active' : '' %>"
-                      title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>">
-                <i data-lucide="notebook-pen"></i>
-              </button>
-            </form>
-
-          </div>
-
-        </header>
-
-        <!-- ATTACHMENTS (altijd op nieuwe lijn) -->
-        <% if (m.attachments && m.attachments.length) { %>
-          <div class="attachments" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
-            <% m.attachments.forEach(a => { %>
-
-              <% if (a.mime && a.mime.startsWith('image/')) { %>
-                <a href="<%= a.href %>" target="_blank" rel="noopener"
-                   style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
-                  <img src="<%= a.href %>" alt="<%= a.name %>"
-                       style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
-                </a>
-              <% } else { %>
-                <a href="<%= a.href %>" target="_blank" rel="noopener"
-                   style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;">
-                  📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
-                </a>
+              <% if (typeof m.deltaMin === 'number') {
+                 const s = m.deltaMin.toFixed(1).replace('.', ',') + "'"; %>
+                <span style="font-size:11px;">
+                  <font color="FF0000">Δ <%= s %></font> -
+                </span>
               <% } %>
 
-            <% }) %>
-          </div>
-        <% } %>
+            </div>
 
-      </article>
+            <!-- LABELS -->
+            <div class="msg-label-row">
+
+              <% (m.infoLabels||[]).forEach(l => { %>
+                <span class="info"><%= l %></span>
+              <% }) %>
+
+              <% (m.software||[]).forEach(l => { %>
+                <span class="tag"><%= l %></span>
+              <% }) %>
+
+              <% if (m.calc==='START') { %><span class="start">START</span><% } %>
+              <% if (m.calc==='STOP')  { %><span class="stop">STOP</span><% } %>
+              <% if (m.calc==='QC')    { %><span class="tag">QC</span><% } %>
+
+              <% if (m.push==='MUST-READ') { %><span class="must">MUST-READ</span><% } %>
+              <% if (m.push==='SAFETY')    { %><span class="safety">SAFETY</span><% } %>
+
+              <% if (m.wms)    { %><span class="tag wms"><%= (m.wms==='IB-RAW'?'RAW-IB':m.wms) %></span><% } %>
+              <% if (m.chemib) { %><span class="tag wms">CHEM-IB</span><% } %>
+              <% if (m.bulkob) { %><span class="tag wms">BULK-OB</span><% } %>
+              <% if (m.qc)     { %><span class="tag">QUALITY CHECK</span><% } %>
+
+            </div>
+
+            <!-- BERICHTTEKST -->
+            <% if (m.message) { %>
+              <div class="msg-body"><%= m.message %></div>
+            <% } %>
+
+            <!-- BIJLAGEN -->
+            <% if (m.attachments && m.attachments.length) { %>
+              <div class="attachments-row">
+
+                <% m.attachments.forEach(a => { %>
+
+                  <% if (a.mime && a.mime.startsWith('image/')) { %>
+
+                    <a href="<%= a.href %>" target="_blank" rel="noopener"
+                       style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                      <img src="<%= a.href %>"
+                           style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
+                    </a>
+
+                  <% } else { %>
+
+                    <a href="<%= a.href %>" target="_blank"
+                       style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;font-size:11px;text-decoration:none;">
+                      📄 <span style="margin-left:6px;"><%= a.name %></span>
+                    </a>
+
+                  <% } %>
+
+                <% }) %>
+
+              </div>
+            <% } %>
+
+          </div>
+        </td>
+
+        <!-- RECHTERKOLOM -->
+        <td class="msg-icons-cell">
+
+          <!-- DELETE -->
+          <form method="post" action="/logbook/message/<%= m.id %>/delete"
+                onsubmit="return confirm('Message wissen?');"
+                style="margin-bottom:6px;">
+            <button class="icon-btn"><i data-lucide="trash-2"></i></button>
+          </form>
+
+          <!-- NOTEBOOK -->
+          <form method="post" action="<%= inNB?'/logbook/remove-notebook':'/logbook/add-notebook' %>">
+            <input type="hidden" name="id" value="<%= m.id %>"/>
+            <button class="icon-btn <%= inNB?'active':'' %>">
+              <i data-lucide="notebook-pen"></i>
+            </button>
+          </form>
+
+        </td>
+
+      </tr>
 
     <% }) %>
 
-  </div>
+    </tbody>
+  </table>
+
+</div>
 </section>

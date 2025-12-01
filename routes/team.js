@@ -1,5 +1,10 @@
 // routes/team.js
 const express = require('express');
+const path    = require('path');
+const fs      = require('fs');
+const multer  = require('multer');
+const crypto  = require('crypto');
+
 const router = express.Router();
 
 // --- Auth guard ---
@@ -8,13 +13,52 @@ router.use((req, res, next) => {
   next();
 });
 
+// --- Upload config (zelfde /uploads map als server.js) ---
+const UP_PATH = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(UP_PATH)) {
+  fs.mkdirSync(UP_PATH, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UP_PATH),
+  filename: (req, file, cb) => {
+    const time = Date.now();
+    const rand = crypto.randomBytes(3).toString('hex');
+    const parsed = path.parse(file.originalname || 'file');
+    const safeBase = (parsed.name || 'file')
+      .toLowerCase()
+      .replace(/[^a-z0-9_\-]+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 60);
+    const ext = (parsed.ext || '').toLowerCase();
+    cb(null, `${time}-${rand}-${safeBase}${ext}`);
+  }
+});
+
+const ALLOWED = new Set([
+  'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp',
+  'application/pdf'
+]);
+
+function fileFilter(req, file, cb) {
+  if (ALLOWED.has(file.mimetype)) return cb(null, true);
+  cb(new Error('Only images or PDF files are allowed for topics.'));
+}
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024, files: 10 }
+});
+
 // --- In-memory store ---
 function getStore(app){
   if (!app.locals.teamStore){
     app.locals.teamStore = {
       schedule: {},
       absences: [],
-      replacements: []
+      replacements: [],
+      topics: []      // topics voor TEAM • TOPICS
     };
   }
   return app.locals.teamStore;
@@ -28,16 +72,18 @@ function monthYearFromQuery(q){
   const yy = String(year || now.getFullYear());
   return { month:mm, year:yy };
 }
+
 function ymd(d){
   const y = d.getFullYear();
   const m = String(d.getMonth()+1);
-  const day = String(d.getDate());
-  const mm = m.padStart(2,'0');
-  const dd = day.padStart(2,'0');
+  const day = d.getDate();
+  const mm = String(m).padStart(2,'0');
+  const dd = String(day).padStart(2,'0');
   return `${y}-${mm}-${dd}`;
 }
 function dow(d){ return d.getDay(); }
 function daysInMonth(year, month){ return new Date(year, month, 0).getDate(); }
+
 function pushShift(store, date, shift, user, start, end){
   store.schedule[date] = store.schedule[date] || [];
   const exists = store.schedule[date].some(x => x.shift===shift && x.user===user);
@@ -54,7 +100,6 @@ function pushShift(store, date, shift, user, start, end){
   }
 }
 
-// --- Auto-fill rules ---
 function ensureMonthSeed(store, month, year){
   const prefix = `${year}-${month}-`;
   const already = Object.keys(store.schedule).some(d => d.startsWith(prefix));
@@ -103,24 +148,229 @@ function filterSchedule(store, month, year){
     (a.date+a.shift+a.user).localeCompare(b.date+b.shift+b.user)
   );
 }
+
 function listAbsencesAll(store){
   return (store.absences||[])
     .slice()
     .sort((a,b)=> (b.date+b.shift).localeCompare(a.date+a.shift));
 }
+
 function listReplacementsAll(store){
   return (store.replacements||[])
     .slice()
     .sort((a,b)=> (b.date+b.shift).localeCompare(a.date+a.shift));
 }
 
-// --- SCHEDULE ---
+/* =====================================================================
+   TEAM tertiary navigation (green bar)
+   ===================================================================== */
+
+const TEAM_TERTIARY_SUBS = [
+  { key: 'TOPICS',        path: '/team/topics' },
+  { key: 'SCHEDULE',      path: '/team/schedule' },
+  { key: 'ABSENCES',      path: '/team/absences' },
+  { key: 'ADD TOPIC',     path: '/team/topics/add' },
+  { key: 'TOPIC STATS',   path: '/team/topics/stats' },
+  { key: 'PAST TOPICS',   path: '/team/topics/past' },
+  { key: 'REPLACEMENTS',  path: '/team/replacements' },
+  { key: 'WORKING HOURS', path: '/team/work-performance' }
+];
+
+function renderTeam(res, req, view, extra){
+  const base = {
+    layout: 'layout',
+    activeDomain: 'TEAM',
+    tertiarySubs: TEAM_TERTIARY_SUBS,
+    requestPath: (req.baseUrl || '') + (req.path || '')
+  };
+  res.render(view, Object.assign(base, extra || {}));
+}
+
+/* =====================================================================
+   TOPICS (TEAM)
+   ===================================================================== */
+
+// overzicht TOPICS
+router.get('/topics', (req, res) => {
+  const teamStore = getStore(req.app);
+  const items = teamStore.topics || [];
+
+  const mainStore = req.app.locals.store || { notebooks: {} };
+  const code = req.session.user.code;
+  const nbIds = (mainStore.notebooks[code] || []).map(n => n.fromId || n.id);
+
+  renderTeam(res, req, 'pages/team/topics', {
+    title: 'TEAM - TOPICS',
+    items,
+    notebooks: nbIds
+  });
+});
+
+// ADD TOPIC – formulier (GET)
+router.get('/topics/add', (req, res) => {
+  renderTeam(res, req, 'pages/team/add-topic', {
+    title: 'TEAM - ADD TOPIC'
+  });
+});
+
+// ADD TOPIC – formulier (POST) mét file-upload
+router.post(
+  '/topics/add',
+  upload.array('attachments', 10),
+  (req, res) => {
+    const teamStore = getStore(req.app);
+    const body = req.body || {};
+    const now  = new Date();
+
+    const infoLabels = (body.infoLabels || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const files = req.files || [];
+    const attachments = files.map(f => ({
+      name: f.originalname,
+      mime: f.mimetype,
+      size: f.size,
+      href: `/uploads/${path.basename(f.filename)}`
+    }));
+
+    const topic = {
+      id: 'T' + Date.now(),
+      createdAt: now,
+      user: (req.session.user && req.session.user.code) || 'TEAM',
+      infoLabels,
+      topicType: body.topicType || '',
+      message: body.message || '',
+      attachments,
+      ackBy: []                // wie dit topic geacknowledged heeft
+    };
+
+    (teamStore.topics ||= []).unshift(topic);
+
+    return res.redirect('/team/topics');
+  }
+);
+
+// ACKNOWLEDGE – huidige user wordt toegevoegd aan ackBy van de aangekruiste topics
+router.post(
+  '/topics/acknowledge',
+  express.urlencoded({ extended: true }),
+  (req, res) => {
+    const teamStore = getStore(req.app);
+    const code = req.session.user.code;
+
+    let { ids } = req.body || {};
+    if (!ids) return res.redirect('/team/topics');
+    if (!Array.isArray(ids)) ids = [ids];
+
+    (teamStore.topics || []).forEach(t => {
+      if (!ids.includes(t.id)) return;
+      if (!Array.isArray(t.ackBy)) t.ackBy = [];
+      if (!t.ackBy.includes(code)) t.ackBy.push(code);
+    });
+
+    return res.redirect('/team/topics');
+  }
+);
+
+// TOPIC → MY NOTEBOOK
+router.post(
+  '/topics/add-notebook',
+  express.urlencoded({ extended: true }),
+  (req, res) => {
+    const { id } = req.body || {};
+    if (!id) return res.redirect('back');
+
+    const teamStore = getStore(req.app);
+    const mainStore = req.app.locals.store;
+    const code      = req.session.user.code;
+
+    const topic = (teamStore.topics || []).find(t => t.id === id);
+    if (!topic) return res.redirect('back');
+
+    if (!mainStore.notebooks[code]) mainStore.notebooks[code] = [];
+
+    const already = mainStore.notebooks[code].some(
+      n => n.fromId === id || n.id === id
+    );
+    if (!already) {
+      mainStore.notebooks[code].unshift({
+        id:        `nb-topic-${topic.id}`,
+        fromId:    topic.id,
+        user:      topic.user,
+        message:   topic.message,
+        time:      '',
+        infoLabels: topic.infoLabels || [],
+        software:   [],
+        calc:       '',
+        push:       'TOPIC',
+        wms: '', chemswitch:'', qc:'', chemib:'', bulkob:'',
+        topicType:  topic.topicType || '',
+        attachments: topic.attachments || [],
+        createdAt:  topic.createdAt || null,
+        savedAt:    new Date()
+      });
+    }
+
+    return res.redirect('back');
+  }
+);
+
+// TOPIC STATS – rood blokje per topic dat die operator NOG NIET heeft geacknowledged
+router.get('/topics/stats', (req, res) => {
+  const teamStore = getStore(req.app);
+  const topics = teamStore.topics || [];
+
+  const OPS = ['DDE','TDA','CVD','JFI','FCO','DTH','JPE'];
+
+  const stats = OPS.map(code => {
+    const count = topics.filter(t => {
+      const ackBy = Array.isArray(t.ackBy) ? t.ackBy : [];
+      return !ackBy.includes(code);    // nog niet gelezen door deze operator
+    }).length;
+    return { code, count };
+  });
+
+  renderTeam(res, req, 'pages/team/stats-topics', {
+    title: 'TEAM - TOPIC STATS',
+    stats
+  });
+});
+
+// PAST TOPICS – enkel opsomming, geen delete
+router.get('/topics/past', (req, res) => {
+  const teamStore = getStore(req.app);
+  const topics = teamStore.topics || [];
+
+  // Rendert pages/team/past-topics.ejs
+  renderTeam(res, req, 'pages/team/past-topics', {
+    title: 'TEAM - PAST TOPICS',
+    topics
+  });
+});
+
+/* =====================================================================
+   SCHEDULE
+   ===================================================================== */
+
+const OPERATORS = ['CVD','DDS','DTH','EDG','FCO','FVW','JFI','TDA'];
+
+function parseStartDateFromLabel(label){
+  if (!label) return null;
+  const m = label.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (!m) return null;
+  return { day:m[1], month:m[2], year:m[3] };
+}
+
 router.get('/schedule', (req, res) => {
   const store = getStore(req.app);
   const { month, year } = monthYearFromQuery(req.query);
   ensureMonthSeed(store, month, year);
   const rows = filterSchedule(store, month, year);
-  res.render('pages/team/schedule', {
+
+  renderTeam(res, req, 'pages/team/schedule', {
+    title: 'TEAM - SCHEDULE',
     month,
     year,
     rows,
@@ -161,7 +411,9 @@ router.post('/schedule/mark-absent', express.urlencoded({extended:true}), (req,r
 router.get('/absences', (req, res) => {
   const store = getStore(req.app);
   const rows = listAbsencesAll(store);
-  res.render('pages/team/absences', {
+
+  renderTeam(res, req, 'pages/team/absences', {
+    title: 'TEAM - ABSENCES',
     rows,
     raw: {
       columns:['date','shift','originalUser','status','approved'],
@@ -224,7 +476,9 @@ router.post('/absences/fill', express.urlencoded({extended:true}), (req,res)=>{
 router.get('/replacements', (req, res) => {
   const store = getStore(req.app);
   const rows = listReplacementsAll(store);
-  res.render('pages/team/replacements', {
+
+  renderTeam(res, req, 'pages/team/replacements', {
+    title: 'TEAM - REPLACEMENTS',
     rows,
     raw: {
       columns:['date','shift','originalUser','coverUser'],
@@ -260,20 +514,9 @@ router.post('/replacements/undo', express.urlencoded({extended:true}), (req,res)
 
 /* =====================================================================
    WORK PERFORMANCE
-   Filters + export
    ===================================================================== */
 
-const OPERATORS = ['CVD','DDS','DTH','EDG','FCO','FVW','JFI','TDA'];
-
-function parseStartDateFromLabel(label){
-  if (!label) return null;
-  const m = label.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-  if (!m) return null;
-  return { day:m[1], month:m[2], year:m[3] };
-}
-
 router.get('/work-performance', (req, res) => {
-
   const allShifts = (req.app.locals && Array.isArray(req.app.locals.shifts))
     ? req.app.locals.shifts
     : [];
@@ -292,8 +535,8 @@ router.get('/work-performance', (req, res) => {
     return true;
   });
 
-  res.render('pages/team/work-performance', {
-    layout: 'layout',
+  renderTeam(res, req, 'pages/team/work-performance', {
+    title: 'TEAM - WORKING HOURS',
     user: req.session.user || null,
     items: filtered,
     filter: { month, year, operator },
@@ -301,7 +544,10 @@ router.get('/work-performance', (req, res) => {
   });
 });
 
-// EXPORT (schedule / absences / replacements / work-performance)
+/* =====================================================================
+   EXPORT
+   ===================================================================== */
+
 router.get('/export', (req, res) => {
   const store = getStore(req.app);
   const { page='schedule' } = req.query;
@@ -322,7 +568,6 @@ router.get('/export', (req, res) => {
     };
 
   } else if (page === 'work-performance') {
-    // Export van /team/work-performance (gefilterde shifts)
     const allShifts = (req.app.locals && Array.isArray(req.app.locals.shifts))
       ? req.app.locals.shifts
       : [];
@@ -341,7 +586,6 @@ router.get('/export', (req, res) => {
       return true;
     });
 
-    // totale minuten & HH:MM per rij
     const rows = filtered.map(s => {
       let minutes = 0;
       let hhmm = '';
@@ -378,7 +622,6 @@ router.get('/export', (req, res) => {
     };
 
   } else {
-    // default: schedule
     const { month, year } = monthYearFromQuery(req.query);
     ensureMonthSeed(store, month, year);
     const rows = filterSchedule(store, month, year);

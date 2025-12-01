@@ -2,120 +2,161 @@
 
 <div class="card shadow-sm mb-4">
   <div class="card-header">
-  <h1 style="margin-bottom:2px;">CHEMICALS • STOCK</h1>
- <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Overview of the stock level and available batches. You can change the alert level.</span><br><br>
+    <h1 style="margin-bottom:2px;">CHEMICALS • STOCK</h1>
+    <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">
+      Overview of the stock level and available batches. You can change the alert level.
+    </span><br><br>
   </div>
-<br>
-  <div class="card-body p-0">
+
+  <div class="card-body">
 
     <style>
-      /* Raster: 4 kolommen zoals in je voorbeeld */
-      .chem-grid {
-        display: grid;
-        grid-template-columns: 300px 150px 120px 120px;
-        column-gap: 12px;
-        row-gap: 3px;
-        font-size: 12px;
+      /* Zelfde stijl als loading-table-compact */
+      .chem-stock-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
+
+      .chem-stock-table thead tr {
+        background: #f7f7f7;
+      }
+
+      .chem-stock-table th,
+      .chem-stock-table td {
+        padding: 7px 8px;
+        border-bottom: 1px solid #e6e6e6;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .chem-stock-table td.num {
+        text-align: left;
+      }
+
+      .chem-stock-table .empty {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #777;
       }
 
       .chem-stock-green { color:#1a7f13; font-weight:bold; }
-      .chem-stock-red { color:#b30000; font-weight:bold; }
+      .chem-stock-red   { color:#b30000; font-weight:bold; }
 
       .chem-alert-input {
         width: 60px;
         text-align: center;
         border: 1px solid #e0c36c;
-        border-radius:6px; 
+        border-radius:9999px;
         background-color: #fff9c4;
         font-weight: bold;
         padding: 2px 4px;
+        font-size:10px;
       }
 
-      .batch-row {
-        display: contents; /* batches volgen perfect de grid */
+      .chem-last-inbound {
+        font-size: 10px;
+        color: #555;
       }
 
-      .batch-lot {
-        padding-left: 10px;
-      }
-
-      /* WITREGEL tussen artikels */
-      .article-block {
-        margin-bottom: 10px;
+      .chem-batch-row td {
+        font-size: 10px;
       }
     </style>
 
-    <% stock.forEach(item => { %>
+    <div style="overflow:auto;">
+      <table class="chem-stock-table">
+        <thead>
+          <tr>
+            <th>ARTICLE</th>
+            <th>STOCK LEVEL</th>
+            <th>LAST INBOUND</th>
+            <th>STOCK ALERT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!stock || stock.length === 0) { %>
+            <tr>
+              <td colspan="4" class="empty">No articles found.</td>
+            </tr>
+          <% } else { %>
 
-      <!-- Artikelblok -->
-      <div class="article-block">
+            <% stock.forEach(function(item) { %>
+              <!-- Hoofd-rij per artikel -->
+              <tr>
+                <!-- ARTICLE -->
+                <td>
+                  <strong><%= item.articleId %> - <%= item.articleName %></strong>
+                </td>
 
-        <div class="chem-grid">
+                <!-- STOCK LEVEL -->
+                <td>
+                  <% if (item.totalAvailable >= item.stockAlertValue) { %>
+                    <span class="chem-stock-green"><%= item.totalAvailable %> in stock</span>
+                  <% } else { %>
+                    <span class="chem-stock-red"><%= item.totalAvailable %> in stock</span>
+                  <% } %>
+                </td>
 
-          <!-- Kolom 1: Artikelnaam -->
-          <div style="font-weight:bold;">
-            <%= item.articleId %> - <%= item.articleName %>
-          </div>
+                <!-- LAST INBOUND -->
+                <td class="chem-last-inbound">
+                  <% if (item.lastInboundQuantity != null && item.lastInboundDate) { %>
+                    #<%= item.lastInboundQuantity %> on
+                    <%= new Date(item.lastInboundDate).toLocaleDateString('nl-BE') %>
+                  <% } else { %>
+                    <span class="text-muted">No inbound yet</span>
+                  <% } %>
+                </td>
 
-          <!-- Kolom 2: X in stock (groen/rood) -->
-          <div>
-            <% if (item.totalAvailable >= item.stockAlertValue) { %>
-              <span class="chem-stock-green"><%= item.totalAvailable %> in stock</span>
-            <% } else { %>
-              <span class="chem-stock-red"><%= item.totalAvailable %> in stock</span>
-            <% } %>
-          </div>
+                <!-- STOCK ALERT (input + SAVE) -->
+                <td>
+                  <form action="/chemicals/stock/<%= item.articleId %>/alert"
+                        method="POST"
+                        style="margin:0; display:inline-flex; align-items:center; gap:6px;">
+                    <input
+                      type="number"
+                      name="stockAlertValue"
+                      value="<%= item.stockAlertValue %>"
+                      min="0"
+                      step="1"
+                      class="chem-alert-input"
+                    >
+                    <button type="submit"
+                            class="btn btn-dark btn-sm"
+                            style="padding:6px 10px; font-size:9px; border-radius:9999px;">
+                      SAVE
+                    </button>
+                  </form>
+                </td>
+              </tr>
 
-          <!-- Kolom 3: Stock alert label -->
-          <div>Stock alert</div>
+              <!-- Extra rijen voor batches met >0 stock -->
+              <% (item.batches || []).forEach(function(batch) { 
+                   if (batch.availableQuantity > 0) { %>
+                <tr class="chem-batch-row">
+                  <!-- ARTICLE-kolom: lotnummer, ingesprongen -->
+                  <td style="padding-left:22px;">
+                    <%= batch.lotNumber %>
+                  </td>
 
-          <!-- Kolom 4: Geel vakje + SAVE-knop -->
-          <div>
-            <form action="/chemicals/stock/<%= item.articleId %>/alert"
-                  method="POST"
-                  style="margin:0; display:flex; align-items:center; gap:4px;">
-              <input
-                type="number"
-                name="stockAlertValue"
-                value="<%= item.stockAlertValue %>"
-                min="0"
-                step="1"
-                class="chem-alert-input"
-              >
-              <button type="submit"
-                      class="btn btn-dark btn-sm"
-                      style="padding: 6px; font-size:9px; line-height:1;">
-                SAVE
-              </button>
-            </form>
-          </div>
+                  <!-- STOCK LEVEL: #aantal -->
+                  <td>
+                    #<%= batch.availableQuantity %>
+                  </td>
 
-          <!-- Batch-rijen in dezelfde grid -->
-          <% item.batches.forEach(batch => { %>
-            <% if (batch.availableQuantity > 0) { %>
-              <div class="batch-row">
+                  <!-- LAST INBOUND & STOCK ALERT leeg voor batch-rijen -->
+                  <td></td>
+                  <td></td>
+                </tr>
+              <% } }); %>
 
-                <!-- Kolom 1: lotnummer -->
-                <div class="batch-lot"><%= batch.lotNumber %></div>
+            <% }); %>
 
-                <!-- Kolom 2: hoeveelheid -->
-                <div>#<%= batch.availableQuantity %></div>
-
-                <!-- Kolom 3 leeg -->
-                <div></div>
-
-                <!-- Kolom 4 leeg -->
-                <div></div>
-
-              </div>
-            <% } %>
-          <% }) %>
-
-        </div>
-      </div>
-
-    <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>
-

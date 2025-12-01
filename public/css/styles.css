@@ -89,7 +89,7 @@ textarea{min-height:120px;resize:vertical}
 .tag.qc{background:#184E77;color:#fff;border-color:#184E77}
 .tag.must{background:#fdc500;color:#000;border-color:#fdc500}
 .tag.safety{background:#FD7800;color:#fff;border-color:#FD7800}
-.tag.wms{background:#b3bfc3;color:#fff;border-color:#000000}
+.tag.wms{background:#184E77;color:#fff;border-color:#000000}
 
 /* Footer buttons */
 .submit{float:right;margin-top:12px}
@@ -185,3 +185,51 @@ input.time { border:1px solid #B3DAFF; background:#F6FBFF; border-radius:6px; }
 .icon-btn:hover{ background:#fdc500; color:#fff; }
 .icon-btn.active{ background:#fdc500; color:#fff; }
 /* ----------------------------------- */
+
+/* Basisknop */
+.btn-nav {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #e9e9e9;       /* zwart */
+  color: #3b3b3b;                  /* witte tekst */
+  border-radius: 4px;              /* kleine radius */
+  text-decoration: none;
+  font-weight: 200;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Hover */
+.btn-nav:hover {
+  background-color: #FFCC00;       /* geel */
+  color: #000000;                  /* zwarte tekst */
+}
+
+/* Actieve knop */
+.btn-nav.is-active {
+  background-color: #FFCC00;       /* geel */
+  color: #000000;
+}
+
+/* Basisknop voor groene balk */
+.btn-sub {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #526744;      /* zwart */
+  color: #ffffff;                 /* wit */
+  border-radius: 4px;             /* lichte radius */
+  text-decoration: none;
+  font-weight: 200;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Hover */
+.btn-sub:hover {
+  background-color: #FFCC00;      /* geel */
+  color: #000000;                 /* zwart */
+}
+
+/* Actieve knop */
+.btn-sub.is-active {
+  background-color: #FFCC00;      /* geel */
+  color: #000000;                 /* zwart */
+}

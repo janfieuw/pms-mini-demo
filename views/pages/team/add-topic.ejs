@@ -1,0 +1,328 @@
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<section class="card">
+  <h1 style="margin-bottom:2px;">ADD TOPIC</h1>
+  <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">
+    Create a new team topic. Select one or more info labels, add your message and (optionally) an attachment. 
+    Use the blue labels to select the topic category.
+  </span><br><br>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div style="background:#ffefef;color:#a40000;border:1px solid #a40000;padding:10px 12px;border-radius:8px;margin:0 0 12px 0;font-weight:600;">
+      <i data-lucide="alert-triangle" style="width:18px;height:18px;vertical-align:-3px;margin-right:6px;"></i>
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form method="post" action="/team/topics/add" class="form" enctype="multipart/form-data">
+
+
+    <input type="hidden" name="user" value="<%= (typeof currentUser !== 'undefined' && currentUser && currentUser.code) ? currentUser.code : 'DEMO' %>">
+
+    <!-- ================= INFO LABELS ================= -->
+    <div class="group">
+      <div class="labels-raster" data-chip-group="info">
+        <div class="label-col">
+          <button class="chip common-label" data-value="B0110" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0110</button>
+          <button class="chip common-label" data-value="R0140" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">R0140</button>
+          <button class="chip common-label" data-value="B0180" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0180</button>
+          <button class="chip common-label" data-value="B0210" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0210</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="D0320" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">D0320</button>
+          <button class="chip common-label" data-value="D0330" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">D0330</button>
+          <button class="chip common-label" data-value="B0340" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0340</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="BP0410" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">BP0410</button>
+          <button class="chip common-label" data-value="B0415" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0415</button>
+          <button class="chip common-label" data-value="C0430" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">C0430</button>
+          <button class="chip common-label" data-value="B0440" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0440</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="M0451" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">M0451</button>
+          <button class="chip common-label" data-value="FB0500" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">FB0500</button>
+          <button class="chip common-label" data-value="VT2003" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">VT2003</button>
+          <button class="chip common-label" data-value="VT2004" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">VT2004</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="S0621" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">S0621</button>
+          <button class="chip common-label" data-value="B0625" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0625</button>
+          <button class="chip common-label" data-value="BR0670" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">BR0670</button>
+          <button class="chip common-label" data-value="B0630" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0630</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="B0710" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0710</button>
+          <button class="chip common-label" data-value="B0720" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0720</button>
+          <button class="chip common-label" data-value="B0680" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B0680</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="GS0910" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">GS0910</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="COAG" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">COAG</button>
+          <button class="chip common-label" data-value="B1070" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B1070</button>
+          <button class="chip common-label" data-value="B1110" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B1110</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="EVAP" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">EVAP</button>
+          <button class="chip common-label" data-value="MVR" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">MVR</button>
+          <button class="chip common-label" data-value="B1320" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">B1320</button>
+          <button class="chip common-label" data-value="P1321" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">P1321</button>
+        </div>
+
+        <div class="label-col">
+          <button class="chip common-label" data-value="CIP" type="button" style="background:#ebebeb;color:#000;border-color:#ebebeb;">CIP</button>
+        </div>
+      </div>
+      <input type="hidden" name="infoLabels" value="">
+    </div>
+
+    <!-- ================= MESSAGE ================= -->
+    <div class="group">
+      <label><font color="#FFFFFF">MESSAGE</font></label>
+      <textarea name="message" rows="2" placeholder="Optional text..."
+        style="
+          width:87%;
+          box-sizing:border-box;
+          line-height:1.2;
+          padding:8px;
+          border:1px solid #acacac;
+          border-radius:6px;
+          min-height:0;
+          height:calc(2 * 1.2em + 16px + 2px);
+          resize:vertical;
+          background:#fff;
+          color:#000;
+        "></textarea>
+    </div>
+
+    <!-- ================= ATTACHMENTS ================= -->
+    <div class="group attachments-block">
+      <span class="attachments-label">ATTACHMENTS (PNG/JPG/GIF/PDF)</span>
+
+      <div class="attachments-control">
+        <label for="attachmentsInput" class="upload-btn">Choose file</label>
+        <span id="attachmentsFileLabel" class="upload-label">No file chosen</span>
+
+        <input
+          id="attachmentsInput"
+          type="file"
+          name="attachments"
+          multiple
+          accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,image/png,image/jpeg,image/gif,image/webp,application/pdf"
+          style="display:none;" />
+      </div>
+    </div>
+
+    <!-- ================= TOPIC CATEGORY (BLUE LABELS) ================= -->
+    <div class="group">
+      <span class="attachments-label">TOPIC CATEGORY</span>
+      <div class="labels-raster options" data-chip-group="topicType" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px;">
+        <button class="chip topic-pill" type="button" data-value="INSTRUCTIONS">INSTRUCTIONS</button>
+        <button class="chip topic-pill" type="button" data-value="PROCESS NOTICES">PROCESS NOTICES</button>
+        <button class="chip topic-pill" type="button" data-value="IMPROVEMENTS">IMPROVEMENTS</button>
+        <button class="chip topic-pill" type="button" data-value="HR">HR</button>
+        <button class="chip topic-pill" type="button" data-value="GENERAL">GENERAL</button>
+      </div>
+      <input type="hidden" name="topicType" value="">
+    </div>
+
+    <!-- ================= SUBMIT ================= -->
+    <button class="btn btn-dark submit" type="submit"
+            style="font-family:'Roboto Mono', monospace;">ADD A TOPIC</button>
+  </form>
+
+  <style>
+    :root { --label-w: 140px; --label-h: 22px; }
+
+    /* INFO-raster: 5 kolommen */
+    .labels-raster[data-chip-group="info"] {
+      display: grid;
+      grid-template-columns: repeat(5, var(--label-w));
+      column-gap: 24px;
+      row-gap: 20px;
+      align-items: start;
+      justify-content: start;
+      margin-top: 8px;
+    }
+
+    .label-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .common-label {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      height: var(--label-h);
+      min-width: var(--label-w);
+      padding: 0 10px;
+      border: 1px solid #acacac;
+      border-radius: 6px;
+      background:#fff;
+      color:#000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .05s ease, box-shadow .15s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 2px rgba(253,197,0,.25);
+    }
+
+    .chip.active {
+      box-shadow: 0 0 0 2px #fdc500;
+    }
+
+    .group { margin-top: 9px; }
+
+    /* ATTACHMENTS */
+    .attachments-block {
+      font-family:'Roboto Mono', monospace;
+      font-size:10px;
+      color:#646464;
+    }
+
+    .attachments-label {
+      display:block;
+      margin-bottom:1px;
+    }
+
+    .attachments-control {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .upload-btn {
+      font-family:'Roboto Mono', monospace;
+      font-size:10px;
+      padding:4px 10px;
+      border-radius:6px;
+      border:1px solid #acacac;
+      background:#ffffff;
+      cursor:pointer;
+    }
+
+    .upload-btn:hover {
+      background:#fdc50033;
+    }
+
+    .topic-type-tag {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+    font-family:'Roboto Mono', monospace;
+    font-size:11px;
+    height:24px;
+    border-radius:4px;
+    background-color:#f9b9aa;   /* << nieuwe kleur */
+    color:#2c2c2c;              /* donkergrijs voor leesbaarheid */
+    border:none;
+    margin:2px 3px;
+    white-space:nowrap;
+}
+
+    .upload-label {
+      font-family:'Roboto Mono', monospace;
+      font-size:10px;
+      color:#000000;
+    }
+
+    /* TOPIC PILL — nieuwe kleur f9b9aa */
+.topic-pill {
+    font-family:'Roboto Mono', monospace;
+    font-size:10px;
+    font-weight:400;
+    height: var(--label-h);
+    padding: 0 14px;
+    border-radius: 999px;
+    border:1px solid #f9b9aa;
+    background:#f9b9aa;         /* << nieuwe kleur */
+    color:#2c2c2c;              /* leesbaar op zachte tint */
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+/* Active state behouden */
+.topic-pill.active {
+    box-shadow: 0 0 0 2px #fdc500;
+}
+
+  </style>
+</section>
+
+<script>
+/* INFO chips -> hidden infoLabels */
+(function(){
+  const form=document.querySelector('form.form');
+  if(!form)return;
+  const wrap=form.querySelector('.labels-raster[data-chip-group="info"]');
+  if(!wrap)return;
+  const hidden=form.querySelector('input[name="infoLabels"]');
+  const sync=()=>hidden.value=Array.from(wrap.querySelectorAll('.chip.active')).map(b=>b.dataset.value).join(',');
+  wrap.addEventListener('click',ev=>{
+    const btn=ev.target.closest('.chip'); if(!btn)return;
+    btn.classList.toggle('active'); sync();
+  });
+  form.addEventListener('submit',sync);
+})();
+
+/* TOPIC TYPE blue chips -> hidden topicType (radio-gedrag) */
+(function(){
+  const form=document.querySelector('form.form');
+  if(!form)return;
+  const wrap=form.querySelector('.labels-raster[data-chip-group="topicType"]');
+  if(!wrap)return;
+  const hidden=form.querySelector('input[name="topicType"]');
+  wrap.addEventListener('click',ev=>{
+    const btn=ev.target.closest('.topic-pill'); if(!btn)return;
+    const alreadyActive = btn.classList.contains('active');
+    wrap.querySelectorAll('.topic-pill').forEach(b=>b.classList.remove('active'));
+    if(!alreadyActive){
+      btn.classList.add('active');
+      hidden.value = btn.dataset.value || '';
+    } else {
+      hidden.value = '';
+    }
+  });
+})();
+
+/* CUSTOM ATTACHMENTS LABEL (ENGLISH TEXTS) */
+(function(){
+  const input=document.getElementById('attachmentsInput');
+  const label=document.getElementById('attachmentsFileLabel');
+  if(!input || !label) return;
+
+  input.addEventListener('change',function(){
+    if(!this.files || this.files.length===0){
+      label.textContent='No file chosen';
+    } else if(this.files.length===1){
+      label.textContent=this.files[0].name;
+    } else {
+      label.textContent=this.files.length + ' files selected';
+    }
+  });
+})();
+</script>

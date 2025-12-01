@@ -1,32 +1,200 @@
 <style>
-  .tag {
-    display: inline-block;
+  /* Tabelstructuur voor messages */
+  .messages-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .messages-table td {
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+
+  .msg-main-cell {
+    width: 100%;
+  }
+
+  .msg-icons-cell {
+    width: 65px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .message-block {
+    border: 1px solid #e5e7eb;   /* lichtgrijs */
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  .msg-header-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .msg-meta {
     font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .msg-label-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;     /* ruimte tussen labels & tekst */
+    padding-bottom: 0;
+  }
+
+  .msg-body {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 11px;
+    white-space: pre-wrap;
+  }
+
+  /* Labels – ALTIJD 145px breed, kleur #346388 */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
     height: 24px;
-    line-height: 22px;
-    border: 1px solid rgba(0,0,0,0.3);
     border-radius: 4px;
-    padding: 0 6px;
+    background-color: #346388;
+    color: #ffffff;
+    border: none;
     margin: 2px 3px;
-    vertical-align: middle;
+    white-space: nowrap;
   }
 
-  .icon-btn{
-    width:32px;
-    height:32px;
-    border:1px solid #ddd;
-    background:#ffffff;
-    border-radius:6px;
-    padding:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
+  .start {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #34885e;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
   }
 
-  .icon-btn:hover{
-    background:#fdc500;
+  .stop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ee3107;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .safety {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ff9100;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .must {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ffea00;
+    color: #6f6f6f;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ebebeb;
+    color: #2c2c2c;
+    border: 0px solid #2c2c2c;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .tag.wms { display: inline-flex; }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .icon-btn:hover { background: #fdc500; }
+  .icon-btn i { font-size: 11px; }
+
+  .messages-help-text {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: #646464;
+  }
+
+  .attachments-row {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 </style>
 
@@ -43,85 +211,95 @@ function fmtDateTime(m){
 }
 %>
 
-    <h1 style="margin-bottom:2px;">LOGBOOK • ARCHIVE</h1>
- <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">All must-read and safety messages. Select the notebook icon to add the message to your notebook, or deselect it to remove it.
- </span><br><br>
+<h1 style="margin-bottom:2px;">LOGBOOK • ARCHIVE</h1>
+<span class="messages-help-text">
+  All must-read and safety messages. Select the notebook icon to add the message to your notebook,
+  or deselect it to remove it.
+</span>
+<br><br>
 
-  <div class="feed">
-    <% if (!items.length) { %>
-      <p class="muted">Empty archive.</p>
-    <% } %>
+<div class="feed">
+  <% if (!items.length) { %>
+    <p class="muted" style="font-size:11px;">Empty archive.</p>
+  <% } %>
 
-    <% items.forEach(m => { 
+  <table class="messages-table">
+    <tbody>
+    <% items.forEach(m => {
          const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
     %>
+      <tr>
+        <!-- LINKERKOLOM -->
+        <td class="msg-main-cell">
+          <div class="message-block">
 
-      <article class="post">
+            <div class="msg-header-row">
+              <span class="msg-meta"><%= m.user %> - <%= fmtDateTime(m) %> :</span>
+            </div>
 
-        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+            <div class="msg-label-row">
+              <% (m.infoLabels||[]).forEach(l => { %>
+                <span class="info"><%= l %></span>
+              <% }) %>
 
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <%= m.user %> - 
-            <span><%= fmtDateTime(m) %> : </span>
+              <% (m.software||[]).forEach(l => { %>
+                <span class="tag"><%= l %></span>
+              <% }) %>
 
-            <!-- ALL LABELS (identiek aan messages.ejs) -->
-            <% (m.infoLabels||[]).forEach(l => { %>
-              <span class="tag"><%= l %></span>
-            <% }) %>
+              <% if (m.calc==='START') { %><span class="start">START</span><% } %>
+              <% if (m.calc==='STOP')  { %><span class="stop">STOP</span><% } %>
+              <% if (m.calc==='QC')    { %><span class="tag">QC</span><% } %>
 
-            <% (m.software||[]).forEach(l => { %>
-              <span class="tag software"><%= l %></span>
-            <% }) %>
+              <% if (m.push==='MUST-READ') { %><span class="must">MUST-READ</span><% } %>
+              <% if (m.push==='SAFETY')    { %><span class="safety">SAFETY</span><% } %>
 
-            <% if (m.calc==='START') { %><span class="tag start">START</span><% } %>
-            <% if (m.calc==='STOP')  { %><span class="tag stop">STOP</span><% } %>
-            <% if (m.calc==='QC')    { %><span class="tag qc">QC</span><% } %>
+              <% if (m.wms)        { %><span class="tag wms"><%= (m.wms === 'IB-RAW' ? 'RAW-IB' : m.wms) %></span><% } %>
+              <% if (m.chemswitch){ %><span class="tag wms">CHEM-SWITCH</span><% } %>
+              <% if (m.chemib)     { %><span class="tag wms">CHEM-IB</span><% } %>
+              <% if (m.bulkob)     { %><span class="tag wms">BULK-OB</span><% } %>
+              <% if (m.qc)         { %><span class="tag">QUALITY CHECK</span><% } %>
+            </div>
 
-            <% if (m.push==='MUST-READ') { %><span class="tag must">MUST-READ</span><% } %>
-            <% if (m.push==='SAFETY')    { %><span class="tag safety">SAFETY</span><% } %>
-
-            <% if (m.wms) { %>
-              <span class="tag wms">WMS:<%= m.wms %></span>
+            <% if (m.message) { %>
+              <div class="msg-body"><%= m.message %></div>
             <% } %>
 
-            <% if (m.message) { %><span><%= m.message %></span><% } %>
+            <% if (m.attachments && m.attachments.length) { %>
+              <div class="attachments-row">
+                <% m.attachments.forEach(a => { %>
+                  <% if (a.mime && a.mime.startsWith('image/')) { %>
+                    <a href="<%= a.href %>" target="_blank" rel="noopener"
+                       style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                      <img src="<%= a.href %>" alt="<%= a.name %>"
+                           style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
+                    </a>
+                  <% } else { %>
+                    <a href="<%= a.href %>" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;font-size:11px;">
+                      📄 <span style="margin-left:6px;"><%= a.name %></span>
+                    </a>
+                  <% } %>
+                <% }) %>
+              </div>
+            <% } %>
+
           </div>
+        </td>
 
-          <div style="display:flex;gap:8px;">
-            <form method="post" action="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
-              <input type="hidden" name="id" value="<%= m.id %>"/>
-              <button class="icon-btn <%= inNB ? 'active' : '' %>" title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>">
-                <i data-lucide="notebook-pen"></i>
-              </button>
-            </form>
-          </div>
-
-        </header>
-
-        <% if (m.attachments && m.attachments.length) { %>
-          <div class="attachments" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
-            <% m.attachments.forEach(a => { %>
-
-              <% if (a.mime && a.mime.startsWith('image/')) { %>
-                <a href="<%= a.href %>" target="_blank" rel="noopener"
-                   style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
-                  <img src="<%= a.href %>" alt="<%= a.name %>"
-                       style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
-                </a>
-              <% } else { %>
-                <a href="<%= a.href %>" target="_blank" rel="noopener"
-                   style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;">
-                  📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
-                </a>
-              <% } %>
-
-            <% }) %>
-          </div>
-        <% } %>
-
-      </article>
-
+        <!-- RECHTERKOLOM: enkel NOTEBOOK -->
+        <td class="msg-icons-cell">
+          <form method="post" action="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
+            <input type="hidden" name="id" value="<%= m.id %>"/>
+            <button class="icon-btn <%= inNB ? 'active' : '' %>"
+                    title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>">
+              <i data-lucide="notebook-pen"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
     <% }) %>
+    </tbody>
+  </table>
+</div>
 
-  </div>
 </section>

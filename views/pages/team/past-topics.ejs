@@ -1,0 +1,191 @@
+<style>
+  /* Zelfde look & feel als LOGBOOK ARCHIVE */
+
+  .topics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .topics-table td {
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+
+  .topic-block {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  .topic-header-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .topic-meta {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .topic-label-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .topic-body {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 11px;
+    white-space: pre-wrap;
+  }
+
+  /* Labels – ALTIJD 145px breed, kleur #346388 (zoals logbook labels) */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color:  #f9b9aa;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ebebeb;
+    color: #2c2c2c;
+    border: 0px solid #2c2c2c;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .topics-help-text {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: #646464;
+  }
+
+  .attachments-row {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+
+<%
+  // Zelfde datum/tijd formatter als in archive.ejs, maar voor topics
+  function fmtDateTime(t){
+    const pad = n => n < 10 ? '0' + n : n;
+    const d = t.createdAt ? new Date(t.createdAt) : null;
+    const valid = d && !isNaN(d);
+    if (!valid) return '';
+    const dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return `${dateStr} - ${timeStr}`;
+  }
+%>
+
+<section class="card">
+
+  <h1 style="margin-bottom:2px;">TOPICS • ARCHIVE</h1>
+  <span class="topics-help-text">
+    This page lists all past topics. No editing or deletion is possible.
+  </span>
+  <br><br>
+
+  <div class="feed">
+
+    <% if (!topics || !topics.length) { %>
+      <p class="muted" style="font-size:11px;">No topics in archive.</p>
+    <% } %>
+
+    <table class="topics-table">
+      <tbody>
+
+      <% (topics || []).forEach(t => { %>
+        <tr>
+          <td>
+            <div class="topic-block">
+
+              <!-- HEADER: user + datum/tijd -->
+              <div class="topic-header-row">
+                <span class="topic-meta">
+                  <%= t.user || 'Unknown' %>
+                  <% const dt = fmtDateTime(t); if (dt) { %>
+                    - <%= dt %> :
+                  <% } %>
+                </span>
+              </div>
+
+              <!-- LABELS -->
+              <div class="topic-label-row">
+                <% (t.infoLabels || []).forEach(l => { %>
+                  <span class="info"><%= l %></span>
+                <% }) %>
+
+                <% if (t.topicType) { %>
+                  <span class="tag"><%= t.topicType %></span>
+                <% } %>
+              </div>
+
+              <!-- TEKST VAN HET TOPIC -->
+              <% if (t.message) { %>
+                <div class="topic-body"><%= t.message %></div>
+              <% } %>
+
+              <!-- ATTACHMENTS (optioneel) -->
+              <% if (t.attachments && t.attachments.length) { %>
+                <div class="attachments-row">
+                  <% t.attachments.forEach(a => { %>
+                    <% if (a.mime && a.mime.startsWith('image/')) { %>
+                      <a href="<%= a.href %>" target="_blank" rel="noopener"
+                         style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                        <img src="<%= a.href %>" alt="<%= a.name %>"
+                             style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
+                      </a>
+                    <% } else { %>
+                      <a href="<%= a.href %>" target="_blank" rel="noopener"
+                         style="display:inline-flex;align-items:center;padding:6px 10px;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;font-size:11px;">
+                        📄 <span style="margin-left:6px;"><%= a.name %></span>
+                      </a>
+                    <% } %>
+                  <% }) %>
+                </div>
+              <% } %>
+
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+
+      </tbody>
+    </table>
+  </div>
+
+</section>

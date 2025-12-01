@@ -35,10 +35,23 @@
     <!-- RIGHT: fixed 85px, logout -->
     <div class="right actions" style="flex:0 0 85px;display:flex;align-items:center;justify-content:flex-end;">
       <form method="POST" action="/logout" style="margin:0;">
-        <button type="submit" class="btn-logout"
-                style="padding:6px 10px;border:0;border-radius:8px;cursor:pointer;">
-          LOG-OUT
-        </button>
+<button type="submit" class="btn-logout"
+        style="
+          width:32px;
+          height:32px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          border:0;
+          background:#000000;        /* zwarte achtergrond */
+          border-radius:8px;
+          cursor:pointer;
+          padding:0;
+        "
+        title="Log out">
+  <i data-lucide="log-out" style="width:18px;height:18px;color:#ffffff;"></i>
+</button>
+
       </form>
     </div>
   </div>

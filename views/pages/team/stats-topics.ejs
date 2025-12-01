@@ -1,0 +1,79 @@
+<% /* views/pages/team/stats-topics.ejs */ %>
+
+<style>
+  .stats-wrapper {
+    font-size: 11px;
+  }
+
+  .stats-title {
+    margin-bottom: 2px;
+  }
+
+  .stats-subtext {
+    font-family:'Roboto Mono',monospace;
+    font-size:11px;
+    color:#646464;
+  }
+
+  .stats-list {
+    margin-top: 18px;
+  }
+
+  .stats-row {
+    display:flex;
+    align-items:center;
+    margin-bottom:6px;
+  }
+
+  .stats-op-code {
+    width:45px;
+    font-weight:600;
+  }
+
+  .stats-blocks {
+    display:flex;
+    align-items:center;
+    gap:3px;
+  }
+
+  .stats-block {
+    display:inline-block;
+    width:40px;          /* rechthoek: breder dan hoog */
+    height:10px;
+    background:#ff0000;
+    border-radius:6px;   /* beperkte radius voor afgeronde hoeken */
+  }
+</style>
+
+<section class="card">
+  <div class="stats-wrapper">
+
+    <h1 class="stats-title">UNACKNOWLEDGED TOPICS</h1>
+    <span class="stats-subtext">
+      Each red square represents one unacknowledged must-read topic.
+    </span>
+
+    <div class="stats-list">
+      <% if (!stats || !stats.length) { %>
+        <p class="muted" style="font-size:11px;">No operators found.</p>
+      <% } else { %>
+
+        <% stats.forEach(function(s){ %>
+          <div class="stats-row">
+            <!-- operator code -->
+            <div class="stats-op-code"><%= s.code %></div>
+
+            <!-- rode blokjes -->
+            <div class="stats-blocks">
+              <% for (var i = 0; i < s.count; i++) { %>
+                <span class="stats-block"></span>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+
+      <% } %>
+    </div>
+
+  </div>
+</section>

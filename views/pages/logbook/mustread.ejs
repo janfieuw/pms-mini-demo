@@ -1,23 +1,178 @@
 <style>
-  .tag {
-    display: inline-block;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    height: 24px;
-    line-height: 22px;
-    border: 1px solid rgba(0,0,0,0.3);
-    border-radius: 4px;
-    padding: 0 6px;
-    margin: 2px 3px;
-    vertical-align: middle;
+  /* Zelfde als messages.ejs */
+  .messages-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
   }
 
+  .messages-table td {
+    padding: 4px 6px;
+    vertical-align: top;
+  }
+
+  .msg-main-cell {
+    width: 100%;
+  }
+
+  .msg-icons-cell {
+    width: 65px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .message-block {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  .msg-header-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .msg-meta {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .msg-label-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+    padding-bottom: 0;
+  }
+
+  .msg-body {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 11px;
+    white-space: pre-wrap;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #346388;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .start {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #34885e;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .stop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ee3107;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .safety {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ff9100;
+    color: #ffffff;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .must {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ffea00;
+    color: #6f6f6f;
+    border: none;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    height: 24px;
+    border-radius: 4px;
+    background-color: #ebebeb;
+    color: #2c2c2c;
+    border: 0px solid #2c2c2c;
+    margin: 2px 3px;
+    white-space: nowrap;
+  }
+
+  .tag.wms { display: inline-flex; }
+
   .icon-btn{
-    width:32px;
-    height:32px;
+    width:28px;
+    height:28px;
     border:1px solid #ddd;
     background:#ffffff;
-    border-radius:10px;
+    border-radius:6px;
     padding:0;
     display:flex;
     align-items:center;
@@ -28,155 +183,187 @@
   .icon-btn:hover{
     background:#fdc500;
   }
+
+  .icon-btn i { font-size: 11px; }
+
+  .messages-help-text {
+    font-family:'Roboto Mono', monospace;
+    font-size:11px;
+    color:#646464;
+  }
+
+  .attachments-row {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 </style>
 
 <section class="card">
 
-    <h1 style="margin-bottom:2px;">LOGBOOK • MUST READ</h1>
- <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">Mark message when read. Select the notebook icon to add the message to your notebook, or deselect it to remove it.
-</span><br><br>
-  
-  </span>
-  <form method="post" action="/logbook/acknowledge">
+<%
+function fmtDateTime(m){
+  const pad=n=>n<10?'0'+n:n;
+  const d = m.createdAt ? new Date(m.createdAt) : null;
+  const valid = d && !isNaN(d);
+  const dateStr = valid ? `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}` : '';
+  const timeStr = m.time || (valid ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : '');
+  return [dateStr, timeStr].filter(Boolean).join(' - ');
+}
+%>
 
+<h1 style="margin-bottom:2px;">LOGBOOK • MUST READ</h1>
+<span class="messages-help-text">
+  Mark message when read. Select the notebook icon to add the message to your notebook,
+  or deselect it to remove it.
+</span>
+<br><br>
+
+<form method="post" action="/logbook/acknowledge">
+
+  <div class="feed">
     <% if (!items.length) { %>
-      <p class="muted">Nothing to read.</p>
+      <p class="muted" style="font-size:11px;">Nothing to read.</p>
+    <% } else { %>
+
+      <table class="messages-table">
+        <tbody>
+        <% items.forEach(m => {
+             const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
+        %>
+          <tr>
+            <!-- LINKERKOLOM -->
+            <td class="msg-main-cell">
+              <div class="message-block">
+
+                <!-- checkbox + meta -->
+                <div class="msg-header-row">
+                  <input type="checkbox"
+                         name="ids"
+                         value="<%= m.id %>"
+                         style="transform:scale(1.3); margin-right:6px;">
+                  <span class="msg-meta">
+                    <%= m.user %> - <%= fmtDateTime(m) %> :
+                  </span>
+                </div>
+
+                <!-- labels -->
+                <div class="msg-label-row">
+                  <% (m.infoLabels || []).forEach(function(l){ %>
+                    <span class="info"><%= l %></span>
+                  <% }); %>
+
+                  <% (m.software || []).forEach(function(l){ %>
+                    <span class="tag"><%= l %></span>
+                  <% }); %>
+
+                  <% if (m.calc === 'START') { %>
+                    <span class="start">START</span>
+                  <% } %>
+
+                  <% if (m.calc === 'STOP') { %>
+                    <span class="stop">STOP</span>
+                  <% } %>
+
+                  <% if (m.calc === 'QC') { %>
+                    <span class="tag">QC</span>
+                  <% } %>
+
+                  <% if (m.push === 'MUST-READ') { %>
+                    <span class="must">MUST-READ</span>
+                  <% } %>
+
+                  <% if (m.push === 'SAFETY') { %>
+                    <span class="safety">SAFETY</span>
+                  <% } %>
+
+                  <% if (m.wms) { %>
+                    <span class="tag wms"><%= (m.wms === 'IB-RAW' ? 'RAW-IB' : m.wms) %></span>
+                  <% } %>
+
+                  <% if (m.chemswitch) { %>
+                    <span class="tag wms">CHEM-SWITCH</span>
+                  <% } %>
+
+                  <% if (m.chemib) { %>
+                    <span class="tag wms">CHEM-IB</span>
+                  <% } %>
+
+                  <% if (m.bulkob) { %>
+                    <span class="tag wms">BULK-OB</span>
+                  <% } %>
+
+                  <% if (m.qc) { %>
+                    <span class="tag">QUALITY CHECK</span>
+                  <% } %>
+                </div>
+
+                <!-- tekst -->
+                <% if (m.message) { %>
+                  <div class="msg-body"><%= m.message %></div>
+                <% } %>
+
+                <!-- bijlagen -->
+                <% if (m.attachments && m.attachments.length) { %>
+                  <div class="attachments-row">
+                    <% m.attachments.forEach(function(a){ %>
+                      <% if (a.mime && a.mime.startsWith('image/')) { %>
+                        <a href="<%= a.href %>"
+                           target="_blank"
+                           rel="noopener"
+                           style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
+                          <img src="<%= a.href %>"
+                               alt="<%= a.name %>"
+                               style="display:block;max-width:77px;max-height:56px;object-fit:contain%;">
+                        </a>
+                      <% } else { %>
+                        <a href="<%= a.href %>"
+                           target="_blank"
+                           rel="noopener"
+                           style="display:inline-flex;align-items:center;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;padding:4px 6px;font-size:11px;">
+                          📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
+                        </a>
+                      <% } %>
+                    <% }); %>
+                  </div>
+                <% } %>
+
+              </div>
+            </td>
+
+            <!-- RECHTERKOLOM: notebook-button binnen hetzelfde form -->
+            <td class="msg-icons-cell">
+              <button
+                class="icon-btn <%= inNB ? 'active' : '' %>"
+                title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>"
+                type="submit"
+                name="id"
+                value="<%= m.id %>"
+                formmethod="post"
+                formaction="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
+                <i data-lucide="notebook-pen"></i>
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+
     <% } %>
+  </div>
 
-    <% items.forEach(m => { 
-         const inNB = (typeof notebooks !== "undefined") && Array.isArray(notebooks) && notebooks.includes(m.id);
-    %>
+  <% if (items.length) { %>
+    <div style="text-align:right;margin-top:15px;">
+      <button type="submit"
+              class="btn btn-dark submit"
+              style="font-family:'Roboto Mono', monospace;">
+        ACKNOWLEDGE
+      </button>
+    </div>
+  <% } %>
 
-      <article class="post">
-
-        <!-- HEADER: alles op één lijn -->
-        <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-
-          <!-- Links -->
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <input type="checkbox"
-                   name="ids"
-                   value="<%= m.id %>"
-                   style="transform:scale(1.3); margin-right:6px;">
-
-            <%= m.user %> - 
-
-            <%
-              const d = m.createdAt ? new Date(m.createdAt) : null;
-              function pad(n){ return n < 10 ? '0' + n : n; }
-              const valid   = d && !isNaN(d);
-              const dateStr = valid ? (d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())) : '';
-              const timeStr = m.time || (valid ? (pad(d.getHours()) + ':' + pad(d.getMinutes())) : '');
-            %>
-
-            <span><%= dateStr %> - <%= timeStr %> - </span>
-
-            <!-- INFO LABELS -->
-            <% (m.infoLabels || []).forEach(function(l){ %>
-              <span class="tag"><%= l %></span>
-            <% }); %>
-
-            <!-- SOFTWARE LABELS -->
-            <% (m.software || []).forEach(function(l){ %>
-              <span class="tag software"><%= l %></span>
-            <% }); %>
-
-            <!-- CALC LABELS -->
-            <% if (m.calc === 'START') { %>
-              <span class="tag start">START</span>
-            <% } %>
-
-            <% if (m.calc === 'STOP') { %>
-              <span class="tag stop">STOP</span>
-            <% } %>
-
-            <% if (m.calc === 'QC') { %>
-              <span class="tag qc">QC</span>
-            <% } %>
-
-            <!-- MUST-READ / SAFETY -->
-            <% if (m.push === 'MUST-READ') { %>
-              <span class="tag must">MUST-READ</span>
-            <% } %>
-
-            <% if (m.push === 'SAFETY') { %>
-              <span class="tag safety">SAFETY</span>
-            <% } %>
-
-            <!-- WMS LABEL -->
-            <% if (m.wms) { %>
-              <span class="tag wms">WMS:<%= m.wms %></span>
-            <% } %>
-
-            <!-- QUALITY CHECK LABEL (via m.qc) -->
-            <% if (m.qc) { %>
-              <span class="tag qc">QUALITY CHECK</span>
-            <% } %>
-
-            <!-- MESSAGE TEKST -->
-            <% if (m.message) { %>
-              <span><%= m.message %></span>
-            <% } %>
-          </div>
-
-          <!-- Rechts: Notebook only -->
-          <div style="display:flex;gap:10px;">
-            <button
-              class="icon-btn <%= inNB ? 'active' : '' %>"
-              title="<%= inNB ? 'Remove from notebook' : 'Add to notebook' %>"
-              type="submit"
-              name="id"
-              value="<%= m.id %>"
-              formmethod="post"
-              formaction="<%= inNB ? '/logbook/remove-notebook' : '/logbook/add-notebook' %>">
-              <i data-lucide="notebook-pen"></i>
-            </button>
-          </div>
-
-        </header>
-
-        <!-- ATTACHMENTS (op nieuwe lijn) -->
-        <% if (m.attachments && m.attachments.length) { %>
-          <div class="attachments"
-               style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
-            <% m.attachments.forEach(function(a){ %>
-
-              <% if (a.mime && a.mime.startsWith('image/')) { %>
-                <a href="<%= a.href %>"
-                   target="_blank"
-                   rel="noopener"
-                   style="border:1px solid #e6e6ee;border-radius:8px;overflow:hidden;display:inline-block;">
-                  <img src="<%= a.href %>"
-                       alt="<%= a.name %>"
-                       style="display:block;max-width:77px;max-height:56px;object-fit:contain;">
-                </a>
-              <% } else { %>
-                <a href="<%= a.href %>"
-                   target="_blank"
-                   rel="noopener"
-                   style="display:inline-flex;align-items:center;border:1px solid #e6e6ee;border-radius:8px;text-decoration:none;padding:4px 6px;">
-                  📄 <span style="margin-left:6px;word-break:break-all;"><%= a.name %></span>
-                </a>
-              <% } %>
-
-            <% }); %>
-          </div>
-        <% } %>
-
-      </article>
-
-    <% }); %>
-
-    <% if (items.length) { %>
-      <div style="text-align:right;margin-top:15px;">
-        <button type="submit"
-                class="btn btn-dark submit"
-                style="font-family:'Roboto Mono', monospace;">
-          ACKNOWLEDGE
-        </button>
-      </div>
-    <% } %>
-
-  </form>
+</form>
 
 </section>
+
