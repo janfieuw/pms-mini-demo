@@ -13,19 +13,40 @@
         border-collapse: collapse;
         font-size: 10px;
       }
+
       .bulk-table thead tr {
         background: #f7f7f7;
       }
-     
-        .bulk-table th,
-.bulk-table td {
-  padding: 7px 8px;
-  border-bottom: 1px solid #e6e6e6;
-  white-space: nowrap;
-  text-align: left !important;
-}
 
-.bulk-table td.num { text-align: left !important; }
+      .bulk-table th,
+      .bulk-table td {
+        padding: 7px 8px;
+        border-bottom: 1px solid #e6e6e6;
+        white-space: nowrap;
+        text-align: left !important;
+      }
+
+      .bulk-table td.num {
+        text-align: left !important;
+      }
+
+      /* DELETE BUTTON STYLE (same as RAW overview) */
+      .btn-delete {
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #b71c1c;
+        background: #ffffff;
+        color: #b71c1c;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+      }
+
+      .btn-delete:hover {
+        background: #b71c1c;
+        color: #ffffff;
+      }
     </style>
 
     <% if (error) { %>
@@ -50,8 +71,10 @@
               <th>CMR</th>
               <th>PURCHASE ORDER</th>
               <th>DELIVERY NOTE</th>
+              <th>DELETE</th>
             </tr>
           </thead>
+
           <tbody>
             <% deliveries.forEach(function(d) { %>
               <tr>
@@ -63,6 +86,20 @@
                 <td><%= d.cmr || '' %></td>
                 <td><%= d.purchase_order || '' %></td>
                 <td><%= d.delivery_note || '' %></td>
+
+                <!-- DELETE BUTTON -->
+                <td>
+                  <form method="POST"
+                        action="/bulk/delete/<%= d.id %>"
+                        onsubmit="return confirm('Delete this line?');">
+
+                    <button type="submit" class="btn-delete">
+                      DELETE
+                    </button>
+
+                  </form>
+                </td>
+
               </tr>
             <% }); %>
           </tbody>
@@ -73,3 +110,4 @@
 
   </div>
 </div>
+
