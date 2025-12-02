@@ -101,7 +101,7 @@
             maxlength="10"
             placeholder="DD/MM/YYYY"
             required
-            pattern="^(0?[1-9]|[12]\\d|3[01])\\/(0?[1-9]|1[0-2])\\/\\d{4}$"
+            pattern="^(0?[1-9]|[12]\d|3[01])/(0?[1-9]|1[0-2])/\d{4}$"
             class="form-control"
             style="border-color:#e0c36c;background:#FFF4CD; text-align:center; max-width:160px;"
             value="<%= old.date || '' %>"
@@ -119,7 +119,7 @@
             maxlength="5"
             placeholder="HH:MM"
             required
-            pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
+            pattern="^([01]\d|2[0-3]):[0-5]\d$"
             class="form-control"
             style="border-color:#e0c36c;background:#FFF4CD; text-align:center; max-width:120px;"
             value="<%= old.time || '' %>"

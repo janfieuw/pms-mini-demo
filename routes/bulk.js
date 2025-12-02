@@ -7,7 +7,7 @@
 // - GET  /bulk/all
 
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 
 // ============================================================================
 //  K L A N T E N L I J S T   (INLINE, VOLGENS JOUW LIJST)
@@ -34,15 +34,15 @@ const BB_CUSTOMERS = [
 //  HELPERS
 // ============================================================================
 function nowDDMMYYYY() {
-  const d = new Date();
+  const d  = new Date();
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
+  const yy = d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
 }
 
 function nowHHMM() {
-  const d = new Date();
+  const d  = new Date();
   const hh = String(d.getHours()).padStart(2, '0');
   const mn = String(d.getMinutes()).padStart(2, '0');
   return `${hh}:${mn}`;
@@ -95,11 +95,25 @@ router.post('/registratie', (req, res) => {
 
   const errors = [];
 
-  if (!customer) errors.push("Customer is verplicht.");
-  if (!silo || (silo !== '710' && silo !== '720')) errors.push("Silo moet 710 of 720 zijn.");
-  if (!kg || isNaN(Number(kg)) || Number(kg) <= 0) errors.push("Weight (kg) moet een positief getal zijn.");
-  if (!date) errors.push("Date is verplicht.");
-  if (!time) errors.push("Time is verplicht.");
+  // Basischecks
+  if (!customer) errors.push('Customer is verplicht.');
+  if (!silo || (silo !== '710' && silo !== '720')) {
+    errors.push('Silo moet 710 of 720 zijn.');
+  }
+  if (!kg || isNaN(Number(kg)) || Number(kg) <= 0) {
+    errors.push('Weight (kg) moet een positief getal zijn.');
+  }
+
+  // Datum- en tijdformaat (DD/MM/YYYY & HH:MM – 24u)
+  const datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+  if (!datePattern.test(date || '')) {
+    errors.push('Date moet formaat DD/MM/YYYY hebben.');
+  }
+  if (!timePattern.test(time || '')) {
+    errors.push('Time moet formaat HH:MM (24u) hebben.');
+  }
 
   if (errors.length > 0) {
     return res.status(400).render('pages/bulk/bulk-registratie', {
@@ -154,12 +168,11 @@ router.get('/all', (req, res) => {
   const bulkDeliveries = getBulkStore(req);
 
   // kopie + sorteren op created_at desc
-  const rows = [...bulkDeliveries].sort((a, b) =>
-    (b.created_at || '').localeCompare(a.created_at || '')
-  );
+  const rows = [...bulkDeliveries]
+    .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
 
   res.render('pages/bulk/bulk-all', {
-    title: "BULK • ALL",
+    title: 'BULK • ALL',
     deliveries: rows,
     error: null
   });

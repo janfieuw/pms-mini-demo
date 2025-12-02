@@ -51,7 +51,11 @@
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/discharge')) ? 'is-active' : '' %>">
           BB - DISCHARGE
         </a>
-              <a href="/bb/allocation"
+        <a href="/bb/movements"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/movements')) ? 'is-active' : '' %>">
+          BB - MOVEMENTS
+        </a>
+        <a href="/bb/allocation"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/allocation')) ? 'is-active' : '' %>">
           BB - ALLOCATION
         </a>
@@ -64,14 +68,14 @@
           BB - STOCK
         </a>
 
-      <% } else if (activeDomain === 'OUTBOUND BULK') { %>
+   <% } else if (activeDomain === 'OUTBOUND BULK') { %>
         <!-- OUTBOUND BULK -->
-        <a href="/outbound-bulk/discharge"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/outbound-bulk/discharge')) ? 'is-active' : '' %>">
+        <a href="/bulk/registratie"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bulk/registratie')) ? 'is-active' : '' %>">
           BULK - DISCHARGE
         </a>
-        <a href="/outbound-bulk/overview"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/outbound-bulk/overview')) ? 'is-active' : '' %>">
+        <a href="/bulk/all"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bulk/all')) ? 'is-active' : '' %>">
           BULK - DISCHARGED OVERVIEW
         </a>
 
