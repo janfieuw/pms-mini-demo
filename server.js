@@ -256,6 +256,26 @@ app.use('/bb',        requireAuth, bbRouter);
 app.use('/bulk',      requireAuth, bulkRouter);
 
 // =============================
+// BULK - DELETE LINE
+// =============================
+app.post('/bulk/delete/:id', requireAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Database-verbinding ophalen uit bulkRouter
+    const db = req.app.locals.db || require('./db');
+
+    await db.run("DELETE FROM bulk WHERE id = ?", [id]);
+
+    return res.redirect("/bulk/all");
+  } catch (err) {
+    console.error("Error deleting bulk line:", err);
+    return res.status(500).send("Could not delete line.");
+  }
+});
+
+
+// =============================
 // HOME
 // =============================
 app.get('/', (req,res)=>{

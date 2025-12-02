@@ -5,6 +5,7 @@
 // - GET  /bulk/registratie
 // - POST /bulk/registratie
 // - GET  /bulk/all
+// - POST /bulk/delete/:id
 
 const express = require('express');
 const router  = express.Router();
@@ -176,6 +177,22 @@ router.get('/all', (req, res) => {
     deliveries: rows,
     error: null
   });
+});
+
+// ============================================================================
+//  POST /bulk/delete/:id   (DELETE KNOP)
+// ============================================================================
+router.post('/delete/:id', (req, res) => {
+  const bulkDeliveries = getBulkStore(req);
+  const { id } = req.params;
+
+  const idx = bulkDeliveries.findIndex(d => String(d.id) === String(id));
+
+  if (idx !== -1) {
+    bulkDeliveries.splice(idx, 1);
+  }
+
+  return res.redirect('/bulk/all');
 });
 
 // ============================================================================
