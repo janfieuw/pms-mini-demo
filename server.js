@@ -256,26 +256,6 @@ app.use('/bb',        requireAuth, bbRouter);
 app.use('/bulk',      requireAuth, bulkRouter);
 
 // =============================
-// BULK - DELETE LINE
-// =============================
-app.post('/bulk/delete/:id', requireAuth, async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    // Database-verbinding ophalen uit bulkRouter
-    const db = req.app.locals.db || require('./db');
-
-    await db.run("DELETE FROM bulk WHERE id = ?", [id]);
-
-    return res.redirect("/bulk/all");
-  } catch (err) {
-    console.error("Error deleting bulk line:", err);
-    return res.status(500).send("Could not delete line.");
-  }
-});
-
-
-// =============================
 // HOME
 // =============================
 app.get('/', (req,res)=>{
@@ -310,10 +290,11 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
 
   const push         = (req.body.push || '').trim();
   const wms          = (req.body.wms || '').trim();
-  const chemswitch   = (req.body.chemswitch || '').trim();  // CHEM-SWITCH
-  const qc           = (req.body.qc || '').trim();          // QUALITY CHECK
-  const chemib       = (req.body.chemib || '').trim();      // CHEM-IB
-  const bulkob       = (req.body.bulkob || '').trim();      // BULK-OB
+  const chemswitch   = (req.body.chemswitch || '').trim();   // CHEM-SWITCH
+  const qc           = (req.body.qc || '').trim();           // QUALITY CHECK
+  const maintenance  = (req.body.maintenance || '').trim();  // MAINTENANCE
+  const chemib       = (req.body.chemib || '').trim();       // CHEM-IB
+  const bulkob       = (req.body.bulkob || '').trim();       // BULK-OB
   const infoLabels   = (req.body.infoLabels || '').split(',').filter(Boolean);
   const software     = (req.body.softwareLabels || '').split(',').filter(Boolean);
   const notebookOnly = (req.body.notebookOnly === '1' || req.body.notebookOnly === 'on');
@@ -367,6 +348,7 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
     wms,
     chemswitch,        // CHEM-SWITCH opslaan
     qc,                // QUALITY CHECK opslaan
+    maintenance,       // MAINTENANCE opslaan
     chemib,            // CHEM-IB opslaan
     bulkob,            // BULK-OB opslaan
     deltaMin,
@@ -388,6 +370,7 @@ logbookRouter.post('/form', requireAuth, upload.array('attachments',10), (req,re
       wms:entry.wms || '',
       chemswitch:entry.chemswitch || '',
       qc:entry.qc || '',
+      maintenance:entry.maintenance || '',
       chemib:entry.chemib || '',
       bulkob:entry.bulkob || '',
       attachments:entry.attachments || [],
@@ -579,6 +562,7 @@ logbookRouter.post('/add-notebook', requireAuth, (req,res)=>{
       wms:msg.wms||'',
       chemswitch:msg.chemswitch||'',
       qc:msg.qc||'',
+      maintenance:msg.maintenance||'',
       chemib:msg.chemib||'',
       bulkob:msg.bulkob||'',
       topicType: msg.topicType || '',

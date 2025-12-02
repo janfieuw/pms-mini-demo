@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <!-- ================= WMS + QUALITY CHECK + CHEM-SWITCH op dezelfde rij ================= -->
+    <!-- ================= WMS + QUALITY CHECK + CHEM-SWITCH + MAINTENANCE ================= -->
     <div class="group">
       <div class="labels-raster options" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
 
@@ -157,6 +157,13 @@
           QUALITY CHECK
         </button>
         <input type="hidden" name="qc" value="">
+
+        <!-- MAINTENANCE (NIEUWE BLAUWE CHIP) -->
+        <button class="chip common-label pill-maintenance" type="button" data-value="MAINTENANCE"
+                style="background:#346388;color:#ffffff;border-color:#ffffff;">
+          MAINTENANCE
+        </button>
+        <input type="hidden" name="maintenance" value="">
 
       </div>
     </div>
@@ -433,6 +440,19 @@
   btn.addEventListener('click',()=>{
     btn.classList.toggle('active');
     hidden.value=btn.classList.contains('active') ? 'QC' : '';
+  });
+})();
+
+/* MAINTENANCE chip -> hidden maintenance */
+(function(){
+  const btn=document.querySelector('.pill-maintenance[data-value="MAINTENANCE"]');
+  if(!btn)return;
+  const hidden=document.querySelector('input[name="maintenance"]');
+  if(!hidden)return;
+
+  btn.addEventListener('click',()=>{
+    btn.classList.toggle('active');
+    hidden.value = btn.classList.contains('active') ? 'MAINTENANCE' : '';
   });
 })();
 
