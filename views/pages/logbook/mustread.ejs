@@ -297,6 +297,10 @@ function fmtDateTime(m){
                   <% if (m.qc) { %>
                     <span class="tag">QUALITY CHECK</span>
                   <% } %>
+
+                  <% if (m.maintenance) { %>
+                    <span class="tag">MAINTENANCE</span>
+                  <% } %>
                 </div>
 
                 <!-- tekst -->

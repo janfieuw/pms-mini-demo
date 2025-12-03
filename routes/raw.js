@@ -33,13 +33,12 @@ router.use((req, res, next) => {
 
 // ----------------------------------------------
 // Helper voor RAW-FILTER
-// (helpers blijven hier staan – nu vooral nuttig als referentie)
 // ----------------------------------------------
 
-// Waarde omzetten naar numeriek als dat kan (met support voor komma-decimaal)
+// Waarde omzetten naar numeriek, incl. komma
 function toNumeric(value) {
   if (value === null || value === undefined) return null;
-  const str = String(value).replace(',', '.'); // "5,8" → "5.8"
+  const str = String(value).replace(',', '.');
   const num = Number(str);
   return Number.isNaN(num) ? null : num;
 }
@@ -50,13 +49,6 @@ function recValue(rec, field) {
   return v === null || v === undefined ? '' : v;
 }
 
-/**
- * Geeft lijst van ontvangsten terug met labo-waarde voor gekozen veld,
- * gesorteerd van klein → groot (numeriek indien mogelijk, anders alfabetisch).
- *
- * field = 'ph', 'ds', 'meal_temperature', 'duration',
- *         'pressure_bar', 'added_sap', 'smell', 'added_af', ...
- */
 function getFilteredReceipts(field) {
   if (!field) return [];
 
@@ -76,16 +68,10 @@ function getFilteredReceipts(field) {
     const aNum = toNumeric(aVal);
     const bNum = toNumeric(bVal);
 
-    // Beide numeriek → numeriek sorteren
-    if (aNum !== null && bNum !== null) {
-      return aNum - bNum;
-    }
-
-    // Eén van de twee numeriek → numeriek eerst
+    if (aNum !== null && bNum !== null) return aNum - bNum;
     if (aNum !== null && bNum === null) return -1;
     if (aNum === null && bNum !== null) return 1;
 
-    // Geen van beide numeriek → alfabetisch
     const aStr = String(aVal).toUpperCase();
     const bStr = String(bVal).toUpperCase();
     if (aStr < bStr) return -1;
@@ -105,12 +91,11 @@ router.get('/inbound-raw', (req, res) => {
   });
 });
 
-// Alias /raw/inbound (gebruik in nav)
-// ----------------------------------------------
+// Alias
 router.get('/inbound', (req, res) => res.redirect('/raw/inbound-raw'));
 
 // ----------------------------------------------
-// POST /raw/inbound-raw → maakt BASIC ontvangst aan
+// POST /raw/inbound-raw → nieuwe ontvangst
 // ----------------------------------------------
 router.post('/inbound-raw', (req, res) => {
   const {
@@ -136,11 +121,10 @@ router.post('/inbound-raw', (req, res) => {
     quantity: quantity ? Number(quantity) : null,
     received_date,
     received_time,
-    // nieuw veld voor overzicht:
     startlevel: startlevel ? Number(startlevel) : null,
     operator,
-    status: 'BASIC',   // BASIC = labo-data ontbreekt
-    labo: null         // wordt ingevuld na labo-analyse
+    status: 'BASIC',
+    labo: null
   };
 
   rawReceipts.push(entry);
@@ -149,7 +133,7 @@ router.post('/inbound-raw', (req, res) => {
 });
 
 // ----------------------------------------------
-// GET /raw/overview → pagina RAW – OVERVIEW
+// GET /raw/overview
 // ----------------------------------------------
 router.get('/overview', (req, res) => {
   res.render('pages/raw/raw-overview', {
@@ -159,16 +143,12 @@ router.get('/overview', (req, res) => {
 });
 
 // ----------------------------------------------
-// STEP 2: LABO DATA
+// STEP 2 – LABO DATA
 // ----------------------------------------------
-
-// GET → toont laboformulier voor één ontvangst
 router.get('/labo/:id', (req, res) => {
   const id = Number(req.params.id);
   const rec = rawReceipts.find(r => r.id === id);
-  if (!rec) {
-    return res.status(404).send('Niet gevonden');
-  }
+  if (!rec) return res.status(404).send('Niet gevonden');
 
   res.render('pages/raw/raw-labo', {
     currentUser: req.user || null,
@@ -176,25 +156,20 @@ router.get('/labo/:id', (req, res) => {
   });
 });
 
-// POST → bewaart labo-waarden, markeert COMPLETED en terug naar overview
 router.post('/labo/:id', (req, res) => {
   const id = Number(req.params.id);
   const rec = rawReceipts.find(r => r.id === id);
-  if (!rec) {
-    return res.status(404).send('Niet gevonden');
-  }
+  if (!rec) return res.status(404).send('Niet gevonden');
 
-  // Velden 1–2: 4-keuze segmenten (zoals Excel)
-  // Velden 3–8: vrije tekst/numerieke invulvelden
   rec.labo = {
-    added_sap: req.body.added_sap || null,               // NONE / FRESH / B1070 / B1070+FRESH
-    smell: req.body.smell || null,                       // A / B / C / D
-    meal_temperature: req.body.meal_temperature || null, // MAALTEMPERATUUR
-    duration: req.body.duration || null,                 // DUUR
-    pressure_bar: req.body.pressure_bar || null,         // BAR
-    added_af: req.body.added_af || null,                 // TOEGEVOEGD AF
-    ph: req.body.ph || null,                             // pH
-    ds: req.body.ds || null                              // DS%
+    added_sap: req.body.added_sap || null,
+    smell: req.body.smell || null,
+    meal_temperature: req.body.meal_temperature || null,
+    duration: req.body.duration || null,
+    pressure_bar: req.body.pressure_bar || null,
+    added_af: req.body.added_af || null,
+    ph: req.body.ph || null,
+    ds: req.body.ds || null
   };
 
   rec.status = 'COMPLETED';
@@ -203,15 +178,28 @@ router.post('/labo/:id', (req, res) => {
 });
 
 // ----------------------------------------------
-// STEP 3 (OUD): RAW – FILTER
-// Deze route bestond als /raw/filter.
-// Nu is de pagina verhuisd naar /analyses/filter.
-// We houden hier een redirect voor oude bookmarks.
+// Oud → redirect naar analyses/filter
 // ----------------------------------------------
 router.get('/filter', (req, res) => {
   const query = new URLSearchParams(req.query).toString();
   const target = '/analyses/filter' + (query ? `?${query}` : '');
   return res.redirect(target);
+});
+
+// ----------------------------------------------
+// ⭐ DELETE RAW RECORD
+// ----------------------------------------------
+router.post('/delete/:id', (req, res) => {
+  const id = Number(req.params.id);
+
+  const index = rawReceipts.findIndex(r => r.id === id);
+  if (index === -1) {
+    return res.status(404).send('Record not found');
+  }
+
+  rawReceipts.splice(index, 1);
+
+  res.redirect('/raw/overview');
 });
 
 module.exports = router;

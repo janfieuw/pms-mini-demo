@@ -168,8 +168,8 @@
 
   .tag.wms { display: inline-flex; }
 
-  /* Blauwe label voor TOPIC categorie (INSTRUCTIONS / HR / ...) */
-.topic-type-tag {
+  /* Blauw label voor TOPIC categorie (INSTRUCTIONS / HR / ...) */
+  .topic-type-tag {
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -180,13 +180,12 @@
     font-size:11px;
     height:24px;
     border-radius:4px;
-    background-color:#f9b9aa;   /* << nieuwe kleur */
-    color:#2c2c2c;              /* donkergrijs voor leesbaarheid */
+    background-color:#f9b9aa;
+    color:#2c2c2c;
     border:none;
     margin:2px 3px;
     white-space:nowrap;
-}
-
+  }
 
   .icon-btn{
     width:28px;
@@ -297,6 +296,10 @@
 
                   <% if (n.qc) { %>
                     <span class="tag">QUALITY CHECK</span>
+                  <% } %>
+
+                  <% if (n.maintenance) { %>
+                    <span class="tag">MAINTENANCE</span>
                   <% } %>
 
                   <% if (n.topicType) { %>

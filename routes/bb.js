@@ -703,7 +703,7 @@ function buildStockSummaryFromDischarges() {
 }
 
 /**
- * ROUTES BB WAREHOUSING
+ * ROUTES BB WAREHOUSING + BATCH
  */
 
 // BATCH - CREATION (GET)
@@ -712,7 +712,7 @@ router.get('/batch', async (req, res) => {
 
   if (!startDate || !endDate) {
     return res.render('pages/bb/batch-creation', {
-      activeDomain: 'BB WAREHOUSING',
+      activeDomain: 'BATCH',
       activePage: 'BATCH - CREATION',
       startDate: '',
       endDate: '',
@@ -729,7 +729,7 @@ router.get('/batch', async (req, res) => {
   const summary   = buildBatchSummary(startDate, endDate, produced, raws, chems);
 
   res.render('pages/bb/batch-creation', {
-    activeDomain: 'BB WAREHOUSING',
+    activeDomain: 'BATCH',
     activePage: 'BATCH - CREATION',
     startDate,
     endDate,
@@ -746,7 +746,7 @@ router.post('/batch', async (req, res) => {
 
   if (!startDate || !endDate) {
     return res.render('pages/bb/batch-creation', {
-      activeDomain: 'BB WAREHOUSING',
+      activeDomain: 'BATCH',
       activePage: 'BATCH - CREATION',
       startDate: startDate || '',
       endDate: endDate || '',
@@ -764,7 +764,7 @@ router.post('/batch', async (req, res) => {
   const summary   = buildBatchSummary(startDate, endDate, produced, raws, chems);
 
   res.render('pages/bb/batch-creation', {
-    activeDomain: 'BB WAREHOUSING',
+    activeDomain: 'BATCH',
     activePage: 'BATCH - CREATION',
     startDate,
     endDate,
@@ -828,7 +828,7 @@ router.get('/batch-overview', (req, res) => {
   const batches = batchRecords.getAllBatchRecords() || [];
 
   res.render('pages/bb/batch-overview', {
-    activeDomain: 'BB WAREHOUSING',
+    activeDomain: 'BATCH',
     activePage: 'BATCH - OVERVIEW',
     batches
   });
@@ -843,7 +843,7 @@ router.get('/batch/:id', (req, res) => {
   }
 
   res.render('pages/bb/batch-detail', {
-    activeDomain: 'BB WAREHOUSING',
+    activeDomain: 'BATCH',
     activePage: 'BATCH - DETAIL',
     batch
   });
@@ -860,6 +860,17 @@ router.get('/discharge', (req, res) => {
     discharges,
     lots,
     slots
+  });
+});
+
+// BB - DISCHARGE OVERVIEW
+router.get('/discharge-overview', (req, res) => {
+  const list = discharges || [];
+
+  res.render('pages/bb/bb-discharge-overview', {
+    activeDomain: 'BB WAREHOUSING',
+    activePage: 'BB - DISCHARGE OVERVIEW',
+    discharges: list
   });
 });
 

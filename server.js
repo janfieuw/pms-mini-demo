@@ -22,7 +22,7 @@ const analysesRouter = require('./routes/analyses');
 const teamRouter       = require('./routes/team');        // TEAM
 const rawRouter        = require('./routes/raw');         // RAW MATERIALS
 const chemicalsRouter  = require('./routes/chemicals');   // CHEMICALS
-const bbRouter         = require('./routes/bb');          // BB WAREHOUSING
+const bbRouter         = require('./routes/bb');          // BB WAREHOUSING + BATCH
 const bulkRouter       = require('./routes/bulk');        // OUTBOUND BULK
 
 // ---- App setup
@@ -117,15 +117,20 @@ const DOMAINS = [
     { key:'CHEMICALS SWITCH',  path:'/chemicals/switch' },
     { key:'USED OVERVIEW',     path:'/chemicals/used-overview' },
   ]},
-  { key:'BB WAREHOUSING', subs:[
-    { key:'BATCH',            path:'/bb/batch' },
-    { key:'BATCH OVERVIEW',   path:'/bb/batch-overview' },
-    { key:'DISCHARGE',        path:'/bb/discharge' },
-    { key:'CHANGES',          path:'/bb/changes' },
-    { key:'ALLOCATION',       path:'/bb/allocation' },
-    { key:'LOADING',          path:'/bb/loading' },
-    { key:'STOCK',            path:'/bb/stock' },
+
+  // --- NIEUW DOMEIN BATCH (gebruikt bb-router, maar apart domein in grijze balk)
+  { key:'BATCH', subs:[
+    { key:'BATCH CREATION',  path:'/bb/batch' },
+    { key:'BATCH OVERVIEW',  path:'/bb/batch-overview' },
   ]},
+
+{ key:'BB WAREHOUSING', subs:[
+  { key:'DISCHARGE',            path:'/bb/discharge' },
+  { key:'DISCHARGE OVERVIEW',   path:'/bb/discharge-overview' },
+  { key:'ALLOCATION',           path:'/bb/allocation' },
+  { key:'LOADING',              path:'/bb/loading' },
+  { key:'STOCK',                path:'/bb/stock' },
+]},
   // OUTBOUND BULK – sleutel gelijk aan tertiary / activeDomain
   { key:'OUTBOUND BULK', subs:[
     { key:'BULK INBOUND',   path:'/bulk/registratie' },
@@ -149,15 +154,18 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
 
   res.locals.activeDomain =
-    req.path.startsWith('/logbook')   ? 'LOGBOOK' :
-    req.path.startsWith('/topics')    ? 'TOPICS'  :
-    req.path.startsWith('/shifts')    ? 'SHIFTS' :
-    req.path.startsWith('/analyses')  ? 'ANALYSES' :
-    req.path.startsWith('/team')      ? 'TEAM' :
-    req.path.startsWith('/raw')       ? 'RAW MATERIALS' :
-    req.path.startsWith('/chemicals') ? 'CHEMICALS' :
-    req.path.startsWith('/bb')        ? 'BB WAREHOUSING' :
-    req.path.startsWith('/bulk')      ? 'OUTBOUND BULK' :
+    req.path.startsWith('/logbook')    ? 'LOGBOOK' :
+    req.path.startsWith('/topics')     ? 'TOPICS'  :
+    req.path.startsWith('/shifts')     ? 'SHIFTS' :
+    req.path.startsWith('/analyses')   ? 'ANALYSES' :
+    req.path.startsWith('/team')       ? 'TEAM' :
+    req.path.startsWith('/raw')        ? 'RAW MATERIALS' :
+    req.path.startsWith('/chemicals')  ? 'CHEMICALS' :
+    // BATCH eerst, zodat /bb/batch en /bb/batch/:id onder domein BATCH vallen
+    req.path.startsWith('/bb/batch')   ? 'BATCH' :
+    // andere BB-pagina's blijven onder BB WAREHOUSING
+    req.path.startsWith('/bb')         ? 'BB WAREHOUSING' :
+    req.path.startsWith('/bulk')       ? 'OUTBOUND BULK' :
     null;
 
   res.locals.tertiarySubs =

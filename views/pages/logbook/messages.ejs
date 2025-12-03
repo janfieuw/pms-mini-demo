@@ -38,7 +38,7 @@
   .msg-meta {
     font-family: 'Roboto Mono', monospace;
     font-size: 11px;
-    font-weight: 400;   /* <-- HIER AANGEPAST: NIET MEER VET */
+    font-weight: 400;   /* niet vet */
   }
 
   .msg-label-row {
@@ -230,6 +230,7 @@ function fmtTime(m){
               <% if (m.chemib) { %><span class="tag wms">CHEM-IB</span><% } %>
               <% if (m.bulkob) { %><span class="tag wms">BULK-OB</span><% } %>
               <% if (m.qc)     { %><span class="tag">QUALITY CHECK</span><% } %>
+              <% if (m.maintenance) { %><span class="tag">MAINTENANCE</span><% } %>
 
             </div>
 

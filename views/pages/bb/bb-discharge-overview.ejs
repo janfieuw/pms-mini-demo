@@ -1,0 +1,136 @@
+<div class="page-shadow-wrapper">
+  <div class="wms-container no-print">
+
+    <!-- Titel + uitleg -->
+    <h1 style="margin-bottom:2px;">BIG BAGS • DISCHARGE OVERVIEW</h1>
+    <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#646464;">
+      Overview of all discharges: discharge date, batch, weight and location.
+    </span><br><br>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="wms-card">
+    <div class="wms-card-header no-print">
+      <h2>All discharges:</h2>
+    </div>
+
+    <%
+      function formatDischargeDate(dateStr, timeStr) {
+        if (!dateStr) return '';
+        var d = String(dateStr || '').trim();
+        var t = String(timeStr || '').trim();
+
+        // indien ISO: YYYY-MM-DD → DD/MM/YYYY
+        var parts = d.split('-');
+        if (parts.length === 3) {
+          d = parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+
+        return t ? (d + ' - ' + t) : d;
+      }
+
+      const hasRows =
+        discharges && Array.isArray(discharges) && discharges.length > 0;
+    %>
+
+    <div style="overflow:auto;">
+      <table class="loading-table-compact">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Discharge date</th>
+            <th>Batch</th>
+            <th>Weight (kg)</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (hasRows) { %>
+            <% discharges.forEach(function(d, idx){ %>
+              <tr>
+                <td><%= idx + 1 %></td>
+                <td><%= formatDischargeDate(d.dischargeDate, d.dischargeTime) %></td>
+                <td><%= d.lotNumber || d.bbLot || '' %></td>
+                <td class="num"><%= (d.quantityKg != null && d.quantityKg !== '') ? d.quantityKg : '' %></td>
+                <td><%= d.locationCode || '' %></td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="empty">No discharges registered yet.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Zelfde tabelopmaak als LOADING */
+
+.loading-table-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.loading-table-compact thead tr {
+  background: #f7f7f7;
+}
+
+.loading-table-compact th,
+.loading-table-compact td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e6e6e6;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.loading-table-compact td.num {
+  text-align: left;
+}
+
+.loading-table-compact .empty {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #777;
+}
+
+/* Kaartrand en layout zoals bij LOADING */
+.page-shadow-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 25px 40px;
+  background: #fff;
+  box-shadow: 0 0 25px rgba(0,0,0,.08);
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
+  min-height: calc(100vh - 140px);
+}
+
+/* Print-gedrag: gewoon de kaart printen, geen extra blokken nodig */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .page-shadow-wrapper, .page-shadow-wrapper * {
+    visibility: visible;
+  }
+
+  .page-shadow-wrapper {
+    max-width: 100%;
+    box-shadow: none;
+    padding: 0;
+    border: none;
+    min-height: auto;
+  }
+}
+</style>
+

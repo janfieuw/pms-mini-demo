@@ -32,28 +32,20 @@
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/stock')) ? 'is-active' : '' %>">
           CHEMICALS - STOCK
         </a>
-        <a href="/chemicals/used"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/used')) ? 'is-active' : '' %>">
+        <a href="/chemicals/used-overview"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/chemicals/used-overview')) ? 'is-active' : '' %>">
           CHEMICALS - USED
         </a>
 
       <% } else if (activeDomain === 'BB WAREHOUSING') { %>
-        <!-- BB WAREHOUSING -->
-        <a href="/bb/batch"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/batch')) ? 'is-active' : '' %>">
-          BATCH - CREATION
-        </a>
-        <a href="/bb/batch-overview"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/batch-overview')) ? 'is-active' : '' %>">
-          BATCH - OVERVIEW
-        </a>
+        <!-- BB WAREHOUSING (zonder BATCH) -->
         <a href="/bb/discharge"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/discharge')) ? 'is-active' : '' %>">
           BB - DISCHARGE
         </a>
-        <a href="/bb/movements"
-           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/movements')) ? 'is-active' : '' %>">
-          BB - MOVEMENTS
+           <a href="/bb/discharge-overview"
+           class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/discharge-overview')) ? 'is-active' : '' %>">
+          BB - DISCHARGE OVERVIEW
         </a>
         <a href="/bb/allocation"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bb/allocation')) ? 'is-active' : '' %>">
@@ -68,11 +60,11 @@
           BB - STOCK
         </a>
 
-   <% } else if (activeDomain === 'OUTBOUND BULK') { %>
+      <% } else if (activeDomain === 'OUTBOUND BULK') { %>
         <!-- OUTBOUND BULK -->
         <a href="/bulk/registratie"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bulk/registratie')) ? 'is-active' : '' %>">
-          BULK - DISCHARGE
+          BULK - INBOUND
         </a>
         <a href="/bulk/all"
            class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath.startsWith('/bulk/all')) ? 'is-active' : '' %>">
@@ -80,7 +72,7 @@
         </a>
 
       <% } else { %>
-        <!-- DEFAULT: dynamische tertiarySubs (o.a. TEAM) -->
+        <!-- DEFAULT: dynamische tertiarySubs (o.a. BATCH, TEAM, ...) -->
         <% (tertiarySubs || []).forEach(function(s){ %>
           <a href="<%= s.path %>"
              class="btn-sub <%= (typeof requestPath !== 'undefined' && requestPath === s.path) ? 'is-active' : '' %>">
@@ -96,4 +88,3 @@
 
   </div>
 </div>
-
