@@ -23,6 +23,51 @@
 
   <h2>ANALYSES • OVERVIEW OEE</h2>
 
+  <%
+  // Bepaal automatisch de vroegste en laatste datum in de data
+  let earliest = "";
+  let latest = "";
+
+  if (rows && rows.length) {
+    const dates = rows
+      .map(r => new Date(r.startLabel))
+      .filter(d => !isNaN(d));
+
+    if (dates.length) {
+      const min = new Date(Math.min.apply(null, dates));
+      const max = new Date(Math.max.apply(null, dates));
+
+      earliest = min.toISOString().substring(0, 10);
+      latest   = max.toISOString().substring(0, 10);
+    }
+  }
+%>
+
+<!-- FILTER FORM -->
+<form method="GET" action="/analyses/overview-oee"
+      style="margin:16px 0 24px 0; display:flex; gap:16px; align-items:flex-end;">
+
+  <div style="display:flex; flex-direction:column;">
+    <label style="font-size:11px; color:#555;">Start date</label>
+    <input type="date" name="start"
+           value="<%= earliest %>"
+           style="padding:6px 8px; border-radius:6px; border:1px solid #ccc;" />
+  </div>
+
+  <div style="display:flex; flex-direction:column;">
+    <label style="font-size:11px; color:#555;">End date</label>
+    <input type="date" name="end"
+           value="<%= latest %>"
+           style="padding:6px 8px; border-radius:6px; border:1px solid #ccc;" />
+  </div>
+
+  <button type="submit"
+          style="padding:8px 16px; background:#000; color:#fff; border:none; border-radius:6px; cursor:pointer;">
+    Filter
+  </button>
+</form>
+
+
   <!-- Kader met gemiddeld OEE -->
   <div style="margin:16px 0 24px 0; padding:16px; border-radius:12px; background:#ededed; display:flex; flex-direction:column; gap:4px;">
     <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:#555;">

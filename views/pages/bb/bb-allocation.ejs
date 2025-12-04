@@ -91,9 +91,9 @@
               <% sortedSlots.forEach(function(slot) { %>
                 <tr>
                   <td>
-                    <input
-                      type="checkbox"
-                      name="locations[]"
+                    <input 
+                      type="checkbox" 
+                      name="locations[]" 
                       value="<%= slot.code %>">
                   </td>
                   <td><%= slot.code %></td>
@@ -203,7 +203,7 @@
     white-space: nowrap;
   }
 
-  /* HIER AANGEPAST: gewichten LINKS uitgelijnd */
+  /* Gewicht LINKS */
   .allocation-table-compact td.num {
     text-align: left;
   }
@@ -236,8 +236,8 @@
     function syncHidden() {
       if (hCust && customer)     hCust.value = customer.value;
       if (hShip && shippingDate) hShip.value = shippingDate.value;
-      if (hRef  && reference)    hRef.value  = reference.value;
-      if (hRem  && remarks)      hRem.value  = remarks.value;
+      if (hRef  && reference)    hRef.value  = reference ? reference.value : '';
+      if (hRem  && remarks)      hRem.value  = remarks ? remarks.value : '';
     }
 
     // sync direct bij load en voor submit van allocation-form

@@ -124,13 +124,13 @@ const DOMAINS = [
     { key:'BATCH OVERVIEW',  path:'/bb/batch-overview' },
   ]},
 
-{ key:'BB WAREHOUSING', subs:[
-  { key:'DISCHARGE',            path:'/bb/discharge' },
-  { key:'DISCHARGE OVERVIEW',   path:'/bb/discharge-overview' },
-  { key:'ALLOCATION',           path:'/bb/allocation' },
-  { key:'LOADING',              path:'/bb/loading' },
-  { key:'STOCK',                path:'/bb/stock' },
-]},
+  { key:'BB WAREHOUSING', subs:[
+    { key:'DISCHARGE',            path:'/bb/discharge' },
+    { key:'DISCHARGE OVERVIEW',   path:'/bb/discharge-overview' },
+    { key:'ALLOCATION',           path:'/bb/allocation' },
+    { key:'LOADING',              path:'/bb/loading' },
+    { key:'STOCK',                path:'/bb/stock' },
+  ]},
   // OUTBOUND BULK – sleutel gelijk aan tertiary / activeDomain
   { key:'OUTBOUND BULK', subs:[
     { key:'BULK INBOUND',   path:'/bulk/registratie' },

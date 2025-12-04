@@ -74,6 +74,13 @@ function getShiftDowntime(s) {
   return Number.isFinite(num) ? num : null;
 }
 
+// Kleine helper: datum uit lijn halen (we gebruiken startLabel of at)
+function getRowDateMs(row) {
+  // eerst startLabel, anders at
+  const label = row.startLabel || row.at || row.start || row.date;
+  return parseMaybeDate(label);
+}
+
 // =====================
 // RAW FILTER helpers
 // =====================
@@ -134,7 +141,7 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => res.redirect('/analyses/messages-filter'));
 
 // =====================
-// OVERVIEW OEE
+// OVERVIEW OEE  (met datumfilter)
 // =====================
 
 router.get('/overview-oee', (req, res) => {
@@ -142,9 +149,29 @@ router.get('/overview-oee', (req, res) => {
 
   const source = getShiftSource(req);
 
-  const rows = source.slice().sort((a, b) => {
-    const ta = parseMaybeDate(a.at);
-    const tb = parseMaybeDate(b.at);
+  const startStr = typeof req.query.start === 'string' ? req.query.start : '';
+  const endStr   = typeof req.query.end   === 'string' ? req.query.end   : '';
+
+  const msStart = startStr ? Date.parse(startStr) : null;
+  // end = inclusief volledige dag
+  const msEnd   = endStr   ? (Date.parse(endStr) + 24 * 60 * 60 * 1000 - 1) : null;
+
+  let rows = source.slice();
+
+  if (msStart || msEnd) {
+    rows = rows.filter(r => {
+      const t = getRowDateMs(r);
+      if (!t) return false;
+      if (msStart && t < msStart) return false;
+      if (msEnd   && t > msEnd)   return false;
+      return true;
+    });
+  }
+
+  // sorteren op datum (nieuwste bovenaan)
+  rows.sort((a, b) => {
+    const ta = getRowDateMs(a);
+    const tb = getRowDateMs(b);
     return tb - ta;
   });
 
@@ -164,7 +191,7 @@ router.get('/overview-oee', (req, res) => {
 });
 
 // =====================
-// PRODUCTION
+// PRODUCTION  (met datumfilter)
 // =====================
 
 router.get('/production', (req, res) => {
@@ -172,9 +199,27 @@ router.get('/production', (req, res) => {
 
   const source = getShiftSource(req);
 
-  const rows = source.slice().sort((a, b) => {
-    const ta = parseMaybeDate(a.at);
-    const tb = parseMaybeDate(b.at);
+  const startStr = typeof req.query.start === 'string' ? req.query.start : '';
+  const endStr   = typeof req.query.end   === 'string' ? req.query.end   : '';
+
+  const msStart = startStr ? Date.parse(startStr) : null;
+  const msEnd   = endStr   ? (Date.parse(endStr) + 24 * 60 * 60 * 1000 - 1) : null;
+
+  let rows = source.slice();
+
+  if (msStart || msEnd) {
+    rows = rows.filter(r => {
+      const t = getRowDateMs(r);
+      if (!t) return false;
+      if (msStart && t < msStart) return false;
+      if (msEnd   && t > msEnd)   return false;
+      return true;
+    });
+  }
+
+  rows.sort((a, b) => {
+    const ta = getRowDateMs(a);
+    const tb = getRowDateMs(b);
     return tb - ta;
   });
 

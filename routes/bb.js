@@ -508,7 +508,7 @@ function attachBatchInfoToSlots(slots) {
 let discharges = [];
 let nextDischargeId = 1;
 
-// 🔸 NIEUW: discharges beschikbaar maken voor andere domeinen (bv. SHIFTS)
+// discharges beschikbaar maken voor andere domeinen (bv. SHIFTS)
 router.use((req, res, next) => {
   if (req.app && req.app.locals) {
     req.app.locals.bbDischarges = discharges;
@@ -872,6 +872,14 @@ router.get('/discharge-overview', (req, res) => {
     activePage: 'BB - DISCHARGE OVERVIEW',
     discharges: list
   });
+});
+
+// 🔴 NIEUW: DISCHARGE VERWIJDEREN
+router.post('/discharge/:id/delete', (req, res) => {
+  const id = Number(req.params.id);
+  discharges = discharges.filter(d => d.id !== id);
+  // stock & grid worden automatisch herberekend op basis van discharges
+  return res.redirect('/bb/discharge-overview');
 });
 
 router.post('/discharge/save', (req, res) => {

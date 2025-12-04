@@ -42,6 +42,7 @@
             <th>Batch</th>
             <th>Weight (kg)</th>
             <th>Location</th>
+            <th class="no-print"></th> <!-- Delete kolom -->
           </tr>
         </thead>
         <tbody>
@@ -51,13 +52,23 @@
                 <td><%= idx + 1 %></td>
                 <td><%= formatDischargeDate(d.dischargeDate, d.dischargeTime) %></td>
                 <td><%= d.lotNumber || d.bbLot || '' %></td>
+                <!-- gewicht links -->
                 <td class="num"><%= (d.quantityKg != null && d.quantityKg !== '') ? d.quantityKg : '' %></td>
                 <td><%= d.locationCode || '' %></td>
+                <td class="no-print">
+                  <form method="POST"
+                        action="/bb/discharge/<%= d.id %>/delete"
+                        onsubmit="return confirm('Delete this line?');">
+                    <button type="submit" class="btn-delete">
+                      DELETE
+                    </button>
+                  </form>
+                </td>
               </tr>
             <% }); %>
           <% } else { %>
             <tr>
-              <td colspan="5" class="empty">No discharges registered yet.</td>
+              <td colspan="6" class="empty">No discharges registered yet.</td>
             </tr>
           <% } %>
         </tbody>
@@ -87,6 +98,7 @@
   white-space: nowrap;
 }
 
+/* Gewicht LINKS uitgelijnd */
 .loading-table-compact td.num {
   text-align: left;
 }
@@ -96,6 +108,24 @@
   padding: 20px;
   font-style: italic;
   color: #777;
+}
+
+/* DELETE BUTTON STYLE – zelfde als bulk-all */
+.btn-delete {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #b71c1c;
+  background: #ffffff;
+  color: #b71c1c;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background: #b71c1c;
+  color: #ffffff;
 }
 
 /* Kaartrand en layout zoals bij LOADING */
@@ -110,7 +140,7 @@
   min-height: calc(100vh - 140px);
 }
 
-/* Print-gedrag: gewoon de kaart printen, geen extra blokken nodig */
+/* Print: knop-kolom verbergen */
 @media print {
   .no-print {
     display: none !important;
